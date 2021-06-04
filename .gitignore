@@ -253,6 +253,7 @@ sysinfo.txt
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+.vsconfig
 
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
@@ -265,6 +266,7 @@ sysinfo.txt
 
 ## User settings
 xcuserdata/
+UserSettings/
 
 ## compatibility with Xcode 8 and earlier (ignoring not required starting Xcode 9)
 *.xcscmblueprint
