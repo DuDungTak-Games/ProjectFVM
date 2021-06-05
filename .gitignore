@@ -625,8 +625,8 @@ healthchecksdb
 MigrationBackup/
 
 # Exception Asset
-_VoxelImporter/Editor/
-_VoxelImporter/Runtime/
+[Aa]ssets/_VoxelImporter/Editor/
+[Aa]ssets/_VoxelImporter/Runtime/
 
 
 # End of https://www.gitignore.io/api/unity,xcode,android,visualstudio,androidstudio,visualstudiocode
