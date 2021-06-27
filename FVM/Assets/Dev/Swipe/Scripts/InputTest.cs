@@ -7,22 +7,22 @@ using UnityEngine;
 
 using DuDungTakGames.Input;
 
-public class InputTest : MonoBehaviour, IBeginInputHandler, IInputHandler, IEndInputHandler
+public class InputTest : MonoBehaviour, IInputHandler
 {
+
+    public enum SwipeType { RIGHT, LEFT, UP, DOWN }
 
     //public EventTrigger trigger;
 
-    public Image startCircle;
-    public Image currentCircle;
-    public Image endCircle;
+    public Image startCircle, currentCircle, endCircle;
 
-    InputData beginInputData;
-    InputData inputData;
-    InputData endInputData;
+    InputData beginInputData, inputData, endInputData;
 
     public UnityEvent<InputData> onBeginInput;
     public UnityEvent<InputData> onInput;
     public UnityEvent<InputData> onEndInput;
+
+    public UnityEvent<SwipeType> onSwipe;
 
     float minSwipeDistance;
 
@@ -159,30 +159,34 @@ public class InputTest : MonoBehaviour, IBeginInputHandler, IInputHandler, IEndI
 
         if(currentSwipe.magnitude >= minSwipeDistance)
         {
+            SwipeType swipeType;
+
             Vector2 swipeDirection = currentSwipe.normalized;
-            Debug.LogFormat("OnSwipe : {0}", swipeDirection);
+            Debug.LogFormat("OnSwipe : {0} / {1}", swipeDirection, currentSwipe.magnitude);
 
 
             if (swipeDirection.x > 0)
             {
-                Debug.LogFormat("OnSwipeRight");
+                swipeType = SwipeType.RIGHT;
             }
             else
             {
-                Debug.LogFormat("OnSwipeLeft");
+                swipeType = SwipeType.LEFT;
             }
 
             if (Mathf.Abs(swipeDirection.y) > Mathf.Abs(swipeDirection.x))
             {
                 if (swipeDirection.y > 0)
                 {
-                    Debug.LogFormat("OnSwipeUp");
+                    swipeType = SwipeType.UP;
                 }
                 else
                 {
-                    Debug.LogFormat("OnSwipeDown");
+                    swipeType = SwipeType.DOWN;
                 }
             }
+
+            onSwipe.Invoke(swipeType);
         }
     }
 

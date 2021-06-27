@@ -95,6 +95,7 @@ GameObject:
   - component: {fileID: 11443940}
   - component: {fileID: 9557478}
   - component: {fileID: 6430108}
+  - component: {fileID: 3718807524786414930}
   m_Layer: 0
   m_Name: PrefabObject
   m_TagString: Untagged
@@ -518,6 +519,19 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 4379122}
+--- !u!114 &3718807524786414930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 122542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bb730a65c3f8c742b6e87d99079669d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputTest: {fileID: 0}
 --- !u!1 &125458
 GameObject:
   m_ObjectHideFlags: 0
@@ -4501,8 +4515,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: mat0
   m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 5
+  m_ShaderKeywords: _EMISSION
+  m_LightmapFlags: 1
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
