@@ -1,0 +1,43 @@
+fileFormatVersion: 2
+guid: bd1a8f4ac68f9f2409ea968727d26f46
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: eeb34f3ead148d04e8630fc3f79cbc1a, type: 3}
+  dataVersion: 6
+  fileType: 0
+  gameObjectName: Dummy_Coin
+  meshMode: 1
+  importMode: 1
+  importScale: {x: 0.75, y: 0.75, z: 0.75}
+  importOffset: {x: 0, y: 0, z: -0.5}
+  combineFaces: 1
+  ignoreCavity: 1
+  shareSameFace: 1
+  removeUnusedPalettes: 1
+  shareSameMaterial: 1
+  outputStructure: 0
+  generateLightmapUVs: 0
+  generateLightmapUVsAngleError: 8
+  generateLightmapUVsAreaError: 15
+  generateLightmapUVsHardAngle: 88
+  generateLightmapUVsPackMargin: 4
+  generateTangents: 0
+  meshFaceVertexOffset: 0
+  loadFromVoxelFile: 1
+  generateMipMaps: 0
+  colliderType: 0
+  createContactChunkFaces: 0
+  materialMode: 0
+  materials:
+  - {fileID: -156486658544998735, guid: bd1a8f4ac68f9f2409ea968727d26f46, type: 3}
+  materialNames:
+  - mat0
+  remappedMaterials: []
+  export: 0
+  legacyVoxImport: 0
+  legacyAssetNaming: 1

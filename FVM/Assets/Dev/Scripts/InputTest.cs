@@ -23,13 +23,15 @@ public class InputTest : MonoBehaviour, IInputHandler
     public UnityEvent<InputData> onEndInput;
 
     public UnityEvent<SwipeType> onSwipe;
+    public UnityEvent onTouch;
 
-    float minSwipeDistance;
+    float minSwipeDistance, maxTouchDistance;
 
     void Awake()
     {
         Vector2 screenSize = new Vector2(Screen.width, Screen.height);
         minSwipeDistance = Mathf.Max(screenSize.x, screenSize.y) / 12f;
+        maxTouchDistance = 10f;
 
         Debug.LogWarningFormat("MinSwipeDistance : {0}", minSwipeDistance);
     }
@@ -58,7 +60,9 @@ public class InputTest : MonoBehaviour, IInputHandler
         onInput.AddListener(MoveCircle);
 
         onEndInput.AddListener(EndCircle);
+
         onEndInput.AddListener(CheckSwipe);
+        onEndInput.AddListener(CheckTouch);
     }
 
     //void InitTrigger()
@@ -94,18 +98,27 @@ public class InputTest : MonoBehaviour, IInputHandler
     {
         if(Input.GetMouseButtonDown(0))
         {
+            if (EventSystem.current.IsPointerOverGameObject())
+                return;
+
             beginInputData.SetData(Input.mousePosition);
             OnBeginInput(beginInputData);
         }
 
         if (Input.GetMouseButton(0))
         {
+            if (EventSystem.current.IsPointerOverGameObject())
+                return;
+
             inputData.SetData(Input.mousePosition);
             OnInput(inputData);
         }
 
         if (Input.GetMouseButtonUp(0))
         {
+            if (EventSystem.current.IsPointerOverGameObject())
+                return;
+
             endInputData.SetData(Input.mousePosition);
             OnEndInput(endInputData);
         }
@@ -162,8 +175,6 @@ public class InputTest : MonoBehaviour, IInputHandler
             SwipeType swipeType;
 
             Vector2 swipeDirection = currentSwipe.normalized;
-            Debug.LogFormat("OnSwipe : {0} / {1}", swipeDirection, currentSwipe.magnitude);
-
 
             if (swipeDirection.x > 0)
             {
@@ -187,6 +198,16 @@ public class InputTest : MonoBehaviour, IInputHandler
             }
 
             onSwipe.Invoke(swipeType);
+        }
+    }
+
+    void CheckTouch(InputData inputData)
+    {
+        Vector2 currentSwipe = endInputData.position - beginInputData.position;
+
+        if (currentSwipe.magnitude < maxTouchDistance)
+        {
+            onTouch.Invoke();
         }
     }
 
