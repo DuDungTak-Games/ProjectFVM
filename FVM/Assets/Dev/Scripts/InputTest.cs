@@ -175,6 +175,7 @@ public class InputTest : MonoBehaviour, IInputHandler
             SwipeType swipeType;
 
             Vector2 swipeDirection = currentSwipe.normalized;
+            Debug.LogWarningFormat("SwipeDirection : {0}", swipeDirection);
 
             if (swipeDirection.x > 0)
             {

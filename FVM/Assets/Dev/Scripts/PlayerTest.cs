@@ -19,6 +19,8 @@ public class PlayerTest : MonoBehaviour, IEventHandler
     float currentFloor = 1f;
     Floor forwardFloor;
 
+    Coroutine moveCoroutine;
+
     void Awake()
     {
         Init();
@@ -41,9 +43,6 @@ public class PlayerTest : MonoBehaviour, IEventHandler
         inputTest.onTouch.RemoveListener(Move);
     }
 
-
-
-    // TODO : 부드러운 회전 모션 적용
     void Rotate(SwipeType swipeType)
     {
         //Vector3 direction = Vector3.zero;
@@ -73,9 +72,11 @@ public class PlayerTest : MonoBehaviour, IEventHandler
         transform.Rotate(Vector3.up, angle * 90);
     }
 
-    // TODO : 부드러운 이동 모션 적용
     void Move()
     {
+        if (moveCoroutine != null)
+            return;
+
         forwardFloor = null;
 
         if (CheckFoward())
@@ -84,7 +85,45 @@ public class PlayerTest : MonoBehaviour, IEventHandler
         if (!CheckFloor())
             return;
 
-        transform.position += GetMoveUnit() + GetMoveHeight();
+        Vector3 movePos = transform.position + GetMoveUnit() + GetMoveHeight();
+        moveCoroutine = StartCoroutine(MoveCoroutine(movePos));
+        //transform.position += GetMoveUnit() + GetMoveHeight();
+    }
+
+    IEnumerator MoveCoroutine(Vector3 movePos)
+    {
+        float progress = 0f;
+
+        Vector3 startPos = transform.position;
+        Vector3 startPosH = transform.position + (Vector3.up * 4f);
+
+        Vector3 endPos = movePos;
+        Vector3 endPosH = movePos + (Vector3.up * 4f);
+
+        while (progress < 1f)
+        {
+            Vector3 A = Vector3.Lerp(startPos, startPosH, progress);
+            Vector3 B = Vector3.Lerp(startPosH, endPosH, progress);
+            Vector3 C = Vector3.Lerp(endPosH, endPos, progress);
+
+            Vector3 D = Vector3.Lerp(A, B, progress);
+            Vector3 E = Vector3.Lerp(B, C, progress);
+
+            Vector3 F = Vector3.Lerp(D, E, progress);
+
+            // NOTE : b 에 0.1f 추가로 보정
+            progress = Mathf.Lerp(progress, 1.1f, 0.125f);
+
+            transform.position = F;
+
+            yield return new WaitForEndOfFrame();
+        }
+
+        transform.position = endPos;
+
+        moveCoroutine = null;
+
+        yield break;
     }
 
     bool CheckFoward()
@@ -117,7 +156,7 @@ public class PlayerTest : MonoBehaviour, IEventHandler
     bool CheckFloor()
     {
         RaycastHit hit;
-        if (Physics.Raycast(GetRayOrigin() + (transform.forward * 10f), Vector3.down, out hit, 10f, ~(1 << LayerMask.NameToLayer("Player") | 1 << LayerMask.NameToLayer("Item"))))
+        if (Physics.Raycast(GetRayOrigin() + (transform.forward * 10f), Vector3.down, out hit, 10f, (1 << LayerMask.NameToLayer("Tile"))))
         {
             GameObject hitObj = hit.collider.gameObject;
 

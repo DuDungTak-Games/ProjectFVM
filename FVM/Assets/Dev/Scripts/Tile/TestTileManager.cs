@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using DuDungTakGames.Gimic;
+
 public class TestTileManager : MonoBehaviour
 {
 
     public GameObject testTile_Prefab;
     public GameObject testCoin_Prefab;
+    public GameObject testTrigger_Prefab;
 
     float hUnit = 10f, vUnit = 5f;
 
@@ -14,6 +17,11 @@ public class TestTileManager : MonoBehaviour
 
     List<TileSet> tileList = new List<TileSet>();
     List<TileSet> coinList = new List<TileSet>();
+    List<TileSet> triggerList = new List<TileSet>();
+    List<TileSet> gimicList = new List<TileSet>();
+
+    // NOTE : TEST GAMEOBJECT LIST!!!
+    List<GameObject> gimicObjList = new List<GameObject>();
 
     const float START_FLOOR_UNIT = -5f;
     const float HALF_FLOOR_UNIT = 2.5f;
@@ -44,9 +52,13 @@ public class TestTileManager : MonoBehaviour
 
         InitTile();
         InitCoin();
+        InitGimic();
+        InitTrigger();
 
         SpawnTile();
         SpawnCoin();
+        SpawnGimic();
+        SpawnTrigger();
     }
 
     void InitTile()
@@ -85,7 +97,7 @@ public class TestTileManager : MonoBehaviour
 
         for (int x = -5; x < 5; x++)
         {
-            AddTileSet(x, 7, 4f);
+            AddTileSet(x, 7, 5f);
         }
 
         for (int x = -5; x < 5; x++)
@@ -133,13 +145,23 @@ public class TestTileManager : MonoBehaviour
         AddCoinSet(0, 5, 3);
     }
 
+    void InitTrigger()
+    {
+        AddTriggerSet(1, 1, 1);
+    }
+
+    void InitGimic()
+    {
+        AddGimicSet(-1, 1, 2);
+    }
+
     void SpawnTile()
     {
         foreach(TileSet tileSet in tileList)
         {
             GameObject tile = Instantiate(testTile_Prefab, tileSet.spawnPos, Quaternion.identity, rootTrf);
             
-            if(tile.TryGetComponent<Floor>(out Floor tileFloor))
+            if(tile.TryGetComponent(out Floor tileFloor))
             {
                 float spawnFloor = tileSet.spawnFloor;
                 tileFloor.floor = spawnFloor;
@@ -159,6 +181,48 @@ public class TestTileManager : MonoBehaviour
         foreach (TileSet tileSet in coinList)
         {
             GameObject coin = Instantiate(testCoin_Prefab, tileSet.spawnPos, testCoin_Prefab.transform.rotation, rootTrf);
+        }
+    }
+
+    void SpawnTrigger()
+    {
+        foreach (TileSet tileSet in triggerList)
+        {
+            GameObject trigger = Instantiate(testTrigger_Prefab, tileSet.spawnPos, testTrigger_Prefab.transform.rotation, rootTrf);
+
+            if (trigger.TryGetComponent(out Gimic tileTrigger))
+            {
+                GameObject testGimicObj = gimicObjList[0];
+                tileTrigger.SetTriggerObject(testGimicObj);
+            }
+        }
+    }
+
+    void SpawnGimic()
+    {
+        foreach (TileSet tileSet in gimicList)
+        {
+            GameObject tile = Instantiate(testTile_Prefab, tileSet.spawnPos, Quaternion.identity, rootTrf);
+
+            if (tile.TryGetComponent(out Floor tileFloor))
+            {
+                float spawnFloor = tileSet.spawnFloor;
+                tileFloor.floor = spawnFloor;
+
+                if (spawnFloor % 1f == 0.5f)
+                {
+                    Vector3 scale = tile.transform.localScale;
+                    scale.y *= 0.5f;
+                    tile.transform.localScale = scale;
+                }
+            }
+
+            if (tile.TryGetComponent(out MeshRenderer mr))
+            {
+                mr.material.color = Color.red;
+            }
+
+            gimicObjList.Add(tile);
         }
     }
 
@@ -191,6 +255,37 @@ public class TestTileManager : MonoBehaviour
         Vector3 pos = new Vector3(posX, posY, posZ);
 
         coinList.Add(CreateTileSet(pos, spawnFloor));
+    }
+
+    void AddTriggerSet(float x, float z, float spawnFloor)
+    {
+        float posX = x * hUnit;
+        float posY = 0;
+        float posZ = z * hUnit;
+
+        posY += (Mathf.FloorToInt(spawnFloor) * vUnit) + ((Mathf.FloorToInt(spawnFloor) - 1) * vUnit);
+        posY += spawnFloor % 1 == 0 ? -vUnit : 0;
+
+        Vector3 pos = new Vector3(posX, posY, posZ);
+
+        triggerList.Add(CreateTileSet(pos, spawnFloor));
+    }
+
+    void AddGimicSet(float x, float z, float spawnFloor)
+    {
+        float posX = x * hUnit;
+        float posY = START_FLOOR_UNIT;
+        float posZ = z * hUnit;
+
+        if (spawnFloor > 1f)
+        {
+            posY += (Mathf.FloorToInt(spawnFloor) * vUnit) + ((Mathf.FloorToInt(spawnFloor) - 1) * vUnit);
+            posY += spawnFloor % 1 == 0 ? -vUnit : HALF_FLOOR_UNIT;
+        }
+
+        Vector3 pos = new Vector3(posX, posY, posZ);
+
+        gimicList.Add(CreateTileSet(pos, spawnFloor));
     }
 
     TileSet CreateTileSet(Vector3 pos, float floor)
