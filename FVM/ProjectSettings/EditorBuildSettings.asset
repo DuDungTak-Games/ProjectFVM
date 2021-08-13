@@ -4,5 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Dev/Coin_Dev.unity
+    guid: 164c579131b059e4aab21320f9587919
+  - enabled: 1
+    path: Assets/Dev/InGame_Dev.unity
+    guid: 9c13d4970e394e248924abb466f990f3
   m_configObjects: {}

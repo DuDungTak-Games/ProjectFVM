@@ -5,6 +5,8 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour
 {
 
+    [SerializeField] bool isLerp;
+
     [SerializeField] Transform target;
 
     [SerializeField] Vector3 offsetPos;
@@ -17,6 +19,14 @@ public class CameraFollow : MonoBehaviour
             return;
 
         Vector3 targetPos = target.position + offsetPos;
-        transform.position = Vector3.Lerp(transform.position, targetPos, followSpeed);
+
+        if(isLerp)
+        {
+            transform.position = Vector3.Lerp(transform.position, targetPos, followSpeed);
+        }
+        else
+        {
+            transform.position = targetPos;
+        }
     }
 }

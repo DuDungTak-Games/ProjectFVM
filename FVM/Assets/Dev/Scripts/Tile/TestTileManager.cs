@@ -10,6 +10,7 @@ public class TestTileManager : MonoBehaviour
     public GameObject testTile_Prefab;
     public GameObject testCoin_Prefab;
     public GameObject testTrigger_Prefab;
+    public GameObject testVM_Prefab;
 
     float hUnit = 10f, vUnit = 5f;
 
@@ -59,6 +60,9 @@ public class TestTileManager : MonoBehaviour
         SpawnCoin();
         SpawnGimic();
         SpawnTrigger();
+
+        //SpawnStartPoint();
+        SpawnGamePoint(-3, -4, 1);
     }
 
     void InitTile()
@@ -148,6 +152,7 @@ public class TestTileManager : MonoBehaviour
     void InitTrigger()
     {
         AddTriggerSet(1, 1, 1);
+        AddTriggerSet(1, 1, 1);
     }
 
     void InitGimic()
@@ -192,8 +197,7 @@ public class TestTileManager : MonoBehaviour
 
             if (trigger.TryGetComponent(out Gimic tileTrigger))
             {
-                GameObject testGimicObj = gimicObjList[0];
-                tileTrigger.SetTriggerObject(testGimicObj);
+                tileTrigger.SetTriggerAction(() => { gimicObjList[0].SetActive(false); });
             }
         }
     }
@@ -223,6 +227,28 @@ public class TestTileManager : MonoBehaviour
             }
 
             gimicObjList.Add(tile);
+        }
+    }
+
+    void SpawnGamePoint(float x, float z, float spawnFloor)
+    {
+        float posX = x * hUnit;
+        float posY = 0;
+        float posZ = z * hUnit;
+
+        posY += (Mathf.FloorToInt(spawnFloor) * vUnit) + ((Mathf.FloorToInt(spawnFloor) - 1) * vUnit);
+        posY += spawnFloor % 1 == 0 ? -vUnit : 0;
+
+        Vector3 pos = new Vector3(posX, posY, posZ);
+
+
+
+        GameObject vendingMachine = Instantiate(testVM_Prefab, new Vector3(posX, 0, (z+1) * hUnit), Quaternion.Euler(0, 180, 0));
+        GameObject trigger = Instantiate(testTrigger_Prefab, pos, testTrigger_Prefab.transform.rotation, rootTrf);
+
+        if (trigger.TryGetComponent(out Gimic tileTrigger))
+        {
+            tileTrigger.SetTriggerAction(() => { UnityEngine.SceneManagement.SceneManager.LoadScene(1); });
         }
     }
 

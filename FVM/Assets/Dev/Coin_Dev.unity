@@ -366,6 +366,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16392c3d9ef88e849a87c50d667604e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isLerp: 1
   target: {fileID: 39187953}
   offsetPos: {x: 70, y: 100, z: -70}
 --- !u!20 &292694159
@@ -1060,6 +1061,7 @@ MonoBehaviour:
   testTile_Prefab: {fileID: 3280564174860502199, guid: df70310ccfaed46479ecc048f7752484, type: 3}
   testCoin_Prefab: {fileID: 4457105397523664863, guid: a1e6f14c02e50a341af48e0072452e6b, type: 3}
   testTrigger_Prefab: {fileID: 9186619336909404956, guid: 73b1998fb8bb6114ab45a25af425717c, type: 3}
+  testVM_Prefab: {fileID: 5491335234846113243, guid: f06e2bd59e285644492e70245ab169a2, type: 3}
 --- !u!4 &1718962760
 Transform:
   m_ObjectHideFlags: 0

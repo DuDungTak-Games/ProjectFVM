@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,8 @@ namespace DuDungTakGames.Gimic
 {
     public class Gimic : MonoBehaviour
     {
-        GameObject testGimicObj;
+
+        Action gimicAction;
 
         public void OnTriggerEnter(Collider col)
         {
@@ -21,17 +23,12 @@ namespace DuDungTakGames.Gimic
             Color onColor = Color.red;
             this.GetComponent<MeshRenderer>().material.color = onColor;
 
-
-
-            if (testGimicObj != null)
-            {
-                testGimicObj.SetActive(false);
-            }
+            gimicAction?.Invoke();
         }
 
-        public void SetTriggerObject(GameObject targetObj)
+        public void SetTriggerAction(Action gimicLogic)
         {
-            testGimicObj = targetObj;
+            gimicAction = gimicLogic;
         }
     }
 }
