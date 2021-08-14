@@ -5,11 +5,11 @@ using UnityEngine;
 public class VendingMachine : MonoBehaviour
 {
 
-    float vmKg = 120; // 자판기 자체의 무게 (Test Value = 120kg)
-    float maxFuel = 30; // 자판기의 연료 (Test Value = 30L)
+    [SerializeField] float vmKg = 120; // 자판기 자체의 무게 (Test Value = 120kg)
+    [SerializeField] float maxFuel = 30; // 자판기의 연료 (Test Value = 30L)
 
-    float fuelFkg = 21; // 자판기 풀 연료 무게 (Test Value = 21kg)
-    float fuelEkg = 3; // 자판기 빈 연료 무게 (Test Value = 3kg)
+    [SerializeField] float fuelFkg = 21; // 자판기 풀 연료 무게 (Test Value = 21kg)
+    [SerializeField] float fuelEkg = 3; // 자판기 빈 연료 무게 (Test Value = 3kg)
 
     float currentKg; // 현재 자판기 무게
     float currentFuel; // 현재 자판기 연료
@@ -50,13 +50,18 @@ public class VendingMachine : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Q))
         {
-            rb.AddTorque(-transform.forward * (torque * Time.deltaTime), ForceMode.Acceleration);
+            Torque(ScreenInputTest.ScreenTouchType.LEFT);
         }
 
         if (Input.GetKey(KeyCode.E))
         {
-            rb.AddTorque(transform.forward * (torque * Time.deltaTime), ForceMode.Acceleration);
+            Torque(ScreenInputTest.ScreenTouchType.RIGHT);
         }
+    }
+
+    public void Torque(ScreenInputTest.ScreenTouchType touchType)
+    {
+        rb.AddTorque((transform.forward * (int)touchType) * (torque * Time.deltaTime), ForceMode.Acceleration);
     }
 
     void UpdateVM()
