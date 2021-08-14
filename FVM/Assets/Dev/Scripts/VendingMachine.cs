@@ -11,11 +11,12 @@ public class VendingMachine : MonoBehaviour
     [SerializeField] float fuelFkg = 21; // 자판기 풀 연료 무게 (Test Value = 21kg)
     [SerializeField] float fuelEkg = 3; // 자판기 빈 연료 무게 (Test Value = 3kg)
 
-    float currentKg; // 현재 자판기 무게
-    float currentFuel; // 현재 자판기 연료
+    float curKg; // 현재 무게 (총합)
+    float curFuel; // 현재 연료
+    float curThrust; // 현재 추력
 
-    public float thrust; // 수직 추력 수치 (임시)
-    public float torque; // 수평 토크 추력 수치 (임시)
+    [SerializeField] float maxThrust; // 수직 추력 최대 수치 (임시)
+    [SerializeField] float torque; // 수평 토크 추력 수치 (임시)
 
     private Rigidbody rb;
 
@@ -26,27 +27,27 @@ public class VendingMachine : MonoBehaviour
 
     void Start()
     {
-        currentKg = vmKg + (fuelFkg + fuelEkg);
-        currentFuel = maxFuel;
+        curKg = vmKg + (fuelFkg + fuelEkg);
+        curFuel = maxFuel;
+        curThrust = 0;
 
-        rb.mass = currentKg;
+        rb.mass = curKg;
     }
 
     void Update()
     {
         UpdateVM();
+        Thrust();
 
-        MoveA();
+        LocalInput();
     }
 
-    void MoveA()
+    void LocalInput()
     {
-        if (Input.GetKey(KeyCode.W) && currentFuel > 0)
-        {
-            rb.AddForce(transform.up * (thrust * Time.deltaTime), ForceMode.Acceleration);
-
-            currentFuel -= Time.deltaTime;
-        }
+        //if (Input.GetKey(KeyCode.W))
+        //{
+        //    Thrust();
+        //}
 
         if (Input.GetKey(KeyCode.Q))
         {
@@ -59,18 +60,33 @@ public class VendingMachine : MonoBehaviour
         }
     }
 
+    public void UpdateThrust(float sliderValue)
+    {
+        curThrust = (maxThrust * sliderValue);
+    }
+
+    void Thrust()
+    {
+        if (curFuel <= 0 || curThrust <= 0)
+            return;
+
+        rb.AddForce(transform.up * (curThrust * Time.deltaTime), ForceMode.Force);
+
+        curFuel -= Time.deltaTime;
+    }
+
     public void Torque(ScreenInputTest.ScreenTouchType touchType)
     {
-        rb.AddTorque((transform.forward * (int)touchType) * (torque * Time.deltaTime), ForceMode.Acceleration);
+        rb.AddTorque((transform.forward * (int)touchType) * (torque * Time.deltaTime), ForceMode.Force);
     }
 
     void UpdateVM()
     {
-        float fuelKg = ((currentFuel / maxFuel) * fuelFkg) + fuelEkg;
+        float fuelKg = ((curFuel / maxFuel) * fuelFkg) + fuelEkg;
 
-        currentKg = vmKg + fuelKg;
+        curKg = vmKg + fuelKg;
 
-        rb.mass = currentKg;
+        rb.mass = curKg;
     }
 
 

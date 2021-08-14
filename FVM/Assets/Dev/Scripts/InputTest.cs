@@ -98,7 +98,7 @@ public class InputTest : MonoBehaviour, IInputHandler
     {
         if(Input.GetMouseButtonDown(0))
         {
-            if (EventSystem.current.IsPointerOverGameObject())
+            if (EventSystem.current.IsPointerOverGameObject(-1))
                 return;
 
             beginInputData.SetData(Input.mousePosition);
@@ -107,7 +107,7 @@ public class InputTest : MonoBehaviour, IInputHandler
 
         if (Input.GetMouseButton(0))
         {
-            if (EventSystem.current.IsPointerOverGameObject())
+            if (EventSystem.current.IsPointerOverGameObject(-1))
                 return;
 
             inputData.SetData(Input.mousePosition);
@@ -116,7 +116,7 @@ public class InputTest : MonoBehaviour, IInputHandler
 
         if (Input.GetMouseButtonUp(0))
         {
-            if (EventSystem.current.IsPointerOverGameObject())
+            if (EventSystem.current.IsPointerOverGameObject(-1))
                 return;
 
             endInputData.SetData(Input.mousePosition);
@@ -128,6 +128,9 @@ public class InputTest : MonoBehaviour, IInputHandler
     {
         if (Input.touchCount > 0)
         {
+            if (EventSystem.current.IsPointerOverGameObject(-1))
+                return;
+
             Touch touch = Input.GetTouch(0);
             switch (touch.phase)
             {

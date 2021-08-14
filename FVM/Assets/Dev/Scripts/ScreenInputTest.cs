@@ -45,7 +45,7 @@ public class ScreenInputTest : MonoBehaviour, IInputHandler
     {
         if (Input.GetMouseButton(0))
         {
-            if (EventSystem.current.IsPointerOverGameObject())
+            if (EventSystem.current.IsPointerOverGameObject(-1))
                 return;
 
             beginInputData.SetData(Input.mousePosition);
@@ -57,6 +57,9 @@ public class ScreenInputTest : MonoBehaviour, IInputHandler
     {
         if (Input.touchCount > 0)
         {
+            if (EventSystem.current.IsPointerOverGameObject(-1))
+                return;
+
             Touch touch = Input.GetTouch(0);
             beginInputData.SetData(touch);
             OnBeginInput(beginInputData);
