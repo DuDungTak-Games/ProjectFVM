@@ -11,7 +11,7 @@ namespace DuDungTakGames.Item
 
         public override void OnGetItem()
         {
-            // TODO : ÄÚÀÎ È¹µæ Ã³¸®
+            TestGameManager.Instance.GetCoinEvent();
 
             base.OnGetItem();
         }
