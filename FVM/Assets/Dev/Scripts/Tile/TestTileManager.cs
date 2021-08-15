@@ -61,103 +61,96 @@ public class TestTileManager : MonoBehaviour
         SpawnGimic();
         SpawnTrigger();
 
+        // TODO : 플레이어 스폰 위치 지정 추가
         //SpawnStartPoint();
-        SpawnGamePoint(-3, -4, 1);
+        SpawnGamePoint(2, 3, 0);
     }
 
     void InitTile()
     {
         AddTileSet(0, 0, 1);
 
-        for (int repeat = -5; repeat < 5; repeat++)
-        {
-            if (repeat == 0)
-                continue;
+        AddTileSet(1, 0, 0.5f);
+        AddTileSet(-1, 2, 1.5f);
+        AddTileSet(-3, 2, 2.5f);
 
-            for (int x = -5; x < 5; x++)
+        AddTileSet(-3, 2, 2);
+        AddTileSet(-3, 1, 2);
+        AddTileSet(-3, 1, 3);
+
+        for (int x = -3; x < 1; x++)
+        {
+            for (int z = 1; z < 6; z++)
             {
-                if (x == 0)
-                    continue;
-                AddTileSet(x, repeat, 1);
+                for (int y = -2; y < 2; y++)
+                {
+                    AddTileSet(x, z, y);
+                }
             }
+        }
 
-            for (int z = -5; z < 5; z++)
+        for (int x = 0; x < 4; x++)
+        {
+            for (int y = -2; y < 1; y++)
             {
-                if (z == 0)
-                    continue;
-                AddTileSet(0, repeat, 1);
+                AddTileSet(x, 0, y);
             }
         }
 
-        for (int x = -5; x < 5; x++)
+        for (int x = 1; x < 4; x++)
         {
-            AddTileSet(x, 6, 3f);
+            for (int z = 1; z < 6; z++)
+            {
+                for (int y = -2; y < 1; y++)
+                {
+                    AddTileSet(x, z, y);
+                }
+            }
         }
 
-        for (int x = -5; x < 5; x++)
+        for (int x = -3; x < 2; x++)
         {
-            AddTileSet(x, 6, 3.5f);
+            for (int z = 3; z < 6; z++)
+            {
+                AddTileSet(x, z, 2);
+            }
         }
 
-        for (int x = -5; x < 5; x++)
+        for (int z = 1; z < 6; z++)
         {
-            AddTileSet(x, 7, 5f);
+            AddTileSet(1, z, 1);
         }
 
-        for (int x = -5; x < 5; x++)
+        for (int x = 2; x < 4; x++)
         {
-            AddTileSet(x, 5, 1);
-        }
-
-        for (int x = -5; x < 5; x++)
-        {
-            AddTileSet(x, 5, 2);
-        }
-
-        for (int x = -5; x < 5; x++)
-        {
-            AddTileSet(x, 5, 3);
-        }
-
-        for (int x = -5; x < 5; x++)
-        {
-            AddTileSet(x, 4, 2.5f);
-        }
-
-        for (int x = -5; x < 5; x++)
-        {
-            AddTileSet(x, 4, 2f);
-        }
-
-        for (int x = -5; x < 5; x++)
-        {
-            AddTileSet(x, 3, 2f);
-        }
-
-        for (int x = -5; x < 5; x++)
-        {
-            AddTileSet(x, 2, 1.5f);
+            for (int y = 1; y < 3; y++)
+            {
+                AddTileSet(x, 5, y);
+            }
         }
     }
 
     void InitCoin()
     {
-        AddCoinSet(0, 1, 1);
-        AddCoinSet(0, 2, 1.5f);
-        AddCoinSet(0, 3, 2);
-        AddCoinSet(0, 4, 2.5f);
-        AddCoinSet(0, 5, 3);
+        AddCoinSet(-3, 1, 3);
+        AddCoinSet(-2, 2, 1);
+        AddCoinSet(-2, 3, 2);
+        AddCoinSet(-1, 5, 2);
+        AddCoinSet(3, 5, 2);
+
+        AddCoinSet(2, 1, 0);
+        AddCoinSet(2, 2, 0);
     }
 
     void InitTrigger()
     {
-        AddTriggerSet(1, 1, 1);
-        AddTriggerSet(1, 1, 1);
+        AddTriggerSet(3, 0, 0);
+        AddTriggerSet(-3, 5, 2);
     }
 
     void InitGimic()
     {
-        AddGimicSet(-1, 1, 2);
+        AddGimicSet(-1, 3, 3);
     }
 
     void SpawnTile()
@@ -243,7 +236,7 @@ public class TestTileManager : MonoBehaviour
 
 
 
-        GameObject vendingMachine = Instantiate(testVM_Prefab, new Vector3(posX, 0, (z+1) * hUnit), Quaternion.Euler(0, 180, 0));
+        GameObject vendingMachine = Instantiate(testVM_Prefab, new Vector3(posX, posY, (z+1) * hUnit), Quaternion.Euler(0, 180, 0));
         GameObject trigger = Instantiate(testTrigger_Prefab, pos, testTrigger_Prefab.transform.rotation, rootTrf);
 
         if (trigger.TryGetComponent(out Gimic tileTrigger))
@@ -258,7 +251,7 @@ public class TestTileManager : MonoBehaviour
         float posY = START_FLOOR_UNIT;
         float posZ = z * hUnit;
 
-        if (spawnFloor > 1f)
+        if (spawnFloor != 1f)
         {
             posY += (Mathf.FloorToInt(spawnFloor) * vUnit) + ((Mathf.FloorToInt(spawnFloor) - 1) * vUnit);
             posY += spawnFloor % 1 == 0 ? -vUnit : HALF_FLOOR_UNIT;
@@ -266,7 +259,16 @@ public class TestTileManager : MonoBehaviour
 
         Vector3 pos = new Vector3(posX, posY, posZ);
 
-        tileList.Add(CreateTileSet(pos, spawnFloor));
+        // TODO : pos 값으로만 중복 체크를 할 수 있도록 개선 필요
+        TileSet tileSet = CreateTileSet(pos, spawnFloor);
+        if(!tileList.Contains(tileSet))
+        {
+            tileList.Add(tileSet);
+        }
+        else
+        {
+            Debug.LogWarningFormat("[중복 타일] TileSet : {0} / {1}", tileSet.spawnPos, tileSet.spawnFloor);
+        }
     }
 
     void AddCoinSet(float x, float z, float spawnFloor)
