@@ -15,7 +15,7 @@ public class LabelText : MonoBehaviour
 
     public Text labelText;
 
-    public string formatTxt;
+    public string formatTxt = "Coin : {0}";
 
     void Awake()
     {

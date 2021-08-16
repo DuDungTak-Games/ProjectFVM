@@ -241,7 +241,7 @@ public class TestTileManager : MonoBehaviour
 
         if (trigger.TryGetComponent(out Gimic tileTrigger))
         {
-            tileTrigger.SetTriggerAction(() => { UnityEngine.SceneManagement.SceneManager.LoadScene(1); });
+            tileTrigger.SetTriggerAction(() => { TestGameManager.Instance.OnPrepareEvent(); });
         }
     }
 

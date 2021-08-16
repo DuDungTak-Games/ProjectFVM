@@ -27,6 +27,8 @@ public class VendingMachine : MonoBehaviour
 
     void Start()
     {
+        vmKg = TestGameManager.Instance.GetKg();
+        
         curKg = vmKg + (fuelFkg + fuelEkg);
         curFuel = maxFuel;
         curThrust = 0;
