@@ -62,7 +62,7 @@ public class TestGameManager : MonoBehaviour
             gameEvents[type].AddListener(action);
         }
     }
-    
+
     public void GetCoinEvent(int increase = 1)
     {
         coin += increase;
@@ -97,7 +97,7 @@ public class TestGameManager : MonoBehaviour
         gameEvents[eventType.PREPARE].Invoke();
     }
     
-    private void UpdateUI(labelType type, int value)
+    public void UpdateUI(labelType type, int value)
     {
         updateTextEvents[type].Invoke(value);
     }

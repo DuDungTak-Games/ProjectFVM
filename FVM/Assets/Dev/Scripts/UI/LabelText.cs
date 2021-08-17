@@ -8,14 +8,21 @@ public class LabelText : MonoBehaviour
 
     public enum labelType
     {
-        COIN
+        COIN,
+        CUR_FUEL,
+        CUR_KG,
+        CUR_HEIGHT,
+        MAX_HEIGHT,
+        CUR_THRUST,
+        CUR_VELOCITY,
+        CUR_ANGLE
     }
 
     public labelType type;
 
     public Text labelText;
 
-    public string formatTxt = "Coin : {0}";
+    public string formatTxt;
 
     void Awake()
     {

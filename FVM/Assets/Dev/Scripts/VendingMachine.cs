@@ -14,10 +14,13 @@ public class VendingMachine : MonoBehaviour
     float curKg; // 현재 무게 (총합)
     float curFuel; // 현재 연료
     float curThrust; // 현재 추력
+    float curHeight, maxHeight; // 현재 고도, 최고 고도
 
     [SerializeField] float maxThrust; // 수직 추력 최대 수치 (임시)
     [SerializeField] float torque; // 수평 토크 추력 수치 (임시)
 
+    private TestGameManager gm;
+    
     private Rigidbody rb;
 
     void Awake()
@@ -27,7 +30,9 @@ public class VendingMachine : MonoBehaviour
 
     void Start()
     {
-        vmKg = TestGameManager.Instance.GetKg();
+        gm = TestGameManager.Instance;
+        
+        vmKg = gm.GetKg();
         
         curKg = vmKg + (fuelFkg + fuelEkg);
         curFuel = maxFuel;
@@ -89,6 +94,20 @@ public class VendingMachine : MonoBehaviour
         curKg = vmKg + fuelKg;
 
         rb.mass = curKg;
+
+        curHeight = transform.position.y;
+        if (maxHeight < curHeight)
+        {
+            maxHeight = curHeight;
+        }
+        
+        gm.UpdateUI(LabelText.labelType.CUR_KG, (int)curKg);
+        gm.UpdateUI(LabelText.labelType.CUR_FUEL, (int)curFuel);
+        gm.UpdateUI(LabelText.labelType.CUR_ANGLE, (int)transform.eulerAngles.z);
+        gm.UpdateUI(LabelText.labelType.CUR_HEIGHT, (int)curHeight);
+        gm.UpdateUI(LabelText.labelType.MAX_HEIGHT, (int)maxHeight);
+        gm.UpdateUI(LabelText.labelType.CUR_THRUST, curThrust > 0 ? (int)curThrust : 0);
+        gm.UpdateUI(LabelText.labelType.CUR_VELOCITY, rb.velocity.y > 0 ? (int)rb.velocity.y : 0);
     }
 
 
