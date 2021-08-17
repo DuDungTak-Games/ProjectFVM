@@ -1,0 +1,45 @@
+fileFormatVersion: 2
+guid: 4cec47c925d54a34ab34a94b86b838b8
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: eeb34f3ead148d04e8630fc3f79cbc1a, type: 3}
+  dataVersion: 6
+  fileType: 0
+  gameObjectName: Tree_Normal
+  meshMode: 0
+  importMode: 1
+  importScale: {x: 0.5, y: 0.5, z: 0.5}
+  importOffset: {x: 0, y: 5, z: 0}
+  combineFaces: 1
+  ignoreCavity: 1
+  shareSameFace: 1
+  removeUnusedPalettes: 1
+  shareSameMaterial: 1
+  outputStructure: 0
+  generateLightmapUVs: 0
+  generateLightmapUVsAngleError: 8
+  generateLightmapUVsAreaError: 15
+  generateLightmapUVsHardAngle: 88
+  generateLightmapUVsPackMargin: 4
+  generateTangents: 0
+  meshFaceVertexOffset: 0
+  loadFromVoxelFile: 1
+  generateMipMaps: 0
+  colliderType: 0
+  createContactChunkFaces: 0
+  materialMode: 0
+  materials:
+  - {fileID: -156486658544998735, guid: 4cec47c925d54a34ab34a94b86b838b8, type: 3}
+  materialNames:
+  - Tree_Normal_0
+  remappedMaterials:
+  - name: Tree_Normal_0
+    material: {fileID: 2100000, guid: 8a9ad4239f592ff41b26d0415152ddff, type: 2}
+  export: 0
+  legacyVoxImport: 0
+  legacyAssetNaming: 0
