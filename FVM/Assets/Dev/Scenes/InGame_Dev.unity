@@ -20,11 +20,11 @@ RenderSettings:
   m_FogDensity: 0
   m_LinearFogStart: 0
   m_LinearFogEnd: 4000
-  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
-  m_AmbientEquatorColor: {r: 0, g: 0.5999999, b: 1, a: 1}
+  m_AmbientSkyColor: {r: 0.6784314, g: 0.8117647, b: 0.9529412, a: 1}
+  m_AmbientEquatorColor: {r: 1, g: 1, b: 1, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
-  m_AmbientMode: 0
+  m_AmbientMode: 3
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 2100000, guid: 26d9bf7e1f81f8747a2d0d20ceb50849, type: 2}
   m_HaloStrength: 0.33
@@ -37,8 +37,8 @@ RenderSettings:
   m_ReflectionBounces: 1
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
-  m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.54379064, g: 0.70586824, b: 0.91513216, a: 1}
+  m_Sun: {fileID: 157616942}
+  m_IndirectSpecularColor: {r: 0.541518, g: 0.7044644, b: 0.9149655, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -6392,6 +6392,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2019327933}
+  - component: {fileID: 2019327934}
   m_Layer: 0
   m_Name: SkyBoxManager
   m_TagString: Untagged
@@ -6413,6 +6414,33 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2019327934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2019327932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73d8e4492d8c3ae44aa47cea65075ba0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skyboxMaterialOri: {fileID: 2100000, guid: 7ee9b0c1d5b41c1498bf4d200a622953, type: 2}
+  target: {fileID: 9132060080923048159}
+  colorList:
+  - targetHeight: 0
+    top: {r: 0.15686275, g: 0.3882353, b: 0.6509804, a: 1}
+    center: {r: 0, g: 0.46666667, b: 1, a: 1}
+    bottom: {r: 0.68235296, g: 0.8117647, b: 0.9529412, a: 1}
+  - targetHeight: 4000
+    top: {r: 0.11764706, g: 0.19607843, b: 0.23529412, a: 1}
+    center: {r: 0.15686275, g: 0.3882353, b: 0.6509804, a: 1}
+    bottom: {r: 0, g: 0.46666667, b: 1, a: 1}
+  - targetHeight: 10000
+    top: {r: 0.11764706, g: 0.19607843, b: 0.23529412, a: 1}
+    center: {r: 0.11764706, g: 0.19607843, b: 0.23529412, a: 1}
+    bottom: {r: 0.11764706, g: 0.19607843, b: 0.23529412, a: 1}
 --- !u!1001 &2027608447
 PrefabInstance:
   m_ObjectHideFlags: 0
