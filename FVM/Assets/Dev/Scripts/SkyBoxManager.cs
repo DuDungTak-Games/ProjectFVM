@@ -50,7 +50,7 @@ public class SkyBoxManager : MonoBehaviour
         if (curIndex >= colorList.Count || curIndex <= 0)
             return;
         
-        float curHeight = target.position.y;
+        float curHeight = target != null ? target.position.y : 0;
         float targetHeight = colorList[curIndex].targetHeight;
         
         if (curHeight < prevHeight)

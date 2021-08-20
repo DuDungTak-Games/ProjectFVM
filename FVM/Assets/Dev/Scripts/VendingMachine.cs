@@ -147,6 +147,8 @@ public class VendingMachine : MonoBehaviour
 
                 Instantiate(deadEffect_Prefab, spawnPos, Quaternion.identity);
                 
+                Camera.main.GetComponent<CameraFollow>().Shake(0.5f, 0.75f);
+                
                 Destroy(this.gameObject);
             }
         }
