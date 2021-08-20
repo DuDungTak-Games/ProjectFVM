@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro.EditorUtilities;
 using UnityEngine;
 
 public class VendingMachine : MonoBehaviour
@@ -16,9 +18,14 @@ public class VendingMachine : MonoBehaviour
     float curThrust; // 현재 추력
     float curHeight, maxHeight; // 현재 고도, 최고 고도
 
+    float lastVelocityY = 0;
+    
     [SerializeField] float maxThrust; // 수직 추력 최대 수치 (임시)
     [SerializeField] float torque; // 수평 토크 추력 수치 (임시)
 
+    [SerializeField] GameObject deadEffect_Prefab;
+    [SerializeField] GameObject[] fireEffect, smokeEffect;
+    
     private TestGameManager gm;
     
     private Rigidbody rb;
@@ -49,6 +56,11 @@ public class VendingMachine : MonoBehaviour
         LocalInput();
     }
 
+    private void LateUpdate()
+    {
+        lastVelocityY = rb.velocity.y;
+    }
+
     void LocalInput()
     {
         //if (Input.GetKey(KeyCode.W))
@@ -72,10 +84,24 @@ public class VendingMachine : MonoBehaviour
         curThrust = (maxThrust * sliderValue);
     }
 
+    void SetEffect(bool isActive)
+    {
+        fireEffect[0].gameObject.SetActive(isActive);
+        smokeEffect[0].gameObject.SetActive(isActive);
+        
+        fireEffect[1].gameObject.SetActive(isActive);
+        smokeEffect[1].gameObject.SetActive(isActive);
+    }
+
     void Thrust()
     {
         if (curFuel <= 0 || curThrust <= 0)
+        {
+            SetEffect(false);
             return;
+        }
+
+        SetEffect(true);
 
         rb.AddForce(transform.up * (curThrust * Time.deltaTime), ForceMode.Force);
 
@@ -100,7 +126,7 @@ public class VendingMachine : MonoBehaviour
         {
             maxHeight = curHeight;
         }
-        
+
         gm.UpdateUI(LabelText.labelType.CUR_KG, (int)curKg);
         gm.UpdateUI(LabelText.labelType.CUR_FUEL, (int)curFuel);
         gm.UpdateUI(LabelText.labelType.CUR_ANGLE, (int)transform.eulerAngles.z);
@@ -110,7 +136,23 @@ public class VendingMachine : MonoBehaviour
         gm.UpdateUI(LabelText.labelType.CUR_VELOCITY, rb.velocity.y > 0 ? (int)rb.velocity.y : 0);
     }
 
+    private void OnCollisionEnter(Collision col)
+    {
+        if (col.gameObject)
+        {
+            if (transform.position.y < 100 && lastVelocityY < -50)
+            {
+                Vector3 spawnPos = transform.position;
+                spawnPos.y = 1;
 
+                Instantiate(deadEffect_Prefab, spawnPos, Quaternion.identity);
+                
+                Destroy(this.gameObject);
+            }
+        }
+    }
+
+    
 
     // TODO : 프로토타입은 AddForce 로 진행 (질량을 고려한 움직임)
     //float accel = 0f;

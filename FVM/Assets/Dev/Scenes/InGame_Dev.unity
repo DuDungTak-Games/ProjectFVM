@@ -197,6 +197,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2722733640089094606, guid: f7b4825962ad67949ac9098ed47bd86b, type: 3}
   m_PrefabInstance: {fileID: 3866188}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &14111493 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6656581814879971490, guid: 0d6dfc7f12845e8409bd902f66ac04ea, type: 3}
+  m_PrefabInstance: {fileID: 1938575641}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &55747710
 GameObject:
   m_ObjectHideFlags: 0
@@ -272,6 +277,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 55747710}
   m_CullTransparentMesh: 1
+--- !u!1 &77264288 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5055727355786658630, guid: 0d6dfc7f12845e8409bd902f66ac04ea, type: 3}
+  m_PrefabInstance: {fileID: 1938575641}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &88702018
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -373,6 +383,9 @@ MonoBehaviour:
   fuelEkg: 3
   maxThrust: 110000
   torque: 10000
+  deadEffect_Prefab: {fileID: 0}
+  fireEffect: []
+  smokeEffect: []
 --- !u!54 &89935297
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3257,6 +3270,11 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 1, y: -1}
   m_UseGraphicAlpha: 1
+--- !u!1 &810827516 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5055727355786658630, guid: 0d6dfc7f12845e8409bd902f66ac04ea, type: 3}
+  m_PrefabInstance: {fileID: 8695487238629528312}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &913139708
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4411,6 +4429,11 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: -3766637679655409228, guid: 4cec47c925d54a34ab34a94b86b838b8, type: 3}
   m_PrefabInstance: {fileID: 1155537578}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1170890478 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6656581814879971490, guid: 0d6dfc7f12845e8409bd902f66ac04ea, type: 3}
+  m_PrefabInstance: {fileID: 8695487238629528312}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1224568075
 PrefabInstance:
@@ -6920,7 +6943,7 @@ Rigidbody:
   serializedVersion: 2
   m_Mass: 12
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 1
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 2
@@ -6944,6 +6967,13 @@ MonoBehaviour:
   fuelEkg: 3
   maxThrust: 110000
   torque: 10000
+  deadEffect_Prefab: {fileID: 1654330215189648, guid: d9a1324d4ee511f4ca952df55bf3ab2e, type: 3}
+  fireEffect:
+  - {fileID: 1170890478}
+  - {fileID: 14111493}
+  smokeEffect:
+  - {fileID: 810827516}
+  - {fileID: 77264288}
 --- !u!33 &4443414406502487758
 MeshFilter:
   m_ObjectHideFlags: 0
