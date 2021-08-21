@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 using DuDungTakGames.Gimic;
@@ -28,7 +29,7 @@ public class TestTileManager : MonoBehaviour
     const float HALF_FLOOR_UNIT = 2.5f;
     const float START_COIN_FLOOR_UNIT = 5f;
 
-    struct TileSet
+    class TileSet
     {
         public void SetData(Vector3 spawnPos, float spawnFloor)
         {
@@ -155,7 +156,7 @@ public class TestTileManager : MonoBehaviour
 
     void SpawnTile()
     {
-        foreach(TileSet tileSet in tileList)
+        foreach(TileSet tileSet in tileList.OrderBy(x => x.spawnFloor))
         {
             GameObject tile = Instantiate(testTile_Prefab, tileSet.spawnPos, Quaternion.identity, rootTrf);
             
@@ -170,6 +171,11 @@ public class TestTileManager : MonoBehaviour
                     scale.y *= 0.5f;
                     tile.transform.localScale = scale;
                 }
+
+                TileSet top = tileList.Find(x => x.spawnFloor == spawnFloor+1);
+                TileSet down = tileList.Find(x => x.spawnFloor == spawnFloor-1);
+                
+                tileFloor.SetFloorInfo(top != null, down != null);
             }
         }
     }
