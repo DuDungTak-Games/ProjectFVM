@@ -549,8 +549,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputTest: {fileID: 0}
-  rayHeightOffset: {x: 0, y: 5, z: 0}
+  rayHeightOffset: {x: 0, y: 5.5, z: 0}
   moveUnit: 10
+  heightUnit: 5
 --- !u!1 &125458
 GameObject:
   m_ObjectHideFlags: 0

@@ -156,7 +156,7 @@ public class PlayerTest : MonoBehaviour, IEventHandler
     bool CheckFloor()
     {
         RaycastHit hit;
-        if (Physics.Raycast(GetRayOrigin() + (transform.forward * 10f), Vector3.down, out hit, 10f, (1 << LayerMask.NameToLayer("Tile"))))
+        if (Physics.Raycast(GetRayOrigin() + (transform.forward * 10f), Vector3.down, out hit, 11f, (1 << LayerMask.NameToLayer("Tile"))))
         {
             GameObject hitObj = hit.collider.gameObject;
 

@@ -203,10 +203,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3718807524786414930, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
-      propertyPath: moveUnit
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 3718807524786414930, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
       propertyPath: inputTest
       value: 
       objectReference: {fileID: 1146052427}

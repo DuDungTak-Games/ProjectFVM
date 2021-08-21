@@ -31,12 +31,19 @@ public class TestTileManager : MonoBehaviour
 
     class TileSet
     {
-        public void SetData(Vector3 spawnPos, float spawnFloor)
+        public void SetData(Vector2 originPos, Vector3 spawnPos, float spawnFloor)
         {
+            this.originPos = originPos;
             this.spawnPos = spawnPos;
             this.spawnFloor = spawnFloor;
         }
 
+        public bool Check(TileSet tileSet, bool compare)
+        {
+            return Vector2.Equals(originPos, tileSet.originPos) && compare;
+        }
+
+        public Vector2 originPos { get; private set; }
         public Vector3 spawnPos { get; private set; }
         public float spawnFloor { get; private set; }
     }
@@ -156,11 +163,11 @@ public class TestTileManager : MonoBehaviour
 
     void SpawnTile()
     {
-        foreach(TileSet tileSet in tileList.OrderBy(x => x.spawnFloor))
+        foreach(TileSet tileSet in tileList)
         {
             GameObject tile = Instantiate(testTile_Prefab, tileSet.spawnPos, Quaternion.identity, rootTrf);
             
-            if(tile.TryGetComponent(out Floor tileFloor))
+            if(tile.TryGetComponent(out GroundTile tileFloor))
             {
                 float spawnFloor = tileSet.spawnFloor;
                 tileFloor.floor = spawnFloor;
@@ -172,9 +179,9 @@ public class TestTileManager : MonoBehaviour
                     tile.transform.localScale = scale;
                 }
 
-                TileSet top = tileList.Find(x => x.spawnFloor == spawnFloor+1);
-                TileSet down = tileList.Find(x => x.spawnFloor == spawnFloor-1);
-                
+                TileSet top = tileList.Find(x => x.Check(tileSet, x.spawnFloor == spawnFloor+1 || x.spawnFloor == spawnFloor+0.5f));
+                TileSet down = tileList.Find(x => x.Check(tileSet, x.spawnFloor == spawnFloor-1));
+
                 tileFloor.SetFloorInfo(top != null, down != null);
             }
         }
@@ -263,10 +270,11 @@ public class TestTileManager : MonoBehaviour
             posY += spawnFloor % 1 == 0 ? -vUnit : HALF_FLOOR_UNIT;
         }
 
+        Vector2 origin = new Vector2(x, z);
         Vector3 pos = new Vector3(posX, posY, posZ);
 
         // TODO : pos 값으로만 중복 체크를 할 수 있도록 개선 필요
-        TileSet tileSet = CreateTileSet(pos, spawnFloor);
+        TileSet tileSet = CreateTileSet(origin, pos, spawnFloor);
         if(!tileList.Contains(tileSet))
         {
             tileList.Add(tileSet);
@@ -286,9 +294,10 @@ public class TestTileManager : MonoBehaviour
         posY += (Mathf.FloorToInt(spawnFloor) * vUnit) + ((Mathf.FloorToInt(spawnFloor) - 1) * vUnit);
         posY += spawnFloor % 1 == 0 ? -vUnit : 0;
 
+        Vector2 origin = new Vector2(x, z);
         Vector3 pos = new Vector3(posX, posY, posZ);
 
-        coinList.Add(CreateTileSet(pos, spawnFloor));
+        coinList.Add(CreateTileSet(origin, pos, spawnFloor));
     }
 
     void AddTriggerSet(float x, float z, float spawnFloor)
@@ -300,9 +309,10 @@ public class TestTileManager : MonoBehaviour
         posY += (Mathf.FloorToInt(spawnFloor) * vUnit) + ((Mathf.FloorToInt(spawnFloor) - 1) * vUnit);
         posY += spawnFloor % 1 == 0 ? -vUnit : 0;
 
+        Vector2 origin = new Vector2(x, z);
         Vector3 pos = new Vector3(posX, posY, posZ);
 
-        triggerList.Add(CreateTileSet(pos, spawnFloor));
+        triggerList.Add(CreateTileSet(origin, pos, spawnFloor));
     }
 
     void AddGimicSet(float x, float z, float spawnFloor)
@@ -317,15 +327,16 @@ public class TestTileManager : MonoBehaviour
             posY += spawnFloor % 1 == 0 ? -vUnit : HALF_FLOOR_UNIT;
         }
 
+        Vector2 origin = new Vector2(x, z);
         Vector3 pos = new Vector3(posX, posY, posZ);
 
-        gimicList.Add(CreateTileSet(pos, spawnFloor));
+        gimicList.Add(CreateTileSet(origin, pos, spawnFloor));
     }
 
-    TileSet CreateTileSet(Vector3 pos, float floor)
+    TileSet CreateTileSet(Vector2 origin, Vector3 pos, float floor)
     {
         TileSet tileSet = new TileSet();
-        tileSet.SetData(pos, floor);
+        tileSet.SetData(origin, pos, floor);
         return tileSet;
     }
 }
