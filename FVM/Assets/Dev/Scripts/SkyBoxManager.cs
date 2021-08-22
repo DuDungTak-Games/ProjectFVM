@@ -47,7 +47,7 @@ public class SkyBoxManager : MonoBehaviour
 
     void UpdateSkyBox()
     {
-        if (curIndex >= colorList.Count || curIndex <= 0)
+        if (curIndex >= colorList.Count || curIndex < 0)
             return;
         
         float curHeight = target != null ? target.position.y : 0;
