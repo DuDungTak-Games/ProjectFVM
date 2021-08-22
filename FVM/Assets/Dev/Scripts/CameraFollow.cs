@@ -20,6 +20,8 @@ public class CameraFollow : MonoBehaviour
         if (target != null)
         {
             targetPos = target.position;
+            
+            transform.LookAt(target);
         }
 
         Vector3 curPos = targetPos + offsetPos;
@@ -31,6 +33,27 @@ public class CameraFollow : MonoBehaviour
         else
         {
             transform.position = curPos;
+        }
+    }
+    
+    
+    
+    // NOTE : ½ÇÇè¿ë
+    public void RotateOffset(bool isRight)
+    {
+        int x = (int)Mathf.Sign(offsetPos.x);
+        int z = (int)Mathf.Sign(offsetPos.z);
+
+        if (x == z)
+        {
+            offsetPos.x = isRight ? offsetPos.x * -1 : offsetPos.x;
+            offsetPos.z = isRight ? offsetPos.z : offsetPos.z * -1;
+        }
+
+        if (x != z)
+        {
+            offsetPos.x = isRight ? offsetPos.x : offsetPos.x * -1;
+            offsetPos.z = isRight ? offsetPos.z * -1 : offsetPos.z;
         }
     }
 
