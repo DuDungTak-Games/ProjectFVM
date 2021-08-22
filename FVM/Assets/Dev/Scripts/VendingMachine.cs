@@ -105,7 +105,7 @@ public class VendingMachine : MonoBehaviour
 
         rb.AddForce(transform.up * (curThrust * Time.deltaTime), ForceMode.Force);
 
-        curFuel -= Time.deltaTime;
+        curFuel -= ((curThrust/maxThrust) * 1) * Time.deltaTime;
     }
 
     public void Torque(ScreenInputTest.ScreenTouchType touchType)
