@@ -363,6 +363,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isLerp: 1
+  isLookAt: 1
   target: {fileID: 39187953}
   offsetPos: {x: 70, y: 100, z: -70}
 --- !u!20 &292694159

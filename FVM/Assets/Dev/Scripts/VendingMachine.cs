@@ -25,6 +25,8 @@ public class VendingMachine : MonoBehaviour
 
     [SerializeField] GameObject deadEffect_Prefab;
     [SerializeField] GameObject[] fireEffect, smokeEffect;
+
+    private CameraFollow camera;
     
     private TestGameManager gm;
     
@@ -33,6 +35,8 @@ public class VendingMachine : MonoBehaviour
     void Awake()
     {
         rb = this.GetComponent<Rigidbody>();
+
+        camera = Camera.main.GetComponent<CameraFollow>();
     }
 
     void Start()
@@ -127,6 +131,8 @@ public class VendingMachine : MonoBehaviour
             maxHeight = curHeight;
         }
 
+        CheckFalling(rb.velocity.y);
+
         gm.UpdateUI(LabelText.labelType.CUR_KG, (int)curKg);
         gm.UpdateUI(LabelText.labelType.CUR_FUEL, (int)curFuel);
         gm.UpdateUI(LabelText.labelType.CUR_ANGLE, (int)transform.eulerAngles.z);
@@ -134,6 +140,23 @@ public class VendingMachine : MonoBehaviour
         gm.UpdateUI(LabelText.labelType.MAX_HEIGHT, (int)maxHeight);
         gm.UpdateUI(LabelText.labelType.CUR_THRUST, curThrust > 0 ? (int)curThrust : 0);
         gm.UpdateUI(LabelText.labelType.CUR_VELOCITY, rb.velocity.y > 0 ? (int)rb.velocity.y : 0);
+    }
+
+    void CheckFalling(float velocityY)
+    {
+        float maxShakeVelocity = 1000;
+        float maxShakeAmount = 3;
+        
+        if (velocityY < -10)
+        {
+            float t = Mathf.Lerp(0, maxShakeAmount, Mathf.Abs(velocityY) / maxShakeVelocity);
+            
+            camera.ShakeLoop(t);
+        }
+        else
+        {
+            camera.ShakeLoop(0);
+        }
     }
 
     private void OnCollisionEnter(Collision col)
@@ -147,7 +170,7 @@ public class VendingMachine : MonoBehaviour
 
                 Instantiate(deadEffect_Prefab, spawnPos, Quaternion.identity);
                 
-                Camera.main.GetComponent<CameraFollow>().Shake(0.5f, 0.75f);
+                camera.Shake(0.5f, 0.75f);
                 
                 Destroy(this.gameObject);
             }
