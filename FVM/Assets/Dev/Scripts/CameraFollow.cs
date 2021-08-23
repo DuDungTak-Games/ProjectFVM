@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class CameraFollow : MonoBehaviour
 {
@@ -18,6 +20,11 @@ public class CameraFollow : MonoBehaviour
     float shakeAmount;
 
     Coroutine shakeCoroutine;
+
+    private void Awake()
+    {
+        Application.targetFrameRate = 60;
+    }
 
     void Update()
     {

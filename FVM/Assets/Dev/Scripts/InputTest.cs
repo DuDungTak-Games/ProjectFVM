@@ -43,8 +43,11 @@ public class InputTest : MonoBehaviour, IInputHandler
 
     void Update()
     {
+        #if ANDROID
         UpdateTouch();
+        #else
         UpdateInput();
+        #endif
     }
 
     void Init()

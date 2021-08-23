@@ -112,7 +112,7 @@ public class PlayerTest : MonoBehaviour, IEventHandler
             Vector3 F = Vector3.Lerp(D, E, progress);
 
             // NOTE : Lerp 에 0.1f 추가로 보정
-            progress = Mathf.Lerp(progress, 1.1f, 0.125f);
+            progress = Mathf.Lerp(progress, 1.1f, 12f * Time.deltaTime);
 
             transform.position = F;
 
