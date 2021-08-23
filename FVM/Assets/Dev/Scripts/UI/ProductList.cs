@@ -11,11 +11,11 @@ public class ProductList : MonoBehaviour
 
     public UnityEvent<int> onBuyEvent;
 
-    public int maxKg = 20;
+    public int maxProduct = 10;
     
     void Awake()
     {
-        TestGameManager.Instance.AddPrepareGameEvent(TestGameManager.eventType.PREPARE, OnInit);
+        TestGameManager.Instance.AddGameEvent(TestGameManager.eventType.PREPARE, OnInit);
         
         tempProduct = GetComponentInChildren<TestProduct>();
         tempProduct.gameObject.SetActive(false);
@@ -31,12 +31,12 @@ public class ProductList : MonoBehaviour
 
     void OnInit()
     {
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < maxProduct; i++)
         {
             GameObject obj = Instantiate(tempProduct.gameObject, Vector3.zero, Quaternion.identity, this.transform);
             TestProduct product = obj.GetComponent<TestProduct>();
             
-            product.SetData(2, 1);
+            product.SetData(3, 1);
             product.SetBuyAction(OnBuyProduct);
 
             onBuyEvent.AddListener(product.CheckPrice);

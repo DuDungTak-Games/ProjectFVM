@@ -7,6 +7,8 @@ namespace DuDungTakGames.Gimic
 {
     public class Gimic : MonoBehaviour
     {
+        
+        bool isOnce;
 
         Action gimicAction;
 
@@ -24,10 +26,16 @@ namespace DuDungTakGames.Gimic
             this.GetComponent<MeshRenderer>().material.color = onColor;
 
             gimicAction?.Invoke();
+
+            if (isOnce)
+            {
+                gimicAction = null;
+            }
         }
 
-        public void SetTriggerAction(Action gimicLogic)
+        public void SetTriggerAction(Action gimicLogic, bool isOnce = false)
         {
+            this.isOnce = isOnce;
             gimicAction = gimicLogic;
         }
     }

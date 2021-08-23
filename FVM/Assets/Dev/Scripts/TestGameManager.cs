@@ -12,10 +12,11 @@ public class TestGameManager : MonoBehaviour
 
     public enum eventType
     {
-        PREPARE
+        PREPARE,
+        GAMEOVER
     }
 
-    private int coin = 0, kg = 120;
+    private int coin = 0, kg = 120, resultHeight;
 
     Dictionary<labelType, UnityEvent<int>> updateTextEvents = new Dictionary<labelType, UnityEvent<int>>();
     Dictionary<eventType, UnityEvent> gameEvents = new Dictionary<eventType, UnityEvent>();
@@ -48,7 +49,7 @@ public class TestGameManager : MonoBehaviour
         }
     }
 
-    public void AddPrepareGameEvent(eventType type, UnityAction action)
+    public void AddGameEvent(eventType type, UnityAction action)
     {
         if (!gameEvents.ContainsKey(type))
         {
@@ -92,9 +93,9 @@ public class TestGameManager : MonoBehaviour
         return coin;
     }
 
-    public void OnPrepareEvent()
+    public void OnGameEvent(eventType type)
     {
-        gameEvents[eventType.PREPARE].Invoke();
+        gameEvents[type].Invoke();
     }
     
     public void UpdateUI(labelType type, int value)

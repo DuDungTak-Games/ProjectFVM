@@ -21,8 +21,10 @@ public class TestTileManager : MonoBehaviour
     List<TileSet> coinList = new List<TileSet>();
     List<TileSet> triggerList = new List<TileSet>();
     List<TileSet> gimicList = new List<TileSet>();
+    List<TileSet> specialTileList = new List<TileSet>();
 
-    // NOTE : TEST GAMEOBJECT LIST!!!
+    // NOTE : GAMEOBJECT LIST FOR TEST!!!
+    List<GameObject> triggerObjList = new List<GameObject>();
     List<GameObject> gimicObjList = new List<GameObject>();
 
     const float START_FLOOR_UNIT = -5f;
@@ -60,11 +62,12 @@ public class TestTileManager : MonoBehaviour
         rootTrf.name = "TileList";
 
         InitTile();
+        InitSpecialTile();
         InitCoin();
         InitGimic();
         InitTrigger();
 
-        SpawnTile();
+        SpawnTile(tileList);
         SpawnCoin();
         SpawnGimic();
         SpawnTrigger();
@@ -138,6 +141,14 @@ public class TestTileManager : MonoBehaviour
         }
     }
 
+    void InitSpecialTile()
+    {
+        for (int z = 6; z < 12; z++)
+        {
+            AddTileSet(-3, z, 2, true);
+        }
+    }
+
     void InitCoin()
     {
         AddCoinSet(-3, 1, 3);
@@ -161,7 +172,7 @@ public class TestTileManager : MonoBehaviour
         AddGimicSet(-1, 3, 3);
     }
 
-    void SpawnTile()
+    void SpawnTile(List<TileSet> tileList)
     {
         foreach(TileSet tileSet in tileList)
         {
@@ -201,11 +212,11 @@ public class TestTileManager : MonoBehaviour
         {
             GameObject trigger = Instantiate(testTrigger_Prefab, tileSet.spawnPos, testTrigger_Prefab.transform.rotation, rootTrf);
 
-            if (trigger.TryGetComponent(out Gimic tileTrigger))
-            {
-                tileTrigger.SetTriggerAction(() => { gimicObjList[0].SetActive(false); });
-            }
+            triggerObjList.Add(trigger);
         }
+        
+        triggerObjList[0].GetComponent<Gimic>().SetTriggerAction(() => { gimicObjList[0].SetActive(false); }, true);
+        triggerObjList[1].GetComponent<Gimic>().SetTriggerAction(() => { SpawnTile(specialTileList); }, true);
     }
 
     void SpawnGimic()
@@ -254,11 +265,11 @@ public class TestTileManager : MonoBehaviour
 
         if (trigger.TryGetComponent(out Gimic tileTrigger))
         {
-            tileTrigger.SetTriggerAction(() => { TestGameManager.Instance.OnPrepareEvent(); });
+            tileTrigger.SetTriggerAction(() => { TestGameManager.Instance.OnGameEvent(TestGameManager.eventType.PREPARE); });
         }
     }
 
-    void AddTileSet(float x, float z, float spawnFloor)
+    void AddTileSet(float x, float z, float spawnFloor, bool isSpecial = false)
     {
         float posX = x * hUnit;
         float posY = START_FLOOR_UNIT;
@@ -275,9 +286,13 @@ public class TestTileManager : MonoBehaviour
 
         // TODO : pos 값으로만 중복 체크를 할 수 있도록 개선 필요
         TileSet tileSet = CreateTileSet(origin, pos, spawnFloor);
-        if(!tileList.Contains(tileSet))
+        if(!tileList.Contains(tileSet) && !isSpecial)
         {
             tileList.Add(tileSet);
+        }
+        else if(!specialTileList.Contains(tileSet) && isSpecial)
+        {
+            specialTileList.Add(tileSet);
         }
         else
         {

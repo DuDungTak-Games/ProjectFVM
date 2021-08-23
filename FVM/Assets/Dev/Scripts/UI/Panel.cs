@@ -3,9 +3,11 @@
 public class Panel : MonoBehaviour
 {
 
+    public TestGameManager.eventType eventType = TestGameManager.eventType.PREPARE;
+
     void Awake()
     {
-        TestGameManager.Instance.AddPrepareGameEvent(TestGameManager.eventType.PREPARE, OnPanel);
+        TestGameManager.Instance.AddGameEvent(eventType, OnPanel);
         
         this.gameObject.SetActive(false);
     }

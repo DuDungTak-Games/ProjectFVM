@@ -172,7 +172,9 @@ public class VendingMachine : MonoBehaviour
                 
                 camera.Shake(0.5f, 0.75f);
                 
-                Destroy(this.gameObject);
+                TestGameManager.Instance.OnGameEvent(TestGameManager.eventType.GAMEOVER);
+
+                Destroy(this.gameObject, 0.01f);
             }
         }
     }

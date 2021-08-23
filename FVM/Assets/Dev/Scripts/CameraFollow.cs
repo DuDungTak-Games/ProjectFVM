@@ -13,7 +13,7 @@ public class CameraFollow : MonoBehaviour
 
     Vector3 targetPos = Vector3.zero;
     
-    float followSpeed = 0.125f;
+    float followSpeed = 10f;
     
     float shakeAmount;
 
@@ -24,18 +24,18 @@ public class CameraFollow : MonoBehaviour
         if (target != null)
         {
             targetPos = target.position;
-
-            if (isLookAt)
-            {
-                transform.LookAt(target);
-            }
         }
 
         Vector3 curPos = targetPos + offsetPos;
 
         if(isLerp)
         {
-            transform.position = Vector3.Lerp(transform.position, curPos, followSpeed);
+            transform.position = Vector3.Lerp(transform.position, curPos, followSpeed * Time.deltaTime);
+            
+            if (isLookAt)
+            {
+                transform.LookAt(curPos - offsetPos);
+            }
         }
         else
         {
