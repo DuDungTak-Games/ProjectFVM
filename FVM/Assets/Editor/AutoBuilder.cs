@@ -7,7 +7,7 @@ using UnityEditor.Build.Reporting;
  
 namespace JENKINS
 {
-    public class AutoBuilder
+    public class AutoBuilder : ScriptableObject
     {
         static string[] SCENES = FindEnabledEditorScenes();
  
