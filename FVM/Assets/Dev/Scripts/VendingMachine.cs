@@ -39,7 +39,7 @@ public class VendingMachine : MonoBehaviour
     }
 
     void Start()
-    {
+    {   
         gm = TestGameManager.Instance;
         
         vmKg = gm.GetKg();
