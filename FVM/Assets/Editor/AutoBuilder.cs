@@ -7,7 +7,7 @@ using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
-public class AutoBuilder : ScriptableObject
+public class AutoBuilder
     {
         static string[] SCENES = FindEnabledEditorScenes();
  
@@ -18,7 +18,7 @@ public class AutoBuilder : ScriptableObject
         static string TARGET_DIR;
  
         [MenuItem("Custom/CI/Android Build")]
-        public static void PerformAOSBuild()
+        public static void PerformAndroidBuild()
         {
             APP_NAME = GetArg("-appName");
             TARGET_DIR = GetArg("-buildFolder");
@@ -42,12 +42,12 @@ public class AutoBuilder : ScriptableObject
  
         private static void GenericBuild(string[] scenes, string app_target, BuildTargetGroup build_target_group, BuildTarget build_target, BuildOptions build_options)
         {
-            //EditorUserBuildSettings.SwitchActiveBuildTarget(build_target_group, BuildTarget.Android);
-            PlayerSettings.keyaliasPass = GetArg("-keyaliasPass");
-            PlayerSettings.keystorePass = GetArg("-keystorePass");
- 
-            Debug.LogFormat("**** keyaliasPass : {0}", PlayerSettings.keyaliasPass);
-            Debug.LogFormat("**** keystorePass : {0}", PlayerSettings.keystorePass);
+            EditorUserBuildSettings.SwitchActiveBuildTarget(build_target_group, BuildTarget.Android);
+            // PlayerSettings.keyaliasPass = GetArg("-keyaliasPass");
+            // PlayerSettings.keystorePass = GetArg("-keystorePass");
+            //
+            // Debug.LogFormat("**** keyaliasPass : {0}", PlayerSettings.keyaliasPass);
+            // Debug.LogFormat("**** keystorePass : {0}", PlayerSettings.keystorePass);
  
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
             buildPlayerOptions.scenes = scenes;
