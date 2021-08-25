@@ -20,7 +20,7 @@ public class AutoBuilder
         [MenuItem("Custom/CI/Android Build")]
         public static void PerformAndroidBuild()
         {
-            APP_NAME = GetArg("-appName") + "_" + Application.version + "_" + PlayerSettings.bundleVersion + ".apk";
+            APP_NAME = GetArg("-appName") + string.Format("_{0}_{1}_{2}.apk", Application.version, PlayerSettings.Android.bundleVersionCode, DateTime.Now.Day);
             TARGET_DIR = GetArg("-buildFolder");
             Debug.Log("Jenkins-Build: APP_NAME: " + APP_NAME + " TARGET_DIR: " + TARGET_DIR);
  
