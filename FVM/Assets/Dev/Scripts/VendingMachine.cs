@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using ScreenTouchType = VMInputScreen.ScreenTouchType;
+
 public class VendingMachine : MonoBehaviour
 {
 
@@ -25,6 +27,8 @@ public class VendingMachine : MonoBehaviour
     [SerializeField] GameObject deadEffect_Prefab;
     [SerializeField] GameObject[] fireEffect, smokeEffect;
 
+    public VMInputScreen vmInput;
+    
     private CameraFollow camera;
     
     private TestGameManager gm;
@@ -36,6 +40,8 @@ public class VendingMachine : MonoBehaviour
         rb = this.GetComponent<Rigidbody>();
 
         camera = Camera.main.GetComponent<CameraFollow>();
+
+        vmInput.onTouch.AddListener(Torque);
     }
 
     void Start()
@@ -73,12 +79,12 @@ public class VendingMachine : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Q))
         {
-            Torque(ScreenInputTest.ScreenTouchType.LEFT);
+            Torque(ScreenTouchType.LEFT);
         }
 
         if (Input.GetKey(KeyCode.E))
         {
-            Torque(ScreenInputTest.ScreenTouchType.RIGHT);
+            Torque(ScreenTouchType.RIGHT);
         }
     }
 
@@ -111,7 +117,7 @@ public class VendingMachine : MonoBehaviour
         curFuel -= ((curThrust/maxThrust) * 1) * Time.deltaTime;
     }
 
-    public void Torque(ScreenInputTest.ScreenTouchType touchType)
+    void Torque(ScreenTouchType touchType)
     {
         rb.AddTorque((transform.forward * (int)touchType) * (torque * Time.deltaTime), ForceMode.Force);
     }

@@ -611,6 +611,7 @@ MonoBehaviour:
   deadEffect_Prefab: {fileID: 0}
   fireEffect: []
   smokeEffect: []
+  vmInput: {fileID: 1146052427}
 --- !u!54 &89935297
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4651,27 +4652,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 1146052425}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55fdc33fdbe0d9448a33dc454c46fd80, type: 3}
+  m_Script: {fileID: 11500000, guid: 7f56d37ac76e7ab4e873303123bac89b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inputType: 0
+  trigger: {fileID: 0}
+  startCircle: {fileID: 0}
+  currentCircle: {fileID: 0}
+  endCircle: {fileID: 0}
   onBeginInput:
+    m_PersistentCalls:
+      m_Calls: []
+  onStayInput:
+    m_PersistentCalls:
+      m_Calls: []
+  onEndInput:
     m_PersistentCalls:
       m_Calls: []
   onTouch:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 3168590954421049297}
-        m_TargetAssemblyTypeName: VendingMachine, Assembly-CSharp
-        m_MethodName: Torque
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1001 &1155537578
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7700,6 +7700,7 @@ MonoBehaviour:
   smokeEffect:
   - {fileID: 810827516}
   - {fileID: 77264288}
+  vmInput: {fileID: 1146052427}
 --- !u!33 &4443414406502487758
 MeshFilter:
   m_ObjectHideFlags: 0

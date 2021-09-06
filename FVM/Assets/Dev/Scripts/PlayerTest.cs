@@ -4,18 +4,17 @@ using UnityEngine;
 
 using DuDungTakGames.Event;
 
-using SwipeType = InputTest.SwipeType;
+using SwipeType = VMInputSwipe.SwipeType;
 
 public class PlayerTest : MonoBehaviour, IEventHandler
 {
-
-    public InputTest inputTest;
-
     public Vector3 rayHeightOffset = new Vector3(0, 5, 0);
 
     public float moveUnit = 10f;
     public float heightUnit = 5f;
 
+    public VMInputSwipe vmInput;
+    
     float currentFloor = 1f;
     Floor forwardFloor;
 
@@ -33,43 +32,53 @@ public class PlayerTest : MonoBehaviour, IEventHandler
 
     public void SetEvent()
     {
-        inputTest.onSwipe.AddListener(Rotate);
-        inputTest.onTouch.AddListener(Move);
+        vmInput.onSwipe.AddListener(Rotate);
+        vmInput.onTouch.AddListener(Move);
     }
 
     public void ClearEvent()
     {
-        inputTest.onSwipe.RemoveListener(Rotate);
-        inputTest.onTouch.RemoveListener(Move);
+        vmInput.onSwipe.RemoveListener(Rotate);
+        vmInput.onTouch.RemoveListener(Move);
     }
 
     void Rotate(SwipeType swipeType)
     {
-        //Vector3 direction = Vector3.zero;
-        int angle = 0;
+        Vector3 direction = Vector3.zero;
 
         switch (swipeType)
         {
-            case SwipeType.LEFT:
-                //direction = Vector3.left;
-                angle = -45;
-                break;
             case SwipeType.RIGHT:
-                //direction = Vector3.right;
-                angle = 45;
+                direction = Vector3.right;
+                break;
+            case SwipeType.LEFT:
+                direction = Vector3.left;
                 break;
             case SwipeType.UP:
-                //direction = Vector3.forward;
+                direction = Vector3.forward;
                 break;
             case SwipeType.DOWN:
-                //direction = Vector3.back;
+                direction = Vector3.back;
+                break;
+            case SwipeType.RIGHT_UP:
+                direction = Vector3.forward;
+                break;
+            case SwipeType.LEFT_UP:
+                direction = Vector3.left;
+                break;
+            case SwipeType.RIGHT_DOWN:
+                direction = Vector3.right;
+                break;
+            case SwipeType.LEFT_DOWN:
+                direction = Vector3.back;
                 break;
             default:
-                break;
+                return;
         }
 
-        // transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
-        transform.Rotate(Vector3.up, angle * 90);
+        transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
+
+        Move();
     }
 
     void Move()
@@ -112,7 +121,7 @@ public class PlayerTest : MonoBehaviour, IEventHandler
             Vector3 F = Vector3.Lerp(D, E, progress);
 
             // NOTE : Lerp 에 0.1f 추가로 보정
-            progress = Mathf.Lerp(progress, 1.1f, 12f * Time.deltaTime);
+            progress = Mathf.Lerp(progress, 1.1f, 15f * Time.deltaTime);
 
             transform.position = F;
 
