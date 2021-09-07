@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using DuDungTakGames.Event;
+using DuDungTakGames.Extensions;
 
 using SwipeType = VMInputSwipe.SwipeType;
 
@@ -10,7 +11,8 @@ public class PlayerTest : MonoBehaviour, IEventHandler
 {
     public Vector3 rayHeightOffset = new Vector3(0, 5, 0);
 
-    public float moveUnit = 10f;
+    public float moveUnit = 10f, moveSpeed = 16f;
+    public float rotateSpeed = 20f;
     public float heightUnit = 5f;
 
     public VMInputSwipe vmInput;
@@ -18,7 +20,7 @@ public class PlayerTest : MonoBehaviour, IEventHandler
     float currentFloor = 1f;
     Floor forwardFloor;
 
-    Coroutine moveCoroutine;
+    Coroutine moveCoroutine, rotateCoroutine;
 
     void Awake()
     {
@@ -76,9 +78,38 @@ public class PlayerTest : MonoBehaviour, IEventHandler
                 return;
         }
 
-        transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
+        if (rotateCoroutine != null)
+            return;
 
+        rotateCoroutine = StartCoroutine(RotateCoroutine(direction));
+
+        //Move();
+    }
+    
+    IEnumerator RotateCoroutine(Vector3 direction)
+    {
+        float progress = 0f;
+
+        Quaternion startRot = transform.localRotation;
+        Quaternion endRot = Quaternion.LookRotation(direction, Vector3.up);
+
+        while (progress < 1f)
+        {
+            transform.localRotation = Quaternion.Lerp(startRot, endRot, progress);
+
+            // NOTE : Lerp 에 0.1f 추가로 보정
+            progress = Mathf.Lerp(progress, 1.1f, rotateSpeed * Time.deltaTime);
+
+            yield return new WaitForEndOfFrame();
+        }
+
+        transform.localRotation = endRot;
+
+        rotateCoroutine = null;
+        
         Move();
+
+        yield break;
     }
 
     void Move()
@@ -95,40 +126,24 @@ public class PlayerTest : MonoBehaviour, IEventHandler
             return;
 
         Vector3 movePos = transform.position + GetMoveUnit() + GetMoveHeight();
-        moveCoroutine = StartCoroutine(MoveCoroutine(movePos));
-        //transform.position += GetMoveUnit() + GetMoveHeight();
+        moveCoroutine = StartCoroutine(MoveCoroutine(transform.position, movePos));
     }
 
-    IEnumerator MoveCoroutine(Vector3 movePos)
+    IEnumerator MoveCoroutine(Vector3 startPos, Vector3 movePos)
     {
         float progress = 0f;
 
-        Vector3 startPos = transform.position;
-        Vector3 startPosH = transform.position + (Vector3.up * 4f);
-
-        Vector3 endPos = movePos;
-        Vector3 endPosH = movePos + (Vector3.up * 4f);
-
         while (progress < 1f)
         {
-            Vector3 A = Vector3.Lerp(startPos, startPosH, progress);
-            Vector3 B = Vector3.Lerp(startPosH, endPosH, progress);
-            Vector3 C = Vector3.Lerp(endPosH, endPos, progress);
-
-            Vector3 D = Vector3.Lerp(A, B, progress);
-            Vector3 E = Vector3.Lerp(B, C, progress);
-
-            Vector3 F = Vector3.Lerp(D, E, progress);
+            transform.BezierCurvePosition(startPos, movePos, (Vector3.up * 4f), progress);
 
             // NOTE : Lerp 에 0.1f 추가로 보정
-            progress = Mathf.Lerp(progress, 1.1f, 15f * Time.deltaTime);
-
-            transform.position = F;
+            progress = Mathf.Lerp(progress, 1.1f, moveSpeed * Time.deltaTime);
 
             yield return new WaitForEndOfFrame();
         }
 
-        transform.position = endPos;
+        transform.position = movePos;
 
         moveCoroutine = null;
 
