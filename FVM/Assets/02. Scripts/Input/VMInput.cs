@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
@@ -24,7 +25,7 @@ public class VMInput : MonoBehaviour
 
         protected InputData beginInputData, stayInputData, endInputData;
 
-        GameObject lastPointerObject;
+        bool isPointerObject;
         
         void Start()
         {
@@ -79,10 +80,10 @@ public class VMInput : MonoBehaviour
 
         public virtual void UpdateLogic()
         {
-#if UNITY_EDITOR || UNITY_STANDALONE
-            UpdateInput();
+#if !UNITY_EDITOR && !UNITY_STANDALONE
+            UpdateTouch();
 #else
-                UpdateTouch();
+                UpdateInput();
 #endif
         }
         
@@ -107,6 +108,7 @@ public class VMInput : MonoBehaviour
             }
         }
         
+#if !UNITY_EDITOR && !UNITY_STANDALONE
         void UpdateTouch()
         {
             if (Input.touchCount > 0)
@@ -131,54 +133,58 @@ public class VMInput : MonoBehaviour
                 }
             }
         }
+#endif
 
-        protected bool IsPointerOverGameObject(bool lastObject = true)
+        protected bool IsPointerOverUIObject(bool isEndInput = false)
         {
             if (inputType == InputType.UI)
                 return false;
-            
-            int pointerID = -1;
-            
-#if !UNITY_EDITOR && !UNITY_STANDALONE
-            pointerID = Input.GetTouch(0).fingerId;
-#endif
 
-            bool isOver = EventSystem.current.IsPointerOverGameObject(pointerID);
-            if (isOver)
+            if (GetPointerRayCount() > 0)
             {
-                if (!lastObject)
-                    return isOver;
-                
-                lastPointerObject = EventSystem.current.currentSelectedGameObject;
-            }
+                if(isEndInput)
+                    return true;
 
-            return (lastPointerObject != null);
+                isPointerObject = true;
+            }
+            
+            return isPointerObject;
         }
 
         protected void OnBeginInput(InputData inputData)
         {
-            if (IsPointerOverGameObject())
+            if (IsPointerOverUIObject())
                 return;
-            
+
             onBeginInput.Invoke(inputData);
         }
 
         protected void OnStayInput(InputData inputData)
         {
-            if (IsPointerOverGameObject())
+            if (IsPointerOverUIObject())
                 return;
-            
+
             onStayInput.Invoke(inputData);
         }
 
         protected void OnEndInput(InputData inputData)
         {
-            lastPointerObject = null;
+            isPointerObject = false;
             
-            if (IsPointerOverGameObject(false))
+            if (IsPointerOverUIObject(true))
                 return;
 
             onEndInput.Invoke(inputData);
+        }
+
+        int GetPointerRayCount()
+        {
+            PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+            
+            List<RaycastResult> results = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+
+            return results.Count;
         }
 
         void StartCircle(InputData inputData)
