@@ -181,6 +181,12 @@ public class VMInput : MonoBehaviour
         {
             PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
             
+#if !UNITY_EDITOR && !UNITY_STANDALONE
+            eventDataCurrentPosition.position = new Vector2(Input.GetTouch(0).position.x, Input.GetTouch(0).position.y);
+#else
+            eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+#endif
+            
             List<RaycastResult> results = new List<RaycastResult>();
             EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
 
