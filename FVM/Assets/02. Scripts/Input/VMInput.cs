@@ -132,7 +132,7 @@ public class VMInput : MonoBehaviour
             }
         }
 
-        protected bool IsPointerOverGameObject()
+        protected bool IsPointerOverGameObject(bool lastObject = true)
         {
             if (inputType == InputType.UI)
                 return false;
@@ -143,14 +143,18 @@ public class VMInput : MonoBehaviour
             pointerID = -1;
 #endif
 
-            if (EventSystem.current.IsPointerOverGameObject(pointerID))
+            bool isOver = EventSystem.current.IsPointerOverGameObject(pointerID);
+            if (isOver)
             {
+                if (!lastObject)
+                    return isOver;
+                
                 lastPointerObject = EventSystem.current.currentSelectedGameObject;
             }
 
             return (lastPointerObject != null);
         }
-        
+
         protected void OnBeginInput(InputData inputData)
         {
             if (IsPointerOverGameObject())
@@ -169,11 +173,11 @@ public class VMInput : MonoBehaviour
 
         protected void OnEndInput(InputData inputData)
         {
-            // if (IsPointerOverGameObject())
-            //     return;
-
             lastPointerObject = null;
             
+            if (IsPointerOverGameObject(false))
+                return;
+
             onEndInput.Invoke(inputData);
         }
 

@@ -18,5 +18,33 @@ namespace DuDungTakGames.Extensions
 
             target.position = Vector3.Lerp(B0, B1, t);
         }
+
+        public static void SetPosition(this Transform trf, Vector3 newPos)
+        {
+            trf.position = newPos;
+        }
+
+        public static void SetPositionX(this Transform trf, float newX)
+        {
+            Vector3 newPos = trf.position;
+            trf.position = newPos.SetX(newX);
+        }
+
+        public static void SetPositionY(this Transform trf, float newY)
+        {
+            Vector3 newPos = trf.position;
+            trf.position = newPos.SetY(newY);
+        }
+        
+        public static void SetPositionZ(this Transform trf, float newZ)
+        {
+            Vector3 newPos = trf.position;
+            trf.position = newPos.SetZ(newZ);
+        }
+
+        public static void SetRotation(this Transform trf, Quaternion newRot)
+        {
+            trf.rotation = newRot;
+        }
     }
 }

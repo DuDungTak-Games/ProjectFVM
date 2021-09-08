@@ -1,12 +1,12 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 using DuDungTakGames.Extensions;
 
 using SwipeType = VMInputSwipe.SwipeType;
 
-public class PlayerTest : MonoBehaviour
+public class Player : MonoBehaviour
 {
     public Vector3 rayHeightOffset = new Vector3(0, 5, 0);
 
@@ -17,7 +17,7 @@ public class PlayerTest : MonoBehaviour
     public VMInputSwipe vmInput;
     
     float currentFloor = 1f;
-    Floor forwardFloor;
+    Floor directionFloor;
 
     Coroutine moveCoroutine, rotateCoroutine;
 
@@ -79,7 +79,7 @@ public class PlayerTest : MonoBehaviour
                     return;
             }
             
-            rotateCoroutine = RotateCoroutine(direction).Start(this);
+            RotateCoroutine(direction).Start(ref rotateCoroutine, this);
 
             Move(direction);
         }
@@ -87,22 +87,15 @@ public class PlayerTest : MonoBehaviour
     
     IEnumerator RotateCoroutine(Vector3 direction)
     {
-        float progress = 0f;
-
-        Quaternion startRot = transform.localRotation;
+        Quaternion startRot = transform.rotation;
         Quaternion endRot = Quaternion.LookRotation(direction, Vector3.up);
 
-        while (progress < 1f)
+        yield return ProcessAction(rotateSpeed, (t) =>
         {
-            transform.localRotation = Quaternion.Lerp(startRot, endRot, progress);
+            transform.rotation = Quaternion.Lerp(startRot, endRot, t);
+        });
 
-            // NOTE : Lerp 에 0.1f 추가로 보정
-            progress = Mathf.Lerp(progress, 1.1f, rotateSpeed * Time.deltaTime);
-
-            yield return new WaitForEndOfFrame();
-        }
-
-        transform.localRotation = endRot;
+        transform.SetRotation(endRot);
 
         rotateCoroutine = null;
     }
@@ -119,62 +112,62 @@ public class PlayerTest : MonoBehaviour
     {
         if (moveCoroutine == null)
         {
-            forwardFloor = null;
+            directionFloor = null;
 
-            if (CheckFoward(direction))
+            if (CheckDirection(direction))
                 return;
 
             if (!CheckFloor(direction))
                 return;
 
             Vector3 movePos = transform.position + GetMoveUnit(direction) + GetMoveHeight();
-            moveCoroutine = MoveCoroutine(transform.position, movePos).Start(this);
+            MoveCoroutine(transform.position, movePos).Start(ref moveCoroutine, this);
         }
     }
 
     IEnumerator MoveCoroutine(Vector3 startPos, Vector3 movePos)
     {
-        float progress = 0f;
-
-        while (progress < 1f)
+        yield return ProcessAction(moveSpeed, (t) =>
         {
-            transform.BezierCurvePosition(startPos, movePos, (Vector3.up * 4f), progress);
+            transform.BezierCurvePosition(startPos, movePos, (Vector3.up * 4f), t);
+        });
 
-            // NOTE : Lerp 에 0.1f 추가로 보정
-            progress = Mathf.Lerp(progress, 1.1f, moveSpeed * Time.deltaTime);
-
-            yield return new WaitForEndOfFrame();
-        }
-
-        transform.position = movePos;
+        transform.SetPosition(movePos);
 
         moveCoroutine = null;
     }
 
-    bool CheckFoward(Vector3 direction)
+    // TODO : 추후에 코루틴 확장 or 매니저 클래스에 넣기
+    // NOTE : 이동하거나 회전이 필요한 오브젝트에 자주 쓰일 것으로 예상됨
+    IEnumerator ProcessAction(float speed, Action<float> action)
+    {
+        float progress = 0f;
+
+        while (progress < 1f)
+        {
+            action(progress);
+
+            // NOTE : Lerp 에 0.1f 추가로 보정
+            progress = Mathf.Lerp(progress, 1.1f, speed * Time.deltaTime);
+
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
+    bool CheckDirection(Vector3 direction)
     {
         RaycastHit hit;
         if(Physics.Raycast(GetRayOrigin(), direction, out hit, 10f, ~(1 << LayerMask.NameToLayer("Player") | 1 << LayerMask.NameToLayer("Item"))))
         {
-            GameObject hitObj = hit.collider.gameObject;
-
-            if(hitObj)
+            GameObject obj = hit.collider.gameObject;
+            if (obj.TryGetComponent(out directionFloor))
             {
-                if (hitObj.TryGetComponent(out forwardFloor))
-                {
-                    float result = (forwardFloor.floor - currentFloor);
-                    if (Mathf.Abs(result) != 0.5f)
-                    {
-                        return true;
-                    }
-
+                float result = (directionFloor.floor - currentFloor);
+                if (Mathf.Abs(result) == 0.5f)
                     return false;
-                }
-
-                return true;
             }
+            return true;
         }
-
         return false;
     }
 
@@ -183,19 +176,9 @@ public class PlayerTest : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(GetRayOrigin() + (direction * 10f), Vector3.down, out hit, 11f, (1 << LayerMask.NameToLayer("Tile"))))
         {
-            GameObject hitObj = hit.collider.gameObject;
-
-            if (hitObj)
-            {
-                if(forwardFloor == null)
-                {
-                    return hitObj.TryGetComponent(out forwardFloor);
-                }
-
-                return true;
-            }
+            GameObject obj = hit.collider.gameObject;
+            return obj.TryGetComponent(out directionFloor);
         }
-
         return false;
     }
 
@@ -211,17 +194,15 @@ public class PlayerTest : MonoBehaviour
 
     Vector3 GetMoveHeight()
     {
-        if (forwardFloor == null)
+        if (directionFloor == null)
             return Vector3.zero;
 
-        float targetFloor = forwardFloor.floor;
+        float targetFloor = directionFloor.floor;
         float result = (targetFloor - currentFloor);
 
         float posY = 0;
         if (Mathf.Abs(result) == 0.5f)
-        {
             posY = result < 0 ? -heightUnit : heightUnit;
-        }
 
         currentFloor = targetFloor;
 

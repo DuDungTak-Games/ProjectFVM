@@ -40,26 +40,26 @@ public class VMInputSwipe : VMInput
         onEndInput.AddListener(CheckTouch);
     }
     
-    void CheckSingleSwipe(InputData inputData)
-    {
-        Vector2 currentSwipe = endInputData.position - beginInputData.position;
-
-        if(currentSwipe.magnitude >= minSwipeDistance)
-        {
-            SwipeType swipeType;
-
-            Vector2 swipeDirection = currentSwipe.normalized;
-
-            swipeType = swipeDirection.x > 0 ? SwipeType.RIGHT : SwipeType.LEFT;
-
-            if (Mathf.Abs(swipeDirection.y) > Mathf.Abs(swipeDirection.x))
-            {
-                swipeType = swipeDirection.y > 0 ? SwipeType.UP : SwipeType.DOWN;
-            }
-
-            onSwipe.Invoke(swipeType);
-        }
-    }
+    // void CheckSingleSwipe(InputData inputData)
+    // {
+    //     Vector2 currentSwipe = endInputData.position - beginInputData.position;
+    //
+    //     if(currentSwipe.magnitude >= minSwipeDistance)
+    //     {
+    //         SwipeType swipeType;
+    //
+    //         Vector2 swipeDirection = currentSwipe.normalized;
+    //
+    //         swipeType = swipeDirection.x > 0 ? SwipeType.RIGHT : SwipeType.LEFT;
+    //
+    //         if (Mathf.Abs(swipeDirection.y) > Mathf.Abs(swipeDirection.x))
+    //         {
+    //             swipeType = swipeDirection.y > 0 ? SwipeType.UP : SwipeType.DOWN;
+    //         }
+    //
+    //         onSwipe.Invoke(swipeType);
+    //     }
+    // }
         
     void CheckMultiSwipe(InputData inputData)
     {

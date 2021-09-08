@@ -202,14 +202,10 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3718807524786414930, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
+    - target: {fileID: 7825480184224408153, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
       propertyPath: vmInput
       value: 
       objectReference: {fileID: 1146052427}
-    - target: {fileID: 3718807524786414930, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
-      propertyPath: inputTest
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 8575016579611022382, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
       propertyPath: m_UseGravity
       value: 0
@@ -1341,16 +1337,13 @@ MonoBehaviour:
   onEndInput:
     m_PersistentCalls:
       m_Calls: []
-  onTouch:
-    m_PersistentCalls:
-      m_Calls: []
-  maxTouchDistance: 10
   onSwipe:
     m_PersistentCalls:
       m_Calls: []
   onTouch:
     m_PersistentCalls:
       m_Calls: []
+  maxTouchDistance: 10
 --- !u!1 &1244538836
 GameObject:
   m_ObjectHideFlags: 0

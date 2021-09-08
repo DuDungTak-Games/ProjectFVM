@@ -31,6 +31,9 @@ public class ProductList : MonoBehaviour
 
     void OnInit()
     {
+        if (transform.childCount > 1)
+            return;
+        
         for (int i = 0; i < maxProduct; i++)
         {
             GameObject obj = Instantiate(tempProduct.gameObject, Vector3.zero, Quaternion.identity, this.transform);
