@@ -137,10 +137,10 @@ public class VMInput : MonoBehaviour
             if (inputType == InputType.UI)
                 return false;
             
-            int pointerID = 0;
+            int pointerID = -1;
             
-#if UNITY_EDITOR || UNITY_STANDALONE
-            pointerID = -1;
+#if !UNITY_EDITOR && !UNITY_STANDALONE
+            pointerID = Input.GetTouch(0).fingerId;
 #endif
 
             bool isOver = EventSystem.current.IsPointerOverGameObject(pointerID);

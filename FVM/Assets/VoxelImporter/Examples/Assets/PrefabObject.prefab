@@ -550,8 +550,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rayHeightOffset: {x: 0, y: 5.5, z: 0}
   moveUnit: 10
-  moveSpeed: 16
-  rotateSpeed: 16
+  moveSpeed: 14
+  rotateSpeed: 14
   heightUnit: 5
   vmInput: {fileID: 0}
 --- !u!1 &125458
