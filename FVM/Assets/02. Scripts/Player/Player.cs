@@ -33,18 +33,21 @@ public class Player : MonoBehaviour
 
     void SetEvent()
     {
-        vmInput?.onSwipe.AddListener(Rotate);
         vmInput?.onTouch.AddListener(Move);
+        vmInput?.onSwipe.AddListener(Rotate);
     }
 
     void ClearEvent()
     {
-        vmInput?.onSwipe.RemoveListener(Rotate);
         vmInput?.onTouch.RemoveListener(Move);
+        vmInput?.onSwipe.RemoveListener(Rotate);
     }
 
     void Rotate(SwipeType swipeType)
     {
+        if (!TestGameManager.Instance.IsGameState(gameState.CoinGame))
+            return;
+        
         if (rotateCoroutine == null)
         {
             Vector3 direction = Vector3.zero;
@@ -102,6 +105,9 @@ public class Player : MonoBehaviour
 
     void Move()
     {
+        if (!TestGameManager.Instance.IsGameState(gameState.CoinGame))
+            return;
+        
         if (rotateCoroutine == null)
         {
             Move(transform.forward);

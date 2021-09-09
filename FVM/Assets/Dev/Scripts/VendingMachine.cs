@@ -29,7 +29,7 @@ public class VendingMachine : MonoBehaviour
 
     public VMInputScreen vmInput;
     
-    private CameraFollow camera;
+    private VMCamera vmCamera;
     
     private TestGameManager gm;
     
@@ -39,7 +39,7 @@ public class VendingMachine : MonoBehaviour
     {
         rb = this.GetComponent<Rigidbody>();
 
-        camera = Camera.main.GetComponent<CameraFollow>();
+        Camera.main.TryGetComponent(out vmCamera);
 
         vmInput.onTouch.AddListener(Torque);
     }
@@ -72,11 +72,6 @@ public class VendingMachine : MonoBehaviour
 
     void LocalInput()
     {
-        //if (Input.GetKey(KeyCode.W))
-        //{
-        //    Thrust();
-        //}
-
         if (Input.GetKey(KeyCode.Q))
         {
             Torque(ScreenTouchType.LEFT);
@@ -112,14 +107,14 @@ public class VendingMachine : MonoBehaviour
 
         SetEffect(true);
 
-        rb.AddForce(transform.up * (curThrust * Time.deltaTime), ForceMode.Force);
+        rb.AddForce(transform.up * (curThrust * Time.smoothDeltaTime), ForceMode.Force);
 
         curFuel -= ((curThrust/maxThrust) * 1) * Time.deltaTime;
     }
 
     void Torque(ScreenTouchType touchType)
     {
-        rb.AddTorque((transform.forward * (int)touchType) * (torque * Time.deltaTime), ForceMode.Force);
+        rb.AddTorque((transform.forward * (int)touchType) * (torque * Time.smoothDeltaTime), ForceMode.Force);
     }
 
     void UpdateVM()
@@ -156,11 +151,11 @@ public class VendingMachine : MonoBehaviour
         {
             float t = Mathf.Lerp(0, maxShakeAmount, Mathf.Abs(velocityY) / maxShakeVelocity);
             
-            camera.ShakeLoop(t);
+            vmCamera?.ShakeLoop(t);
         }
         else
         {
-            camera.ShakeLoop(0);
+            vmCamera?.ShakeLoop(0);
         }
     }
 
@@ -175,9 +170,9 @@ public class VendingMachine : MonoBehaviour
 
                 Instantiate(deadEffect_Prefab, spawnPos, Quaternion.identity);
                 
-                camera.Shake(0.5f, 0.75f);
+                vmCamera?.Shake(0.5f, 0.75f);
                 
-                TestGameManager.Instance.OnGameEvent(TestGameManager.eventType.GAMEOVER);
+                TestGameManager.Instance.SetGameEvent(gameState.GameOver);
 
                 Destroy(this.gameObject, 0.01f);
             }

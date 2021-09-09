@@ -4,6 +4,12 @@ namespace DuDungTakGames.Extensions
 {
     public static class VectorExtensions
     {
+        public static Vector3 Set(this ref Vector3 pos, Vector3 newPos)
+        {
+            pos = newPos;
+            return pos;
+        }
+        
         public static Vector3 SetX(this ref Vector3 pos, float newX)
         {
             pos.x = newX;

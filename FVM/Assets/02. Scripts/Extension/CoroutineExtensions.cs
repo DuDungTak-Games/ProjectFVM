@@ -25,6 +25,11 @@ namespace DuDungTakGames.Extensions
             yield return monoBehaviour.StartCoroutine(logic);
         }
         
+        public static void Stop(this Coroutine logic, MonoBehaviour monoBehaviour)
+        {
+            monoBehaviour.StopCoroutine(logic);
+        }
+        
         public static IEnumerator Stop(this IEnumerator logic, MonoBehaviour monoBehaviour)
         {
             monoBehaviour.StopCoroutine(logic);

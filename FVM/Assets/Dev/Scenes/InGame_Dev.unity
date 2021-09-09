@@ -1362,7 +1362,7 @@ GameObject:
   - component: {fileID: 292694159}
   - component: {fileID: 292694157}
   - component: {fileID: 292694156}
-  - component: {fileID: 292694158}
+  - component: {fileID: 292694161}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1386,22 +1386,6 @@ Behaviour:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 292694155}
   m_Enabled: 1
---- !u!114 &292694158
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 292694155}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16392c3d9ef88e849a87c50d667604e6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isLerp: 0
-  isLookAt: 0
-  target: {fileID: 9132060080923048159}
-  offsetPos: {x: 0, y: 10, z: -30}
 --- !u!20 &292694159
 Camera:
   m_ObjectHideFlags: 0
@@ -1452,13 +1436,29 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 292694155}
-  m_LocalRotation: {x: 0.08715578, y: 0, z: 0, w: 0.9961947}
-  m_LocalPosition: {x: 0, y: 10, z: -30}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 10, z: -40}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 10, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &292694161
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 292694155}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3bd9915febb4e844b771c7de07a3347, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isLerp: 0
+  target: {fileID: 9132060080923048159}
+  followSpeed: 10
+  offsetPos: {x: 0, y: 12.5, z: -40}
 --- !u!1 &324764152
 GameObject:
   m_ObjectHideFlags: 0
@@ -7672,7 +7672,7 @@ Rigidbody:
   m_AngularDrag: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 2
+  m_Interpolate: 1
   m_Constraints: 48
   m_CollisionDetection: 1
 --- !u!114 &3168590954421049297

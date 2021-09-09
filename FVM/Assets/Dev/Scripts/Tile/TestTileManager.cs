@@ -265,7 +265,7 @@ public class TestTileManager : MonoBehaviour
 
         if (trigger.TryGetComponent(out Gimic tileTrigger))
         {
-            tileTrigger.SetTriggerAction(() => { TestGameManager.Instance.OnGameEvent(TestGameManager.eventType.PREPARE); });
+            tileTrigger.SetTriggerAction(() => { TestGameManager.Instance.SetGameEvent(gameState.Prepare); });
         }
     }
 

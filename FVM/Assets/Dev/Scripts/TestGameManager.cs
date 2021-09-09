@@ -10,16 +10,12 @@ public class TestGameManager : MonoBehaviour
 
     public static TestGameManager Instance;
 
-    public enum eventType
-    {
-        PREPARE,
-        GAMEOVER
-    }
+    private gameState GAME_STATE;
 
     private int coin = 0, kg = 120, resultHeight;
 
     Dictionary<labelType, UnityEvent<int>> updateTextEvents = new Dictionary<labelType, UnityEvent<int>>();
-    Dictionary<eventType, UnityEvent> gameEvents = new Dictionary<eventType, UnityEvent>();
+    Dictionary<gameState, UnityEvent> gameEvents = new Dictionary<gameState, UnityEvent>();
 
     void Awake()
     {
@@ -49,7 +45,7 @@ public class TestGameManager : MonoBehaviour
         }
     }
 
-    public void AddGameEvent(eventType type, UnityAction action)
+    public void AddGameEvent(gameState type, UnityAction action)
     {
         if (!gameEvents.ContainsKey(type))
         {
@@ -93,9 +89,22 @@ public class TestGameManager : MonoBehaviour
         return coin;
     }
 
-    public void OnGameEvent(eventType type)
+    public void SetGameEvent(gameState type, bool isUpdate = true)
     {
-        gameEvents[type].Invoke();
+        GAME_STATE = type;
+
+        if (!isUpdate)
+            return;
+        
+        if (gameEvents.ContainsKey(GAME_STATE))
+        {
+            gameEvents[GAME_STATE].Invoke();
+        }
+    }
+
+    public bool IsGameState(gameState type)
+    {
+        return GAME_STATE == type;
     }
     
     public void UpdateUI(labelType type, int value)
