@@ -327,6 +327,7 @@ GameObject:
   - component: {fileID: 292694157}
   - component: {fileID: 292694156}
   - component: {fileID: 292694161}
+  - component: {fileID: 292694158}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -350,6 +351,29 @@ Behaviour:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 292694155}
   m_Enabled: 1
+--- !u!114 &292694158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 292694155}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 434b0f0fb6ece3446aa041d0e2c20edf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  datas:
+  - onGameState: 0
+    offsetPos: {x: 70, y: 100, z: -70}
+    offsetRot: {x: 45, y: -45, z: 0}
+    offsetZoom: 70
+    followSpeed: 8
+  - onGameState: 1
+    offsetPos: {x: 40, y: 30, z: -40}
+    offsetRot: {x: 20, y: -45, z: 0}
+    offsetZoom: 30
+    followSpeed: 4
 --- !u!20 &292694159
 Camera:
   m_ObjectHideFlags: 0
@@ -420,6 +444,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetPos: {x: 70, y: 100, z: -70}
+  offsetRot: {x: 45, y: -45, z: 0}
+  offsetZoom: 70
   isLerp: 1
   target: {fileID: 39187953}
   followSpeed: 8
@@ -1193,7 +1219,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d537d3f4f11b4fe184d914ba425e3474, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onEventType: 2
+  onEventType: 1
 --- !u!1 &1321284018
 GameObject:
   m_ObjectHideFlags: 0

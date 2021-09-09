@@ -29,7 +29,7 @@ public class VendingMachine : MonoBehaviour
 
     public VMInputScreen vmInput;
     
-    private VMCamera vmCamera;
+    private CameraShake cameraShake;
     
     private TestGameManager gm;
     
@@ -39,7 +39,7 @@ public class VendingMachine : MonoBehaviour
     {
         rb = this.GetComponent<Rigidbody>();
 
-        Camera.main.TryGetComponent(out vmCamera);
+        Camera.main.TryGetComponent(out cameraShake);
 
         vmInput.onTouch.AddListener(Torque);
     }
@@ -107,14 +107,14 @@ public class VendingMachine : MonoBehaviour
 
         SetEffect(true);
 
-        rb.AddForce(transform.up * (curThrust * Time.smoothDeltaTime), ForceMode.Force);
+        rb.AddForce(transform.up * (curThrust * Time.deltaTime), ForceMode.Force);
 
         curFuel -= ((curThrust/maxThrust) * 1) * Time.deltaTime;
     }
 
     void Torque(ScreenTouchType touchType)
     {
-        rb.AddTorque((transform.forward * (int)touchType) * (torque * Time.smoothDeltaTime), ForceMode.Force);
+        rb.AddTorque((transform.forward * (int)touchType) * (torque * Time.deltaTime), ForceMode.Force);
     }
 
     void UpdateVM()
@@ -151,11 +151,11 @@ public class VendingMachine : MonoBehaviour
         {
             float t = Mathf.Lerp(0, maxShakeAmount, Mathf.Abs(velocityY) / maxShakeVelocity);
             
-            vmCamera?.ShakeLoop(t);
+            cameraShake?.ShakeLoop(t);
         }
         else
         {
-            vmCamera?.ShakeLoop(0);
+            cameraShake?.ShakeLoop(0);
         }
     }
 
@@ -170,7 +170,7 @@ public class VendingMachine : MonoBehaviour
 
                 Instantiate(deadEffect_Prefab, spawnPos, Quaternion.identity);
                 
-                vmCamera?.Shake(0.5f, 0.75f);
+                cameraShake?.Shake(0.5f, 0.75f);
                 
                 TestGameManager.Instance.SetGameEvent(gameState.GameOver);
 
@@ -178,47 +178,4 @@ public class VendingMachine : MonoBehaviour
             }
         }
     }
-
-    
-
-    // TODO : 프로토타입은 AddForce 로 진행 (질량을 고려한 움직임)
-    //float accel = 0f;
-    //void MoveB()
-    //{
-    //    if (Input.GetKey(KeyCode.W))
-    //    {
-    //        accel += thrust * Time.deltaTime;
-    //    }
-    //    else
-    //    {
-    //        accel = 0;
-    //    }
-
-    //    if (Input.GetKey(KeyCode.Q))
-    //    {
-    //        rb.AddTorque(-transform.forward * (torque * Time.deltaTime), ForceMode.Acceleration);
-    //    }
-
-    //    if (Input.GetKey(KeyCode.E))
-    //    {
-    //        rb.AddTorque(transform.forward * (torque * Time.deltaTime), ForceMode.Acceleration);
-    //    }
-
-    //    if(accel > 0f)
-    //    {
-    //        rb.velocity = transform.up * accel;
-    //    }
-    //}
-
-    //float IncrementTowards(float n, float target, float a)
-    //{
-    //    if (n == target) {
-    //        return n;
-    //    }
-    //    else {
-    //        float dir = Mathf.Sign(target = n);
-    //        n += a * Time.deltaTime;
-    //        return (dir == Mathf.Sign(target - n)) ? n : target;
-    //    }
-    //}
 }

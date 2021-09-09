@@ -1363,6 +1363,7 @@ GameObject:
   - component: {fileID: 292694157}
   - component: {fileID: 292694156}
   - component: {fileID: 292694161}
+  - component: {fileID: 292694158}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1386,6 +1387,18 @@ Behaviour:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 292694155}
   m_Enabled: 1
+--- !u!114 &292694158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 292694155}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8804750e670c6e84c9d644db43551bd0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!20 &292694159
 Camera:
   m_ObjectHideFlags: 0
@@ -1455,10 +1468,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3bd9915febb4e844b771c7de07a3347, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  offsetPos: {x: 0, y: 12.5, z: -40}
+  offsetRot: {x: 0, y: 0, z: 0}
+  offsetZoom: 0
   isLerp: 0
   target: {fileID: 9132060080923048159}
   followSpeed: 10
-  offsetPos: {x: 0, y: 12.5, z: -40}
 --- !u!1 &324764152
 GameObject:
   m_ObjectHideFlags: 0
@@ -5408,7 +5423,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d537d3f4f11b4fe184d914ba425e3474, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  eventType: 1
+  onEventType: 3
 --- !u!222 &1408455385
 CanvasRenderer:
   m_ObjectHideFlags: 0

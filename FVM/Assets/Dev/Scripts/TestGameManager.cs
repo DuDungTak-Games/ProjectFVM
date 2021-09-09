@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -5,10 +6,8 @@ using UnityEngine.Events;
 
 using labelType = LabelText.labelType;
 
-public class TestGameManager : MonoBehaviour
+public class TestGameManager : MonoSingleton<TestGameManager>
 {
-
-    public static TestGameManager Instance;
 
     private gameState GAME_STATE;
 
@@ -16,19 +15,6 @@ public class TestGameManager : MonoBehaviour
 
     Dictionary<labelType, UnityEvent<int>> updateTextEvents = new Dictionary<labelType, UnityEvent<int>>();
     Dictionary<gameState, UnityEvent> gameEvents = new Dictionary<gameState, UnityEvent>();
-
-    void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(this.gameObject);
-        }
-        else if(Instance != this)
-        {
-            Destroy(this.gameObject);
-        }
-    }
 
     public void AddUpdateTextEvent(labelType type, UnityAction<int> action)
     {

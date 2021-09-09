@@ -35,6 +35,8 @@ public class Player : MonoBehaviour
     {
         vmInput?.onTouch.AddListener(Move);
         vmInput?.onSwipe.AddListener(Rotate);
+        
+        TestGameManager.Instance.SetGameEvent(gameState.CoinGame);
     }
 
     void ClearEvent()

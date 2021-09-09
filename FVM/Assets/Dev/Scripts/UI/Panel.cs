@@ -19,7 +19,7 @@ public class Panel : MonoBehaviour
     
     public void Close()
     {
-        TestGameManager.Instance.SetGameEvent(gameState.CoinGame, false);
+        TestGameManager.Instance.SetGameEvent(gameState.CoinGame);
         
         this.gameObject.SetActive(false);
     }

@@ -1,13 +1,17 @@
-using System.Collections;
 using UnityEngine;
 
+using DuDungTakGames.CameraData;
 using DuDungTakGames.Extensions;
 
 public class VMCamera : MonoBehaviour
 {
     
-    [Header("Camera")]
+    Camera camera;
+
+    [Header("Camera Info")]
     [SerializeField] Vector3 offsetPos;
+    [SerializeField] Vector3 offsetRot;
+    [SerializeField] float offsetZoom;
 
     [Header("Camera Follow")]
     [SerializeField] bool isLerp;
@@ -18,19 +22,26 @@ public class VMCamera : MonoBehaviour
     
     Vector3 targetPos, resultPos, effectPos;
 
-    // NOTE : Camera Shake
-    float globalShakeAmount;
+    void Awake()
+    {
+        camera = GetComponent<Camera>();
+    }
     
-    Coroutine shakeCoroutine;
-
     void Update()
+    {
+        UpdateCameraPos();
+        UpdateCameraRot();
+        UpdateCameraZoom();
+    }
+
+    void UpdateCameraPos()
     {
         if (target != null)
         {
-            targetPos = target.position;
+            targetPos.Set(target.position);
         }
 
-        resultPos = targetPos + offsetPos + effectPos;
+        resultPos.Set(targetPos + offsetPos + effectPos);
         
         if (isLerp)
         {
@@ -38,67 +49,40 @@ public class VMCamera : MonoBehaviour
         }
         else
         {
-            transform.position = resultPos;
+            transform.SetPosition(resultPos);
         }
+    }
+
+    void UpdateCameraRot()
+    {
+        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(offsetRot), followSpeed * Time.smoothDeltaTime);
     }
     
-    public void ShakeLoop(float amount = 0.125f)
+    void UpdateCameraZoom()
     {
-        if (globalShakeAmount <= 0)
-        {
-            shakeCoroutine?.Stop(this);
-            ShakeDone();
-        }
-
-        globalShakeAmount = amount;
-        
-        if (shakeCoroutine == null)
-            ShakeCameraLoop().Start(ref shakeCoroutine, this);
+        camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, offsetZoom, followSpeed * Time.smoothDeltaTime);
     }
 
-    public void Shake(float duration, float amount = 0.125f)
+    public void SetCameraTarget(Transform trf)
     {
-        shakeCoroutine?.Stop(this);
-
-        ShakeCamera(duration, amount).Start(ref shakeCoroutine, this);
-    }
-
-    IEnumerator ShakeCamera(float duration, float amount)
-    {
-        Vector3 originPos = effectPos;
-
-        while (duration > 0)
-        {
-            yield return Shake(originPos, amount);
-            duration -= Time.deltaTime;
-        }
-
-        ShakeDone();
+        target = trf;
     }
     
-    IEnumerator ShakeCameraLoop()
+    public void SetCameraPreset(CameraData data)
     {
-        Vector3 originPos = effectPos;
-
-        while (globalShakeAmount > 0f)
-        {
-            yield return Shake(originPos, globalShakeAmount);
-        }
-
-        ShakeDone();
+        offsetPos = data.offsetPos;
+        offsetRot = data.offsetRot;
+        offsetZoom = data.offsetZoom;
+        followSpeed = data.followSpeed;
     }
 
-    IEnumerator Shake(Vector3 originPos, float amount)
+    public Vector3 GetEffectPos()
     {
-        effectPos.Set(originPos + Random.insideUnitSphere * amount);
-        yield return new WaitForEndOfFrame();
+        return effectPos;
     }
 
-    void ShakeDone()
+    public void SetEffectPos(Vector3 newPos)
     {
-        effectPos.Reset();
-        
-        globalShakeAmount = 0f;
-        shakeCoroutine = null;
+        effectPos.Set(newPos);
     }
 }
