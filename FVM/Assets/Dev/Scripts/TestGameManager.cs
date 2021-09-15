@@ -9,12 +9,12 @@ using labelType = LabelText.labelType;
 public class TestGameManager : MonoSingleton<TestGameManager>
 {
 
-    private gameState GAME_STATE;
+    private GameState gameState;
 
     private int coin = 0, kg = 120, resultHeight;
 
     Dictionary<labelType, UnityEvent<int>> updateTextEvents = new Dictionary<labelType, UnityEvent<int>>();
-    Dictionary<gameState, UnityEvent> gameEvents = new Dictionary<gameState, UnityEvent>();
+    Dictionary<GameState, UnityEvent> gameEvents = new Dictionary<GameState, UnityEvent>();
 
     public void AddUpdateTextEvent(labelType type, UnityAction<int> action)
     {
@@ -31,7 +31,7 @@ public class TestGameManager : MonoSingleton<TestGameManager>
         }
     }
 
-    public void AddGameEvent(gameState type, UnityAction action)
+    public void AddGameEvent(GameState type, UnityAction action)
     {
         if (!gameEvents.ContainsKey(type))
         {
@@ -75,22 +75,22 @@ public class TestGameManager : MonoSingleton<TestGameManager>
         return coin;
     }
 
-    public void SetGameEvent(gameState type, bool isUpdate = true)
+    public void SetGameEvent(GameState type, bool isUpdate = true)
     {
-        GAME_STATE = type;
+        gameState = type;
 
         if (!isUpdate)
             return;
         
-        if (gameEvents.ContainsKey(GAME_STATE))
+        if (gameEvents.ContainsKey(gameState))
         {
-            gameEvents[GAME_STATE].Invoke();
+            gameEvents[gameState].Invoke();
         }
     }
 
-    public bool IsGameState(gameState type)
+    public bool IsGameState(GameState type)
     {
-        return GAME_STATE == type;
+        return gameState == type;
     }
     
     public void UpdateUI(labelType type, int value)

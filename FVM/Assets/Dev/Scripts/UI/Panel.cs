@@ -3,7 +3,7 @@
 public class Panel : MonoBehaviour
 {
 
-    public gameState onEventType = gameState.Prepare;
+    public GameState onEventType = GameState.PREPARE;
 
     void Awake()
     {
@@ -19,7 +19,7 @@ public class Panel : MonoBehaviour
     
     public void Close()
     {
-        TestGameManager.Instance.SetGameEvent(gameState.CoinGame);
+        TestGameManager.Instance.SetGameEvent(GameState.COIN_GAME);
         
         this.gameObject.SetActive(false);
     }

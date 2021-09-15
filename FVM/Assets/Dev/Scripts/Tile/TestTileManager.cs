@@ -31,25 +31,6 @@ public class TestTileManager : MonoBehaviour
     const float HALF_FLOOR_UNIT = 2.5f;
     const float START_COIN_FLOOR_UNIT = 5f;
 
-    class TileSet
-    {
-        public void SetData(Vector2 originPos, Vector3 spawnPos, float spawnFloor)
-        {
-            this.originPos = originPos;
-            this.spawnPos = spawnPos;
-            this.spawnFloor = spawnFloor;
-        }
-
-        public bool Check(TileSet tileSet, bool compare)
-        {
-            return Vector2.Equals(originPos, tileSet.originPos) && compare;
-        }
-
-        public Vector2 originPos { get; private set; }
-        public Vector3 spawnPos { get; private set; }
-        public float spawnFloor { get; private set; }
-    }
-
     void Start()
     {
         Init();
@@ -95,6 +76,9 @@ public class TestTileManager : MonoBehaviour
             {
                 for (int y = -2; y < 2; y++)
                 {
+                    if (z > 1 && y < 1)
+                        continue;
+                    
                     AddTileSet(x, z, y);
                 }
             }
@@ -178,10 +162,11 @@ public class TestTileManager : MonoBehaviour
         {
             GameObject tile = Instantiate(testTile_Prefab, tileSet.spawnPos, Quaternion.identity, rootTrf);
             
-            if(tile.TryGetComponent(out GroundTile tileFloor))
+            if(tile.TryGetComponent(out Tile tileFloor))
             {
                 float spawnFloor = tileSet.spawnFloor;
                 tileFloor.floor = spawnFloor;
+                tileFloor.tilePos = tileSet.tilePos;
 
                 if (spawnFloor % 1f == 0.5f)
                 {
@@ -190,10 +175,12 @@ public class TestTileManager : MonoBehaviour
                     tile.transform.localScale = scale;
                 }
 
-                TileSet top = tileList.Find(x => x.Check(tileSet, x.spawnFloor == spawnFloor+1 || x.spawnFloor == spawnFloor+0.5f));
-                TileSet down = tileList.Find(x => x.Check(tileSet, x.spawnFloor == spawnFloor-1));
+                bool isTop = false;
+                bool isBottom = false;
+                tileList.Find(x => isTop = x.Check(tileSet, x.spawnFloor == spawnFloor+1 || x.spawnFloor == spawnFloor+0.5f));
+                tileList.Find(x => isBottom = x.Check(tileSet, x.spawnFloor == spawnFloor-1));
 
-                tileFloor.SetFloorInfo(top != null, down != null);
+                //tileFloor.Init(isTop, isBottom);
             }
         }
     }
@@ -265,7 +252,7 @@ public class TestTileManager : MonoBehaviour
 
         if (trigger.TryGetComponent(out Gimic tileTrigger))
         {
-            tileTrigger.SetTriggerAction(() => { TestGameManager.Instance.SetGameEvent(gameState.Prepare); });
+            tileTrigger.SetTriggerAction(() => { TestGameManager.Instance.SetGameEvent(GameState.PREPARE); });
         }
     }
 
@@ -350,8 +337,7 @@ public class TestTileManager : MonoBehaviour
 
     TileSet CreateTileSet(Vector2 origin, Vector3 pos, float floor)
     {
-        TileSet tileSet = new TileSet();
-        tileSet.SetData(origin, pos, floor);
+        TileSet tileSet = new TileSet(origin, pos, floor);
         return tileSet;
     }
 }

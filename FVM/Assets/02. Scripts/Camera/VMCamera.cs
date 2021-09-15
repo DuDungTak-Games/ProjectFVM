@@ -25,6 +25,8 @@ public class VMCamera : MonoBehaviour
     void Awake()
     {
         camera = GetComponent<Camera>();
+
+        Application.targetFrameRate = 60;
     }
     
     void Update()

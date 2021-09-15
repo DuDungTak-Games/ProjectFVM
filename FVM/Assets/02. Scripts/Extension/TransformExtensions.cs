@@ -46,5 +46,51 @@ namespace DuDungTakGames.Extensions
         {
             trf.rotation = newRot;
         }
+
+        public static void SetScale(this Transform trf, Vector3 newScale)
+        {
+            trf.localScale = newScale;
+        }
+        
+        public static void SetScaleX(this Transform trf, float newX)
+        {
+            Vector3 newScale = trf.localScale;
+            trf.localScale = newScale.SetX(newX);
+        }
+        
+        public static void SetScaleY(this Transform trf, float newY)
+        {
+            Vector3 newScale = trf.localScale;
+            trf.localScale = newScale.SetY(newY);
+        }
+        
+        public static void SetScaleZ(this Transform trf, float newZ)
+        {
+            Vector3 newScale = trf.localScale;
+            trf.localScale = newScale.SetZ(newZ);
+        }
+        
+        public static void MultipleScale(this Transform trf, float multiple)
+        {
+            trf.localScale *= multiple;
+        }
+        
+        public static void MultipleScaleX(this Transform trf, float multiple)
+        {
+            Vector3 newScale = trf.localScale;
+            trf.localScale = newScale.SetX(newScale.x * multiple);
+        }
+        
+        public static void MultipleScaleY(this Transform trf, float multiple)
+        {
+            Vector3 newScale = trf.localScale;
+            trf.localScale = newScale.SetY(newScale.y * multiple);
+        }
+        
+        public static void MultipleScaleZ(this Transform trf, float multiple)
+        {
+            Vector3 newScale = trf.localScale;
+            trf.localScale = newScale.SetZ(newScale.z * multiple);
+        }
     }
 }

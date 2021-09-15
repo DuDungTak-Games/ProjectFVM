@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: 5a9ba41e83750ec43a4345bc55996cf8, type: 2}
   m_LightingSettings: {fileID: 2121859871}
 --- !u!196 &4
 NavMeshSettings:
@@ -180,7 +180,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 494468, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 494468, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -256,7 +256,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 1
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -287,7 +287,7 @@ Light:
   m_RenderMode: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294967263
   m_RenderingLayerMask: 1
   m_Lightmapping: 1
   m_LightShadowCasterMode: 0
@@ -449,6 +449,56 @@ MonoBehaviour:
   isLerp: 1
   target: {fileID: 39187953}
   followSpeed: 8
+--- !u!1 &455213982
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 455213983}
+  - component: {fileID: 455213984}
+  m_Layer: 0
+  m_Name: TileManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &455213983
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 455213982}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &455213984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 455213982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3523c2c5aae846d4993d338a1499c271, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tile_Prefab: {fileID: 3280564174860502199, guid: df70310ccfaed46479ecc048f7752484, type: 3}
+  coin_Prefab: {fileID: 4457105397523664863, guid: a1e6f14c02e50a341af48e0072452e6b, type: 3}
+  startPoint_Prefab: {fileID: 8499600687057106280, guid: 407b76a51f7e63c4e95a4570af0589d0, type: 3}
+  vmPoint_Prefab: {fileID: 5491335234846113243, guid: f06e2bd59e285644492e70245ab169a2, type: 3}
+  trigger_Prefab: {fileID: 9186619336909404956, guid: 73b1998fb8bb6114ab45a25af425717c, type: 3}
+  gimic_Prefab: {fileID: 3280564174860502199, guid: df70310ccfaed46479ecc048f7752484, type: 3}
+  subTileMaterial: {fileID: 2100000, guid: 8596893258e727c4ba1c6e2038546849, type: 2}
 --- !u!1 &519700471
 GameObject:
   m_ObjectHideFlags: 0
@@ -1718,53 +1768,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1525285023}
   m_CullTransparentMesh: 1
---- !u!1 &1718962758
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1718962760}
-  - component: {fileID: 1718962759}
-  m_Layer: 0
-  m_Name: Test_TileManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1718962759
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1718962758}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b91d6263544d5fd41932c0b958224dee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  testTile_Prefab: {fileID: 3280564174860502199, guid: df70310ccfaed46479ecc048f7752484, type: 3}
-  testCoin_Prefab: {fileID: 4457105397523664863, guid: a1e6f14c02e50a341af48e0072452e6b, type: 3}
-  testTrigger_Prefab: {fileID: 9186619336909404956, guid: 73b1998fb8bb6114ab45a25af425717c, type: 3}
-  testVM_Prefab: {fileID: 5491335234846113243, guid: f06e2bd59e285644492e70245ab169a2, type: 3}
---- !u!4 &1718962760
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1718962758}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1869095890
 GameObject:
   m_ObjectHideFlags: 0
@@ -2131,7 +2134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_FirstSelected: {fileID: 0}
+  m_FirstSelected: {fileID: 2128235947}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
 --- !u!4 &1920564584
@@ -2261,15 +2264,15 @@ LightingSettings:
   m_PrefabAsset: {fileID: 0}
   m_Name: Settings.lighting
   serializedVersion: 3
-  m_GIWorkflowMode: 0
+  m_GIWorkflowMode: 1
   m_EnableBakedLightmaps: 1
-  m_EnableRealtimeLightmaps: 1
+  m_EnableRealtimeLightmaps: 0
   m_RealtimeEnvironmentLighting: 1
   m_BounceScale: 1
   m_AlbedoBoost: 1
   m_IndirectOutputScale: 1
   m_UsingShadowmask: 0
-  m_BakeBackend: 0
+  m_BakeBackend: 1
   m_LightmapMaxSize: 1024
   m_BakeResolution: 40
   m_Padding: 2
@@ -2314,3 +2317,8 @@ LightingSettings:
   m_PVRFilteringAtrousPositionSigmaDirect: 0.5
   m_PVRFilteringAtrousPositionSigmaIndirect: 2
   m_PVRFilteringAtrousPositionSigmaAO: 1
+--- !u!1 &2128235947 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 122542, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
+  m_PrefabInstance: {fileID: 39187952}
+  m_PrefabAsset: {fileID: 0}

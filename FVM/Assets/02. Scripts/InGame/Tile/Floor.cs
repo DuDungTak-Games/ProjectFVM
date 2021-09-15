@@ -6,4 +6,5 @@ using UnityEngine;
 public class Floor : MonoBehaviour
 {
     public float floor = 1f;
+    public Vector2 tilePos; // DEBUG
 }

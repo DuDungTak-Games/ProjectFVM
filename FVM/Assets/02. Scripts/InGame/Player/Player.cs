@@ -16,7 +16,7 @@ public class Player : MonoBehaviour
 
     public VMInputSwipe vmInput;
     
-    float currentFloor = 1f;
+    float currentFloor = 0;
     Floor directionFloor;
 
     Coroutine moveCoroutine, rotateCoroutine;
@@ -36,7 +36,7 @@ public class Player : MonoBehaviour
         vmInput?.onTouch.AddListener(Move);
         vmInput?.onSwipe.AddListener(Rotate);
         
-        TestGameManager.Instance.SetGameEvent(gameState.CoinGame);
+        TestGameManager.Instance.SetGameEvent(GameState.COIN_GAME);
     }
 
     void ClearEvent()
@@ -47,7 +47,7 @@ public class Player : MonoBehaviour
 
     void Rotate(SwipeType swipeType)
     {
-        if (!TestGameManager.Instance.IsGameState(gameState.CoinGame))
+        if (!TestGameManager.Instance.IsGameState(GameState.COIN_GAME))
             return;
         
         if (rotateCoroutine == null)
@@ -107,7 +107,7 @@ public class Player : MonoBehaviour
 
     void Move()
     {
-        if (!TestGameManager.Instance.IsGameState(gameState.CoinGame))
+        if (!TestGameManager.Instance.IsGameState(GameState.COIN_GAME))
             return;
         
         if (rotateCoroutine == null)
@@ -156,9 +156,9 @@ public class Player : MonoBehaviour
             action(progress);
 
             // NOTE : Lerp 에 0.1f 추가로 보정
-            progress = Mathf.Lerp(progress, 1.1f, speed * Time.deltaTime);
+            progress = Mathf.Lerp(progress, 1.1f, speed * Time.smoothDeltaTime);
 
-            yield return new WaitForEndOfFrame();
+            yield return null;
         }
     }
 

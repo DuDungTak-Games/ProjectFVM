@@ -15,7 +15,7 @@ public class ProductList : MonoBehaviour
     
     void Awake()
     {
-        TestGameManager.Instance.AddGameEvent(gameState.Prepare, OnInit);
+        TestGameManager.Instance.AddGameEvent(GameState.PREPARE, OnInit);
         
         tempProduct = GetComponentInChildren<TestProduct>();
         tempProduct.gameObject.SetActive(false);

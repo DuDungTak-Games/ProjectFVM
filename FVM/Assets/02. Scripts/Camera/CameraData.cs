@@ -6,7 +6,7 @@ namespace DuDungTakGames.CameraData
     [Serializable]
     public struct CameraData
     {
-        public gameState onGameState;
+        public GameState onGameState;
         public Vector3 offsetPos;
         public Vector3 offsetRot;
         public float offsetZoom;

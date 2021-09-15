@@ -21,12 +21,12 @@ ScriptedImporter:
   removeUnusedPalettes: 1
   shareSameMaterial: 1
   outputStructure: 0
-  generateLightmapUVs: 0
+  generateLightmapUVs: 1
   generateLightmapUVsAngleError: 8
   generateLightmapUVsAreaError: 15
   generateLightmapUVsHardAngle: 88
   generateLightmapUVsPackMargin: 4
-  generateTangents: 0
+  generateTangents: 1
   meshFaceVertexOffset: 0
   loadFromVoxelFile: 1
   generateMipMaps: 0
@@ -34,7 +34,7 @@ ScriptedImporter:
   createContactChunkFaces: 0
   materialMode: 0
   materials:
-  - {fileID: -156486658544998735, guid: 4868ab7e34d2e7f45b21d9c387f0e2a4, type: 3}
+  - {instanceID: 0}
   materialNames:
   - Vending_Machine_Window_2_0
   remappedMaterials:

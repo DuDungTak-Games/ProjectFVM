@@ -172,7 +172,7 @@ public class VendingMachine : MonoBehaviour
                 
                 cameraShake?.Shake(0.5f, 0.75f);
                 
-                TestGameManager.Instance.SetGameEvent(gameState.GameOver);
+                TestGameManager.Instance.SetGameEvent(GameState.GAME_OVER);
 
                 Destroy(this.gameObject, 0.01f);
             }

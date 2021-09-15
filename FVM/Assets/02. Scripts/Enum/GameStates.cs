@@ -1,7 +1,7 @@
-public enum gameState
+public enum GameState
 {
-    CoinGame,
-    Prepare,
-    VmGame,
-    GameOver
+    COIN_GAME,
+    PREPARE,
+    VM_GAME,
+    GAME_OVER
 }
