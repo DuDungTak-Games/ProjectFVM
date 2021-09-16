@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 4457105397523664832}
   m_Layer: 7
   m_Name: Dummy_Coin
-  m_TagString: Untagged
+  m_TagString: Tile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

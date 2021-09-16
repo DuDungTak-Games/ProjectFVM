@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 9186619336909404953}
   m_Layer: 8
   m_Name: Dummy_Trigger_(Gimic)
-  m_TagString: Untagged
+  m_TagString: Tile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 
+[Serializable]
 public struct TileSet
 {
     public TileSet(Vector2 tilePos, Vector3 spawnPos, float spawnFloor)
