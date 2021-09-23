@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -17,13 +19,27 @@ public class StageEditor : EditorWindow
 
     Vector3 tileSize = new Vector3(10, 10, 10);
 
-    private GameObject testTileObject;
+    TileID curTileID;
+    GameObject curPrefab;
+    float curFloorUnit;
+
+    public GameObject testPrefab;
+    public float testUnit;
+    
+    public TilePrefabData tilePrefabData;
+    public TileFloorPrefabData tileFloorPrefabData;
+    public TileSetData tileSetData;
+    
     private static List<Tuple<Vector3, GameObject>> tileList = new List<Tuple<Vector3, GameObject>>();
     
     [MenuItem("DudungtakGames/Stage Editor")]
     private static void ShowWindow()
     {
-        EditorWindow.GetWindow(typeof(StageEditor));
+        StageEditor window = (StageEditor)EditorWindow.GetWindow(typeof(StageEditor));
+        GUIContent guiContent = new GUIContent(GUIContent.none);
+        guiContent.text = "Stage Editor";
+
+        window.titleContent = guiContent;
     }
 
     void OnGUI()
@@ -67,7 +83,7 @@ public class StageEditor : EditorWindow
         Init();
     }
 
-    private void OnDestroy()
+    void OnDestroy()
     {
         SceneView.duringSceneGui -= this.OnSceneGUI;
     }
@@ -91,25 +107,53 @@ public class StageEditor : EditorWindow
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Stage Editor", GetStyle("Title"), GUILayout.Height(40));
 
-        testTileObject = (GameObject)EditorGUILayout.ObjectField(testTileObject, typeof(GameObject), true);
-        
-        EditorGUILayout.LabelField(string.Format("타일 배치 모드 : {0}", isEditMode ? "ON" : "OFF"),
+        EditorGUILayout.LabelField(string.Format("Edit Mode : {0}", isEditMode ? "ON" : "OFF"),
             GetStyle("Context", isEditMode ? Color.green : Color.red, true), GUILayout.MinHeight(30));
 
-        EditorGUILayout.Space();
-        isEditMode = GUILayout.Toggle(isEditMode, "타일 배치 모드", GetStyle("Button", 24, Color.white), GUILayout.MinHeight(40));
+        EditorGUI.BeginChangeCheck();
+        
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("TilePrefabData",
+            GetStyle("Context", TextAnchor.LowerLeft,true), GUILayout.MaxWidth(160), GUILayout.MinHeight(30));
+        tilePrefabData = (TilePrefabData)EditorGUILayout.ObjectField(tilePrefabData, typeof(TilePrefabData), false, 
+            GUILayout.MaxWidth(400), GUILayout.MaxHeight(30));
+        EditorGUILayout.EndHorizontal();
+        
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("TileFloorPrefabData",
+            GetStyle("Context", TextAnchor.LowerLeft,true), GUILayout.MaxWidth(160), GUILayout.MinHeight(30));
+        tileFloorPrefabData = (TileFloorPrefabData)EditorGUILayout.ObjectField(tileFloorPrefabData, typeof(TileFloorPrefabData), false, 
+            GUILayout.MaxWidth(400), GUILayout.MaxHeight(30));
+        EditorGUILayout.EndHorizontal();
+        
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("TileSetData",
+            GetStyle("Context", TextAnchor.LowerLeft,true), GUILayout.MaxWidth(160), GUILayout.MinHeight(30));
+        tileSetData = (TileSetData)EditorGUILayout.ObjectField(tileSetData, typeof(TileSetData), false, 
+            GUILayout.MaxWidth(400), GUILayout.MaxHeight(30));
+        EditorGUILayout.EndHorizontal();
 
+        if (EditorGUI.EndChangeCheck())
+        {
+            Save();
+        }
+
+        EditorGUILayout.Space();
+        isEditMode = GUILayout.Toggle(isEditMode, "Edit Mode", GetStyle("Button", 24, Color.white), GUILayout.MinHeight(40));
+        
         UpdateHelper();
     }
 
     void DisplaySceneGUI()
     {
-        Handles.BeginGUI();
-
         UpdateRay();
         UpdateInput();
-
+        UpdateData();
+        
+        Handles.BeginGUI();
+        
         ShowToolBox();
+        ShowInfoBox();
         
         Handles.EndGUI();
     }
@@ -165,7 +209,7 @@ public class StageEditor : EditorWindow
                 {
                     if (e.type == EventType.MouseDown)
                     {
-                        if (e.button == 0 && e.keyCode != KeyCode.C) // NOTE : 타일 배치
+                        if (e.button == 0) // NOTE : 타일 배치
                         {
                             CreateTile();
                         }
@@ -173,7 +217,7 @@ public class StageEditor : EditorWindow
 
                     if (e.type == EventType.KeyDown)
                     {
-                        if (e.keyCode == KeyCode.T) // NOTE : 타일 배치
+                        if (e.keyCode == KeyCode.V) // NOTE : 타일 배치
                         {
                             CreateTile();
                         }
@@ -182,38 +226,60 @@ public class StageEditor : EditorWindow
                         {
                             DeleteTile();
                         }
-                        
-                        if (e.keyCode == KeyCode.R) // NOTE : 층 올리기
-                        {
-                            SetTileFloor(true);
-                        }
-                
-                        if (e.keyCode == KeyCode.F) // NOTE : 층 내리기
-                        {
-                            SetTileFloor(false);
-                        }
+                    }
+
+                    if (e.type == EventType.MouseMove)
+                    {
+                        SceneView.RepaintAll();
                     }
                 }
             }
         }
     }
 
-    int toolBoxwindowID = 1000;
-    Rect toolBoxRect = new Rect(20,40, 260, 0);
+    void UpdateData()
+    {
+        if (tilePrefabData != null)
+        {
+            if (tilePrefabData.prefabList.ContainsKey(curTileID))
+            {
+                curPrefab = tilePrefabData.prefabList[curTileID];
+            }
+            else
+            {
+                curPrefab = null;
+            }
+            
+            if (tilePrefabData.floorUnitList.ContainsKey(curTileID))
+            {
+                curFloorUnit = tilePrefabData.floorUnitList[curTileID];
+            }
+            else
+            {
+                curFloorUnit = 0;
+            }
+        }
+    }
+
+    int toolBoxWindowID = 1000;
+    Rect toolBoxRect = new Rect(10,30, 360, 0);
     void ShowToolBox()
     {
-        toolBoxRect = GUILayout.Window (toolBoxwindowID, toolBoxRect, (id) => 
+        toolBoxRect = GUILayout.Window (toolBoxWindowID, toolBoxRect, (id) => 
         {
-
-            EditorGUILayout.LabelField (string.Format("타일 위치 ({0}, {1}, {2})", tilePos.x, tilePos.y, tilePos.z), 
-                GetStyle("Context", true), GUILayout.MinHeight(30));
-            EditorGUILayout.LabelField (string.Format("그리드 위치 ({0}, {1}, {2})", gridPos.x, gridPos.y, gridPos.z), 
-                GetStyle("Context", true), GUILayout.MinHeight(30));
-            EditorGUILayout.LabelField (string.Format("마우스 위치 ({0}, {1}, {2})", Mathf.Round(mousePos.x), Mathf.Round(mousePos.y), Mathf.Round(mousePos.z)), 
-                GetStyle("Context", true), GUILayout.MinHeight(30));
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField (string.Format("TileID ({0} [{1}])", curTileID.ToString(), ((int)curTileID).ToString()), 
+                GetStyle("Context", Color.yellow,true), GUILayout.MinHeight(30));
+            if(GUILayout.Button("◀", GUILayout.MaxWidth(30), GUILayout.MaxHeight(20))) { SetTileID(false); }
+            if(GUILayout.Button("▶", GUILayout.MaxWidth(30), GUILayout.MaxHeight(20))) { SetTileID(true); }
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.LabelField (string.Format("Prefab ({0})", curPrefab ? curPrefab.name : "NULL"), 
+                GetStyle("Context", curPrefab ? Color.green : Color.gray, true), GUILayout.MinHeight(30));
+            EditorGUILayout.LabelField (string.Format("Floor Unit ({0})", curFloorUnit), 
+                GetStyle("Context", curFloorUnit > 0 ? Color.cyan : Color.gray, true), GUILayout.MinHeight(30));
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField ("현재 층", GetStyle("Context", 16, TextAnchor.LowerCenter, true), 
+            EditorGUILayout.LabelField ("Floor", GetStyle("Context", 16, TextAnchor.LowerCenter, true), 
                 GUILayout.MaxWidth(60), GUILayout.MinHeight(30));
 
             EditorGUILayout.FloatField(tileFloor, GetStyle("NumberField"), GUILayout.MinHeight(30));
@@ -223,17 +289,44 @@ public class StageEditor : EditorWindow
             if(GUILayout.Button("▼", GUILayout.MaxHeight(15))) { SetTileFloor(false); }
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndHorizontal();
+            
+            EditorGUILayout.LabelField (string.Format("Tile Count : {0}", tileList.Count), 
+                GetStyle("Context", true), GUILayout.MinHeight(30));
 
             EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("그리드 위치 초기화", GUILayout.MinHeight(30))) { gridPos = Vector3.zero; }
-            if (GUILayout.Button("층 초기화", GUILayout.MinHeight(30))) { tileFloor = 0; }
+            if (GUILayout.Button("Plane Pos Reset", GUILayout.MinHeight(30))) { gridPos = Vector3.zero; }
+            if (GUILayout.Button("Floor Reset", GUILayout.MinHeight(30))) { tileFloor = 0; }
+            if (GUILayout.Button("TileID Reset", GUILayout.MinHeight(30))) { curTileID = 0; }
             EditorGUILayout.EndHorizontal();
+            
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("TileSet Reload", GUILayout.MinHeight(30))) { Debug.Log("기능 구현 필요"); }
+            if (GUILayout.Button("TileSet Reset", GUILayout.MinHeight(30))) { ClearTileList(); }
+            EditorGUILayout.EndHorizontal();
+            
+            GUI.DragWindow();
 
-            EditorGUILayout.LabelField (string.Format("타일 수 : {0}", tileList.Count), 
+        }, "Tool", GUILayout.MinWidth(360));
+    }
+
+    int infoBoxWindowID = 1001;
+    Rect windowBoxRect = new Rect(10, 840, 260, 0);
+    void ShowInfoBox()
+    {
+        windowBoxRect = GUILayout.Window (infoBoxWindowID, windowBoxRect, (id) => 
+        {
+            EditorGUILayout.BeginVertical();
+            EditorGUILayout.LabelField (string.Format("Tile Pos ({0}, {1}, {2})", tilePos.x, tilePos.y, tilePos.z), 
                 GetStyle("Context", true), GUILayout.MinHeight(30));
-            if (GUILayout.Button("타일 초기화", GUILayout.MinHeight(30))) { ClearTileList(); }
+            EditorGUILayout.LabelField (string.Format("Grid Pos ({0}, {1}, {2})", gridPos.x, gridPos.y, gridPos.z), 
+                GetStyle("Context", true), GUILayout.MinHeight(30));
+            EditorGUILayout.LabelField (string.Format("Mouse Pos ({0}, {1}, {2})", Mathf.Round(mousePos.x), Mathf.Round(mousePos.y), Mathf.Round(mousePos.z)), 
+                GetStyle("Context", true), GUILayout.MinHeight(30));
+            EditorGUILayout.EndVertical();
+            
+            GUI.DragWindow();
 
-        }, "Stage Editor ToolBox", GUILayout.MaxWidth(260));
+        }, "Info", GUILayout.MaxWidth(260));
     }
 
     void SetTileFloor(bool isUp)
@@ -248,21 +341,49 @@ public class StageEditor : EditorWindow
 
         tileSize = new Vector3(tileUnit, remian == 0.5f ? (tileUnit/2) : tileUnit, tileUnit);
         GizmoHelper.SetSize(tileSize);
+        
+        Save();
+    }
+
+    void SetTileID(bool isNext)
+    {
+        if (isNext)
+        {
+            int last = (int)Enum.GetValues(typeof(TileID)).Cast<TileID>().Last();
+            
+            if ((int) curTileID >= last)
+            {
+                curTileID = Enum.GetValues(typeof(TileID)).Cast<TileID>().First();
+                return;
+            }
+            
+            curTileID += 1;
+        }
+        else
+        {
+            if ((int) curTileID <= 0)
+            {
+                curTileID = Enum.GetValues(typeof(TileID)).Cast<TileID>().Last();
+                return;
+            }
+
+            curTileID -= 1;
+        }
+        
+        Save();
     }
 
     void CreateTile()
     {
-        if (!TileCheck())
+        if (!TileCheck() && curPrefab != null)
         {
-            GameObject tile = Instantiate(testTileObject, tilePos, Quaternion.identity);
-
-            if (tileFloor % 1 != 0)
-            {
-                tile.transform.MultipleScaleY(0.5f);
-            }
-                                
+            GameObject prefab = GetTilePrefab();
+            GameObject tile = Instantiate(prefab, tilePos, Quaternion.identity);
+            
             tileList.Add(new Tuple<Vector3, GameObject>(tilePos, tile));
         }
+        
+        Save();
     }
 
     void DeleteTile()
@@ -273,6 +394,26 @@ public class StageEditor : EditorWindow
             tileList.Remove(tile);
             DestroyImmediate(tile.Item2);
         }
+
+        Save();
+    }
+    
+    void ReplaceBottomTile(Tuple<Vector3, GameObject> data)
+    {
+        Vector3 pos = data.Item1;
+        GameObject tile = data.Item2;
+        
+        tileList.Remove(data);
+        DestroyImmediate(tile);
+
+        if (pos.y % 1 != 0)
+        {
+            pos.y += 2.5f;
+        }
+        
+        tile = Instantiate(tileFloorPrefabData.GetPrefab(TileFloorID.BOTTOM_TILE), pos, Quaternion.identity);
+
+        tileList.Add(new Tuple<Vector3, GameObject>(pos, tile));
     }
 
     bool TileCheck()
@@ -284,10 +425,63 @@ public class StageEditor : EditorWindow
         return isAlready;
     }
 
+    GameObject GetTilePrefab()
+    {
+        switch (curTileID)
+        {
+            case TileID.TILE:
+                bool hasTop = FindTopTile();
+                TileFloorID tileFloorID = hasTop ? TileFloorID.BOTTOM_TILE : TileFloorID.TOP_TILE;
+                
+                if (tileFloor % 1 != 0)
+                {
+                    tileFloorID = hasTop ? TileFloorID.BOTTOM_HALF_TILE : TileFloorID.TOP_HALF_TILE;
+                }
+
+                return tileFloorPrefabData.GetPrefab(tileFloorID);
+            default:
+                break;
+        }
+        
+        return curPrefab;
+    }
+
+    bool FindTopTile()
+    {
+        Tuple<Vector3, GameObject> data = tileList.Find(x =>
+            x.Item1 == tilePos + (Vector3.up * 2.5f) ||
+            x.Item1 == tilePos + (Vector3.up * 10));
+
+        if (data == null)
+        {
+            FindBottomTile();
+            return false;
+        }
+
+        return true;
+    }
+
+    bool FindBottomTile()
+    {
+        Tuple<Vector3, GameObject> data = tileList.Find(x =>
+            x.Item1 == tilePos - (Vector3.up * 7.5f) ||
+            x.Item1 == tilePos - (Vector3.up * 10));
+
+        if (data != null)
+        {
+            ReplaceBottomTile(data);
+            return true;
+        }
+        
+        return false;
+    }
+
     Tuple<Vector3, GameObject> FindDuplicateTile()
     {
         return tileList.Find(x =>
-            x.Item1 == tilePos || x.Item1 == tilePos - (Vector3.up * 2.5f) || x.Item1 == tilePos + (Vector3.up * 7.5f));
+            x.Item1 == tilePos || 
+            x.Item1 == tilePos + (Vector3.up * 2.5f) ||
+            x.Item1 == tilePos - (Vector3.up * 2.5f));
     }
 
     void ClearTileList()
@@ -303,6 +497,14 @@ public class StageEditor : EditorWindow
         }
         
         tileList.Clear();
+    }
+
+    void Save()
+    {
+        SaveChanges();
+        
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
     }
 
     #region GUI_Style

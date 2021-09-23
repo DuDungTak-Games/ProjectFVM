@@ -1,0 +1,69 @@
+fileFormatVersion: 2
+guid: 69cde14d41520754aa3ab390038736a3
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: eeb34f3ead148d04e8630fc3f79cbc1a, type: 3}
+  dataVersion: 6
+  fileType: 0
+  gameObjectName: IObject_Lever
+  meshMode: 1
+  importMode: 1
+  importScale: {x: 1, y: 1, z: 1}
+  importOffset: {x: 0, y: 0, z: 0}
+  combineFaces: 1
+  ignoreCavity: 1
+  shareSameFace: 1
+  removeUnusedPalettes: 1
+  shareSameMaterial: 1
+  outputStructure: 0
+  generateLightmapUVs: 0
+  generateLightmapUVsAngleError: 8
+  generateLightmapUVsAreaError: 15
+  generateLightmapUVsHardAngle: 88
+  generateLightmapUVsPackMargin: 4
+  generateTangents: 0
+  meshFaceVertexOffset: 0
+  loadFromVoxelFile: 1
+  generateMipMaps: 0
+  colliderType: 0
+  createContactChunkFaces: 0
+  materialMode: 1
+  materials:
+  - {fileID: -7243801432929835188, guid: 69cde14d41520754aa3ab390038736a3, type: 3}
+  - {fileID: 7312158941740743834, guid: 69cde14d41520754aa3ab390038736a3, type: 3}
+  - {fileID: -2161748032366795029, guid: 69cde14d41520754aa3ab390038736a3, type: 3}
+  - {fileID: -5023227458279549278, guid: 69cde14d41520754aa3ab390038736a3, type: 3}
+  - {fileID: -2518046609667999627, guid: 69cde14d41520754aa3ab390038736a3, type: 3}
+  - {fileID: -5194634019922558755, guid: 69cde14d41520754aa3ab390038736a3, type: 3}
+  - {fileID: -5928007800524719232, guid: 69cde14d41520754aa3ab390038736a3, type: 3}
+  - {fileID: -3496479702225161721, guid: 69cde14d41520754aa3ab390038736a3, type: 3}
+  - {fileID: -8917761753447379908, guid: 69cde14d41520754aa3ab390038736a3, type: 3}
+  - {fileID: 2126813514460367143, guid: 69cde14d41520754aa3ab390038736a3, type: 3}
+  - {fileID: -613754011302882070, guid: 69cde14d41520754aa3ab390038736a3, type: 3}
+  - {fileID: -3356390932480297861, guid: 69cde14d41520754aa3ab390038736a3, type: 3}
+  - {fileID: -7433814515903076439, guid: 69cde14d41520754aa3ab390038736a3, type: 3}
+  - {fileID: 4671263225850740937, guid: 69cde14d41520754aa3ab390038736a3, type: 3}
+  materialNames:
+  - IObject_Lever_0_0
+  - IObject_Lever_1_0
+  - IObject_Lever_10_0
+  - IObject_Lever_11_0
+  - IObject_Lever_12_0
+  - IObject_Lever_13_0
+  - IObject_Lever_2_0
+  - IObject_Lever_3_0
+  - IObject_Lever_4_0
+  - IObject_Lever_5_0
+  - IObject_Lever_6_0
+  - IObject_Lever_7_0
+  - IObject_Lever_8_0
+  - IObject_Lever_9_0
+  remappedMaterials: []
+  export: 0
+  legacyVoxImport: 0
+  legacyAssetNaming: 0

@@ -1,9 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using DuDungTakGames.Extensions;
 using UnityEngine;
+
+using DuDungTakGames.Extensions;
 
 public class StageEditorHelper : MonoBehaviour
 {

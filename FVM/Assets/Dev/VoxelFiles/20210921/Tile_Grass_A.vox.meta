@@ -1,0 +1,59 @@
+fileFormatVersion: 2
+guid: 183016d19446b894c958bff56faba4a1
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: eeb34f3ead148d04e8630fc3f79cbc1a, type: 3}
+  dataVersion: 6
+  fileType: 0
+  gameObjectName: Tile_Grass_A
+  meshMode: 1
+  importMode: 1
+  importScale: {x: 0.15625, y: 0.15625, z: 0.15625}
+  importOffset: {x: 0, y: 0, z: 0}
+  combineFaces: 1
+  ignoreCavity: 1
+  shareSameFace: 1
+  removeUnusedPalettes: 1
+  shareSameMaterial: 1
+  outputStructure: 0
+  generateLightmapUVs: 0
+  generateLightmapUVsAngleError: 8
+  generateLightmapUVsAreaError: 15
+  generateLightmapUVsHardAngle: 88
+  generateLightmapUVsPackMargin: 4
+  generateTangents: 1
+  meshFaceVertexOffset: 0
+  loadFromVoxelFile: 1
+  generateMipMaps: 0
+  colliderType: 0
+  createContactChunkFaces: 1
+  materialMode: 1
+  materials:
+  - {fileID: -7243801432929835188, guid: 183016d19446b894c958bff56faba4a1, type: 3}
+  - {fileID: 7312158941740743834, guid: 183016d19446b894c958bff56faba4a1, type: 3}
+  - {fileID: -3942264933687615468, guid: 183016d19446b894c958bff56faba4a1, type: 3}
+  - {fileID: -5928007800524719232, guid: 183016d19446b894c958bff56faba4a1, type: 3}
+  - {fileID: -3496479702225161721, guid: 183016d19446b894c958bff56faba4a1, type: 3}
+  - {fileID: 6514501354253114163, guid: 183016d19446b894c958bff56faba4a1, type: 3}
+  - {fileID: -8917761753447379908, guid: 183016d19446b894c958bff56faba4a1, type: 3}
+  - {fileID: 2126813514460367143, guid: 183016d19446b894c958bff56faba4a1, type: 3}
+  - {fileID: -613754011302882070, guid: 183016d19446b894c958bff56faba4a1, type: 3}
+  materialNames:
+  - Tile_Grass_A_0_1
+  - Tile_Grass_A_1_1
+  - Tile_Grass_A_1_2
+  - Tile_Grass_A_2_1
+  - Tile_Grass_A_3_1
+  - Tile_Grass_A_3_2
+  - Tile_Grass_A_4_2
+  - Tile_Grass_A_5_2
+  - Tile_Grass_A_6_2
+  remappedMaterials: []
+  export: 0
+  legacyVoxImport: 0
+  legacyAssetNaming: 0
