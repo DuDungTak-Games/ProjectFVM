@@ -13,4 +13,43 @@ MonoBehaviour:
   m_Name: Default_TileSet
   m_EditorClassIdentifier: 
   tileSetList:
-    keys: 
+    keys: 0000000002000000
+    values:
+    - datas:
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 200, y: 20, z: 180}
+        spawnFloor: 2
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 210, y: 20, z: 180}
+        spawnFloor: 2
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 200, y: 20, z: 190}
+        spawnFloor: 2
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 210, y: 20, z: 190}
+        spawnFloor: 2
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 200, y: 20, z: 200}
+        spawnFloor: 2
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 210, y: 20, z: 200}
+        spawnFloor: 2
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 200, y: 30, z: 180}
+        spawnFloor: 3
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 200, y: 30, z: 200}
+        spawnFloor: 3
+    - datas:
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 210, y: 30, z: 180}
+        spawnFloor: 3
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 210, y: 30, z: 190}
+        spawnFloor: 3
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 210, y: 30, z: 200}
+        spawnFloor: 3
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 200, y: 30, z: 190}
+        spawnFloor: 3

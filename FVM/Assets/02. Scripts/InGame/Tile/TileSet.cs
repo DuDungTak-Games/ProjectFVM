@@ -16,7 +16,7 @@ public struct TileSet
         return Equals(tilePos, tileSet.tilePos) && compare;
     }
 
-    public Vector2 tilePos { get; private set; }
-    public Vector3 spawnPos { get; private set; }
-    public float spawnFloor { get; private set; }
+    public Vector2 tilePos;
+    public Vector3 spawnPos;
+    public float spawnFloor;
 }

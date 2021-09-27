@@ -15,9 +15,9 @@ MonoBehaviour:
   prefabList:
     keys: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a0000000b000000
     values:
+    - {fileID: 2343881085487667825, guid: e7595a15fe9afa14ca61da5c5cc50594, type: 3}
     - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
+    - {fileID: 4457105397523664863, guid: a1e6f14c02e50a341af48e0072452e6b, type: 3}
     - {fileID: 0}
     - {fileID: 0}
     - {fileID: 0}
@@ -32,7 +32,7 @@ MonoBehaviour:
     values:
     - 0
     - 0
-    - 0
+    - 12
     - 0
     - 0
     - 0

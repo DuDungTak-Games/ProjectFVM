@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-
-using DuDungTakGames.Extensions;
 
 public class StageEditor : EditorWindow
 {
@@ -23,14 +20,12 @@ public class StageEditor : EditorWindow
     GameObject curPrefab;
     float curFloorUnit;
 
-    public GameObject testPrefab;
-    public float testUnit;
-    
     public TilePrefabData tilePrefabData;
     public TileFloorPrefabData tileFloorPrefabData;
     public TileSetData tileSetData;
     
-    private static List<Tuple<Vector3, GameObject>> tileList = new List<Tuple<Vector3, GameObject>>();
+    private List<Tuple<Vector3, GameObject>> spawnList = new List<Tuple<Vector3, GameObject>>();
+    private SerializeDictionary<TileID, SubList<TileSet>> tileSetList = new SerializeDictionary<TileID, SubList<TileSet>>();
     
     [MenuItem("DudungtakGames/Stage Editor")]
     private static void ShowWindow()
@@ -140,6 +135,16 @@ public class StageEditor : EditorWindow
 
         EditorGUILayout.Space();
         isEditMode = GUILayout.Toggle(isEditMode, "Edit Mode", GetStyle("Button", 24, Color.white), GUILayout.MinHeight(40));
+        
+        if(GUILayout.Button("TileSet Load", GetStyle("Button", 20, Color.white), GUILayout.MinHeight(40)))
+        {
+            LoadTileSet();
+        }
+        
+        if(GUILayout.Button("TileSet Save", GetStyle("Button", 20, Color.white), GUILayout.MinHeight(40)))
+        {
+            SaveTileSet();
+        }
         
         UpdateHelper();
     }
@@ -290,7 +295,7 @@ public class StageEditor : EditorWindow
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndHorizontal();
             
-            EditorGUILayout.LabelField (string.Format("Tile Count : {0}", tileList.Count), 
+            EditorGUILayout.LabelField (string.Format("Tile Count : {0}", spawnList.Count), 
                 GetStyle("Context", true), GUILayout.MinHeight(30));
 
             EditorGUILayout.BeginHorizontal();
@@ -299,11 +304,12 @@ public class StageEditor : EditorWindow
             if (GUILayout.Button("TileID Reset", GUILayout.MinHeight(30))) { curTileID = 0; }
             EditorGUILayout.EndHorizontal();
             
-            EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("TileSet Reload", GUILayout.MinHeight(30))) { Debug.Log("기능 구현 필요"); }
-            if (GUILayout.Button("TileSet Reset", GUILayout.MinHeight(30))) { ClearTileList(); }
-            EditorGUILayout.EndHorizontal();
-            
+            if (GUILayout.Button("TileSet Reset", GUILayout.MinHeight(30)))
+            {
+                ClearSpawn();
+                ClearTile();
+            }
+
             GUI.DragWindow();
 
         }, "Tool", GUILayout.MinWidth(360));
@@ -373,14 +379,19 @@ public class StageEditor : EditorWindow
         Save();
     }
 
-    void CreateTile()
+    void CreateTile(bool isLoad = false)
     {
         if (!TileCheck() && curPrefab != null)
         {
             GameObject prefab = GetTilePrefab();
             GameObject tile = Instantiate(prefab, tilePos, Quaternion.identity);
             
-            tileList.Add(new Tuple<Vector3, GameObject>(tilePos, tile));
+            spawnList.Add(new Tuple<Vector3, GameObject>(tilePos, tile));
+
+            if (!isLoad)
+            {
+                AddTileSet();
+            }
         }
         
         Save();
@@ -391,7 +402,9 @@ public class StageEditor : EditorWindow
         Tuple<Vector3, GameObject> tile = FindDuplicateTile();
         if (tile != null)
         {
-            tileList.Remove(tile);
+            spawnList.Remove(tile);
+            FindBottomTile(true);
+            DeleteTileSet(tile.Item1);
             DestroyImmediate(tile.Item2);
         }
 
@@ -403,7 +416,7 @@ public class StageEditor : EditorWindow
         Vector3 pos = data.Item1;
         GameObject tile = data.Item2;
         
-        tileList.Remove(data);
+        spawnList.Remove(data);
         DestroyImmediate(tile);
 
         if (pos.y % 1 != 0)
@@ -413,9 +426,22 @@ public class StageEditor : EditorWindow
         
         tile = Instantiate(tileFloorPrefabData.GetPrefab(TileFloorID.BOTTOM_TILE), pos, Quaternion.identity);
 
-        tileList.Add(new Tuple<Vector3, GameObject>(pos, tile));
+        spawnList.Add(new Tuple<Vector3, GameObject>(pos, tile));
     }
+    
+    void ReplaceTopTile(Tuple<Vector3, GameObject> data)
+    {
+        Vector3 pos = data.Item1;
+        GameObject tile = data.Item2;
 
+        spawnList.Remove(data);
+        DestroyImmediate(tile);
+
+        tile = Instantiate(tileFloorPrefabData.GetPrefab(pos.y % 1 != 0 ? TileFloorID.TOP_HALF_TILE : TileFloorID.TOP_TILE), pos, Quaternion.identity);
+
+        spawnList.Add(new Tuple<Vector3, GameObject>(pos, tile));
+    }
+    
     bool TileCheck()
     {
         bool isAlready = FindDuplicateTile() != null;
@@ -448,7 +474,7 @@ public class StageEditor : EditorWindow
 
     bool FindTopTile()
     {
-        Tuple<Vector3, GameObject> data = tileList.Find(x =>
+        Tuple<Vector3, GameObject> data = spawnList.Find(x =>
             x.Item1 == tilePos + (Vector3.up * 2.5f) ||
             x.Item1 == tilePos + (Vector3.up * 10));
 
@@ -461,15 +487,23 @@ public class StageEditor : EditorWindow
         return true;
     }
 
-    bool FindBottomTile()
+    bool FindBottomTile(bool isDelete = false)
     {
-        Tuple<Vector3, GameObject> data = tileList.Find(x =>
+        Tuple<Vector3, GameObject> data = spawnList.Find(x =>
             x.Item1 == tilePos - (Vector3.up * 7.5f) ||
             x.Item1 == tilePos - (Vector3.up * 10));
 
         if (data != null)
         {
-            ReplaceBottomTile(data);
+            if (isDelete)
+            {
+                ReplaceTopTile(data);
+            }
+            else
+            {
+                ReplaceBottomTile(data);
+            }
+            
             return true;
         }
         
@@ -478,15 +512,15 @@ public class StageEditor : EditorWindow
 
     Tuple<Vector3, GameObject> FindDuplicateTile()
     {
-        return tileList.Find(x =>
+        return spawnList.Find(x =>
             x.Item1 == tilePos || 
             x.Item1 == tilePos + (Vector3.up * 2.5f) ||
             x.Item1 == tilePos - (Vector3.up * 2.5f));
     }
 
-    void ClearTileList()
+    void ClearSpawn()
     {
-        foreach (var tile in tileList)
+        foreach (var tile in spawnList)
         {
             DestroyImmediate(tile.Item2);
         }
@@ -496,7 +530,96 @@ public class StageEditor : EditorWindow
             DestroyImmediate(obj);
         }
         
-        tileList.Clear();
+        spawnList.Clear();
+    }
+
+    void ClearTile()
+    {
+        tileSetList.Clear();
+    }
+
+    void AddTileSet()
+    {
+        if (!tileSetList.ContainsKey(curTileID))
+        {
+            tileSetList.Add(curTileID, new SubList<TileSet>());
+        }
+
+        tileSetList[curTileID].Add(new TileSet(Vector2.zero, tilePos, tileFloor));
+    }
+
+    void DeleteTileSet(Vector3 matchPos)
+    {
+        foreach (var key in tileSetList.Keys)
+        {
+            TileSet tileSet = tileSetList[key].Find(x => x.spawnPos == matchPos);
+            tileSetList[key].Remove(tileSet);
+        }
+    }
+
+    void SpawnTileSet()
+    {
+        foreach (var key in tileSetList.Keys)
+        {
+            foreach (var tileSet in tileSetList[key])
+            {
+                curTileID = key;
+                tileFloor = tileSet.spawnFloor;
+                tilePos = tileSet.spawnPos;
+                
+                UpdateData();
+                
+                CreateTile(true);
+            }
+        }
+    }
+
+    void LoadTileSet()
+    {
+        if (tileSetData.tileSetList == null)
+            return;
+        
+        ClearSpawn();
+        ClearTile();
+
+        foreach (var key in tileSetData.tileSetList.Keys)
+        {
+            foreach (var tileSet in tileSetData.tileSetList[key])
+            {
+                if (!tileSetList.ContainsKey(key))
+                {
+                    tileSetList.Add(key, new SubList<TileSet>());
+                }
+            
+                tileSetList[key].Add(new TileSet(Vector2.zero, tileSet.spawnPos, tileSet.spawnFloor));
+            }
+        }
+
+        SpawnTileSet();
+    }
+
+    void SaveTileSet()
+    {
+        if (tileSetData == null)
+            return;
+        
+        tileSetData.tileSetList.Clear();
+        
+        foreach (var key in tileSetList.Keys)
+        {
+            foreach (var tileSet in tileSetList[key].OrderBy(x => x.spawnFloor))
+            {
+                if (!tileSetData.tileSetList.ContainsKey(key))
+                {
+                    tileSetData.tileSetList.Add(key, new SubList<TileSet>());
+                }
+            
+                tileSetData.tileSetList[key].Add(new TileSet(Vector2.zero, tileSet.spawnPos, tileSet.spawnFloor));
+            }
+        }
+
+        EditorUtility.SetDirty(tileSetData);
+        Save();
     }
 
     void Save()

@@ -4,5 +4,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "TileSetData", menuName = "Scriptable Object/TileSetData")]
 public class TileSetData : ScriptableObject
 {
-    public SerializeDictionary<TileID, List<GameObject>> tileSetList;
+    [SerializeField]
+    public SerializeDictionary<TileID, SubList<TileSet>> tileSetList;
 }

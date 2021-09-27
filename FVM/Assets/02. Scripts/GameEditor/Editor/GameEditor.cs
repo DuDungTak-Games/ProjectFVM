@@ -1,13 +1,8 @@
 using System;
 using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using UnityEditor;
-using UnityEditor.SearchService;
 using UnityEngine;
-using UnityEngine.Windows;
-using Directory = System.IO.Directory;
 
 public class GameEditor : EditorWindow
 {
@@ -376,6 +371,7 @@ public class GameEditor : EditorWindow
 
                                     if (EditorGUI.EndChangeCheck())
                                     {
+                                        EditorUtility.SetDirty(selectData);
                                         Save();
                                     }
 
@@ -575,6 +571,7 @@ public class GameEditor : EditorWindow
 
                                     if (EditorGUI.EndChangeCheck())
                                     {
+                                        EditorUtility.SetDirty(selectData);
                                         Save();
                                     }
 
