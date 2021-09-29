@@ -34,7 +34,7 @@ public class GameEditor : EditorWindow
 
 
 
-    public enum menuType { NONE, INFO, TILE_PREFAB_DATA, TILE_FLOOR_PREFAB_DATA }
+    public enum menuType { NONE, INFO, TILE_PREFAB, TILE_FLOOR_PREFAB, LEVEL }
     static menuType MENU_TYPE;
     static string MENU_TITLE;
 
@@ -103,8 +103,9 @@ public class GameEditor : EditorWindow
     {
         contentsList = new List<EditorContent>();
         contentsList.Add(new GameInfo());
-        contentsList.Add(new TilePrefabDataEditor());
-        contentsList.Add(new TileFloorPrefabDataEditor());
+        contentsList.Add(new TilePrefabEditor());
+        contentsList.Add(new TileFloorPrefabEditor());
+        contentsList.Add(new LevelEditor());
 
         foreach(EditorContent editorContent in contentsList)
         {
@@ -266,7 +267,7 @@ public class GameEditor : EditorWindow
         #endregion
     }
 
-    private class TilePrefabDataEditor : EditorContent
+    private class TilePrefabEditor : EditorContent
     {
 
         TilePrefabData selectData;
@@ -284,7 +285,7 @@ public class GameEditor : EditorWindow
 
         public override void Init()
         {
-            MENU_TYPE = menuType.TILE_PREFAB_DATA;
+            MENU_TYPE = menuType.TILE_PREFAB;
             BUTTON_TEXT = "Tile Prefab Editor";
 
             Update();
@@ -467,7 +468,7 @@ public class GameEditor : EditorWindow
         #endregion
     }
     
-    private class TileFloorPrefabDataEditor : EditorContent
+    private class TileFloorPrefabEditor : EditorContent
     {
 
         TileFloorPrefabData selectData;
@@ -485,7 +486,7 @@ public class GameEditor : EditorWindow
 
         public override void Init()
         {
-            MENU_TYPE = menuType.TILE_FLOOR_PREFAB_DATA;
+            MENU_TYPE = menuType.TILE_FLOOR_PREFAB;
             BUTTON_TEXT = "Tile Floor Prefab Editor";
 
             Update();
@@ -615,6 +616,313 @@ public class GameEditor : EditorWindow
                     keys = selectData.prefabList.Keys.ToArray();
                 }
             }
+        }
+
+        #region GUI
+        public GUIStyle GUIStyle_HelpBox()
+        {
+            GUIStyle style = new GUIStyle("HelpBox");
+            style.margin = new RectOffset(0, 0, 0, 0);
+            style.padding = new RectOffset(0, 0, 0, 0);
+
+            return style;
+        }
+
+        public GUIStyle GUIStyle_KeyValueTitle_Text()
+        {
+            GUIStyle style = new GUIStyle(GUI.skin.label);
+            style.alignment = TextAnchor.LowerCenter;
+            style.fontStyle = FontStyle.Bold;
+            style.fontSize = 14;
+
+            return style;
+        }
+
+        public GUIStyle GUIStyle_SelectButton()
+        {
+            GUIStyle style = new GUIStyle(GUI.skin.button);
+            style.margin = new RectOffset(0, 0, 2, 2);
+            style.padding = new RectOffset(0, 0, 5, 5);
+
+            return style;
+        }
+
+        public GUIStyle GUIStyle_SelectedButton()
+        {
+            GUIStyle style = new GUIStyle(GUI.skin.button);
+            style.margin = new RectOffset(0, 0, 10, 10);
+            style.padding = new RectOffset(0, 0, 5, 5);
+
+            style.normal.textColor = Color.green;
+            style.fontStyle = FontStyle.Bold;
+            style.fontSize = 20;
+
+            return style;
+        }
+        #endregion
+    }
+    
+    private class LevelEditor : EditorContent
+    {
+
+        LevelData selectData;
+        LevelData[] datas;
+
+        string serachValue_LIST = string.Empty;
+
+        string selectDataKey = "Preset";
+        string selectDataValue = "Data";
+
+        Vector2 scrollPosition_LIST = Vector2.zero;
+        Vector2 scrollPosition_DATA = Vector2.zero;
+
+        public override void Init()
+        {
+            MENU_TYPE = menuType.LEVEL;
+            BUTTON_TEXT = "Level Editor";
+
+            Update();
+        }
+
+        public override void DrawContent()
+        {
+            MENU_TITLE = "Level Editor";
+
+            using (new EditorGUILayout.HorizontalScope("GroupBox", GUILayout.ExpandWidth(true)))
+            {
+                using (new EditorGUILayout.VerticalScope("HelpBox", GUILayout.MaxWidth(260), GUILayout.ExpandHeight(true)))
+                {
+                    using (new EditorGUILayout.HorizontalScope(GUILayout.ExpandWidth(true)))
+                    {
+                        EditorGUILayout.LabelField("Serach", GUILayout.MaxWidth(45));
+                        serachValue_LIST = EditorGUILayout.TextField(serachValue_LIST);
+
+                        if (GUILayout.Button("Refresh", GUILayout.MaxWidth(80)))
+                        {
+                            serachValue_LIST = string.Empty;
+                            Update();
+                        }
+                    }
+
+                    EditorGUILayout.Space(6);
+
+                    scrollPosition_LIST = EditorGUILayout.BeginScrollView(scrollPosition_LIST);
+
+                    bool isSerach = serachValue_LIST != string.Empty;
+
+                    foreach (LevelData data in datas)
+                    {
+                        if (data == null)
+                            break;
+                        
+                        bool isKeyMatch = serachValue_LIST.SpecialContains(data.name);
+
+                        if ((isSerach && isKeyMatch) || !isSerach)
+                        {
+                            using (new EditorGUILayout.HorizontalScope())
+                            {
+                                if (GUILayout.Button(data.name, selectData == data ? GUIStyle_SelectedButton() : GUIStyle_SelectButton()))
+                                {
+                                    selectData = data;
+                                    Update();
+                                }
+                            }
+                        }
+                    }
+                    
+                    if (GUILayout.Button("Add (Empty)", GUIStyle_SelectedButton()))
+                    {
+                        LevelData levelData = CreateInstance<LevelData>();
+                        AssetDatabase.CreateAsset(levelData, string.Format("Assets/Resources/GameData/Level/Level_{0}_{1}.asset", 
+                            datas.Length, UnityEngine.Random.Range(0, 999999)));
+                        
+                        Update();
+                    }
+
+                    EditorGUILayout.EndScrollView();
+                }
+
+                using (new EditorGUILayout.VerticalScope("HelpBox", GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true)))
+                {
+                    EditorGUILayout.Space(6);
+
+                    using (new EditorGUILayout.HorizontalScope(GUIStyle_HelpBox(), GUILayout.ExpandWidth(true), GUILayout.MaxHeight(10)))
+                    {
+                        EditorGUILayout.LabelField(selectDataKey, GUIStyle_KeyValueTitle_Text(), GUILayout.MaxWidth(320));
+                        EditorGUILayout.LabelField(selectDataValue, GUIStyle_KeyValueTitle_Text());
+
+                        EditorGUILayout.LabelField("Action", GUIStyle_KeyValueTitle_Text(), GUILayout.MaxWidth(120));
+                    }
+
+                    scrollPosition_DATA = EditorGUILayout.BeginScrollView(scrollPosition_DATA);
+
+                    if (selectData != null)
+                    {
+                        EditorGUI.BeginChangeCheck();
+
+                        using (new EditorGUILayout.HorizontalScope())
+                        {
+                            EditorGUILayout.LabelField("Tile Prefab Data", GUIStyle_KeyValueTitle_Text(),
+                                GUILayout.MaxWidth(320));
+                            selectData.tilePrefabData =
+                                (TilePrefabData) EditorGUILayout.ObjectField(selectData.tilePrefabData,
+                                    typeof(TilePrefabData), false);
+
+                            if (GUILayout.Button("Reset", GUILayout.MaxWidth(120)))
+                            {
+                                selectData.tilePrefabData = null;
+                            }
+                        }
+                        
+                        using (new EditorGUILayout.HorizontalScope())
+                        {
+                            EditorGUILayout.LabelField("Tile Floor Prefab Data", GUIStyle_KeyValueTitle_Text(),
+                                GUILayout.MaxWidth(320));
+                            selectData.tileFloorPrefabData =
+                                (TileFloorPrefabData) EditorGUILayout.ObjectField(selectData.tileFloorPrefabData,
+                                    typeof(TileFloorPrefabData), false);
+
+                            if (GUILayout.Button("Reset", GUILayout.MaxWidth(120)))
+                            {
+                                selectData.tileFloorPrefabData = null;
+                            }
+                        }
+                        
+                        EditorGUILayout.Space(20);
+
+                        using (new EditorGUILayout.HorizontalScope())
+                        {
+                            EditorGUILayout.LabelField("Main Preset", GUIStyle_KeyValueTitle_Text(), GUILayout.MaxWidth(320));
+                            selectData.mainPreset = 
+                                (TileSetData)EditorGUILayout.ObjectField(selectData.mainPreset, 
+                                    typeof(TileSetData), false);
+
+                            if (selectData.mainPreset != null)
+                            {
+                                if (GUILayout.Button("Reset", GUILayout.MaxWidth(120)))
+                                {
+                                    selectData.mainPreset = null;
+                                }
+                                
+                                if (GUILayout.Button("Delete", GUILayout.MaxWidth(120)))
+                                {
+                                    string path = AssetDatabase.GetAssetPath(selectData.mainPreset);
+                                    if (path.Length > 0)
+                                    {
+                                        AssetDatabase.DeleteAsset(path);
+                                    }
+                                            
+                                    selectData.mainPreset = null;
+                                }
+                            }
+                            else
+                            {
+                                if (GUILayout.Button("Create"))
+                                {
+                                    TileSetData tileSetData = CreateInstance<TileSetData>();
+                                    AssetDatabase.CreateAsset(tileSetData, string.Format("Assets/Resources/GameData/TileSet/{0}_MainTileSet.asset", selectData.name));
+                                    
+                                    selectData.mainPreset = tileSetData;
+                                }
+                            }
+                        }
+                        
+                        EditorGUILayout.Space(20);
+
+                        using (new EditorGUILayout.VerticalScope())
+                        {
+                            using (new EditorGUILayout.HorizontalScope())
+                            {
+                                EditorGUILayout.LabelField("Sub Preset", GUIStyle_KeyValueTitle_Text(),
+                                    GUILayout.MaxWidth(320));
+
+                                if (selectData.subPreset == null)
+                                {
+                                    selectData.subPreset = new List<TileSetData>();
+                                }
+                                
+                                if (selectData.subPreset.Count <= 0)
+                                {
+                                    EditorGUILayout.LabelField("데이터를 추가해주세요!!", GUIStyle_KeyValueTitle_Text());
+                                }
+                            }
+
+                            if (selectData.subPreset.Count > 0)
+                            {
+                                for(int i = 0; i < selectData.subPreset.Count; i++)
+                                {
+                                    using (new EditorGUILayout.HorizontalScope())
+                                    {
+                                        GUILayout.FlexibleSpace();
+                                        selectData.subPreset[i] = (TileSetData)EditorGUILayout.ObjectField(selectData.subPreset[i], typeof(TileSetData), false);
+ 
+                                        if (GUILayout.Button("Reset", GUILayout.MaxWidth(110)))
+                                        {
+                                            selectData.subPreset[i] = null;
+                                            break;
+                                        }
+                                    
+                                        if (GUILayout.Button("Remove", GUILayout.MaxWidth(110)))
+                                        {
+                                            selectData.subPreset.RemoveAt(i);
+                                            break;
+                                        }
+                                        
+                                        if (GUILayout.Button("Delete", GUILayout.MaxWidth(110)))
+                                        {
+                                            string path = AssetDatabase.GetAssetPath(selectData.subPreset[i]);
+                                            if (path.Length > 0)
+                                            {
+                                                AssetDatabase.DeleteAsset(path);
+                                            }
+                                            
+                                            selectData.subPreset.RemoveAt(i);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+
+                            using (new EditorGUILayout.HorizontalScope())
+                            {
+                                GUILayout.FlexibleSpace();
+                                if (GUILayout.Button("Add (Empty)", GUILayout.MaxWidth(270)))
+                                {
+                                    selectData.subPreset.Add(null);
+                                }
+                                
+                                if (GUILayout.Button("Add (Create)", GUILayout.MaxWidth(270)))
+                                {
+                                    TileSetData tileSetData = CreateInstance<TileSetData>();
+                                    AssetDatabase.CreateAsset(tileSetData, string.Format("Assets/Resources/GameData/TileSet/{0}_SubTileSet{1}.asset", 
+                                        selectData.name, selectData.subPreset.Count));
+                                    
+                                    selectData.subPreset.Add(tileSetData);
+                                }
+                            }
+                        }
+
+                        if (EditorGUI.EndChangeCheck())
+                        {
+                            EditorUtility.SetDirty(selectData);
+                            Save();
+                        }
+                    }
+                    else
+                    {
+                        EditorGUILayout.Space(6);
+
+                        EditorGUILayout.LabelField("선택된 데이터가 없어요!!", GUIStyle_KeyValueTitle_Text());
+                    }
+
+                    EditorGUILayout.EndScrollView();
+                }
+            }
+        }
+
+        public override void Update()
+        {
+            datas = Resources.LoadAll<LevelData>("GameData/Level");
         }
 
         #region GUI

@@ -20,12 +20,15 @@ public class StageEditor : EditorWindow
     GameObject curPrefab;
     float curFloorUnit;
 
-    public TilePrefabData tilePrefabData;
-    public TileFloorPrefabData tileFloorPrefabData;
-    public TileSetData tileSetData;
+    int lvlSelectIdx = 0, subSelectIdx = 0;
+    string[] lvlSelect, subSelect;
     
+    public LevelData levelData;
+    public LevelData[] datas;
+
     private List<Tuple<Vector3, GameObject>> spawnList = new List<Tuple<Vector3, GameObject>>();
     private SerializeDictionary<TileID, SubList<TileSet>> tileSetList = new SerializeDictionary<TileID, SubList<TileSet>>();
+    private SerializeDictionary<TileID, SubList<TileSet>> subTileSetList = new SerializeDictionary<TileID, SubList<TileSet>>();
     
     [MenuItem("DudungtakGames/Stage Editor")]
     private static void ShowWindow()
@@ -107,26 +110,28 @@ public class StageEditor : EditorWindow
 
         EditorGUI.BeginChangeCheck();
         
-        EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("TilePrefabData",
-            GetStyle("Context", TextAnchor.LowerLeft,true), GUILayout.MaxWidth(160), GUILayout.MinHeight(30));
-        tilePrefabData = (TilePrefabData)EditorGUILayout.ObjectField(tilePrefabData, typeof(TilePrefabData), false, 
-            GUILayout.MaxWidth(400), GUILayout.MaxHeight(30));
-        EditorGUILayout.EndHorizontal();
-        
-        EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("TileFloorPrefabData",
-            GetStyle("Context", TextAnchor.LowerLeft,true), GUILayout.MaxWidth(160), GUILayout.MinHeight(30));
-        tileFloorPrefabData = (TileFloorPrefabData)EditorGUILayout.ObjectField(tileFloorPrefabData, typeof(TileFloorPrefabData), false, 
-            GUILayout.MaxWidth(400), GUILayout.MaxHeight(30));
-        EditorGUILayout.EndHorizontal();
-        
-        EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("TileSetData",
-            GetStyle("Context", TextAnchor.LowerLeft,true), GUILayout.MaxWidth(160), GUILayout.MinHeight(30));
-        tileSetData = (TileSetData)EditorGUILayout.ObjectField(tileSetData, typeof(TileSetData), false, 
-            GUILayout.MaxWidth(400), GUILayout.MaxHeight(30));
-        EditorGUILayout.EndHorizontal();
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            EditorGUILayout.LabelField("Level Data", 
+                GetStyle("Context", TextAnchor.LowerLeft,true), GUILayout.MaxWidth(160), GUILayout.MinHeight(30));
+
+            datas = Resources.LoadAll<LevelData>("GameData/Level");
+            if (datas.Length > 0)
+            {
+                lvlSelect = new string[datas.Length];
+                for (int i = 0; i < datas.Length; i++)
+                {
+                    lvlSelect[i] = datas[i].name;
+                }
+            
+                levelData = datas[lvlSelectIdx];            
+            
+                if (lvlSelect.Length > 0)
+                {
+                    lvlSelectIdx = EditorGUILayout.Popup(lvlSelectIdx, lvlSelect, GetStyle("Popup"));
+                }
+            }
+        }
 
         if (EditorGUI.EndChangeCheck())
         {
@@ -244,25 +249,29 @@ public class StageEditor : EditorWindow
 
     void UpdateData()
     {
-        if (tilePrefabData != null)
+        if (levelData != null && levelData.tilePrefabData != null && levelData.tileFloorPrefabData != null)
         {
-            if (tilePrefabData.prefabList.ContainsKey(curTileID))
+            if (levelData.tilePrefabData.prefabList.ContainsKey(curTileID))
             {
-                curPrefab = tilePrefabData.prefabList[curTileID];
+                curPrefab = levelData.tilePrefabData.prefabList[curTileID];
             }
             else
             {
                 curPrefab = null;
             }
             
-            if (tilePrefabData.floorUnitList.ContainsKey(curTileID))
+            if (levelData.tilePrefabData.floorUnitList.ContainsKey(curTileID))
             {
-                curFloorUnit = tilePrefabData.floorUnitList[curTileID];
+                curFloorUnit = levelData.tilePrefabData.floorUnitList[curTileID];
             }
             else
             {
                 curFloorUnit = 0;
             }
+        }
+        else
+        {
+            curPrefab = null;
         }
     }
 
@@ -424,7 +433,7 @@ public class StageEditor : EditorWindow
             pos.y += 2.5f;
         }
         
-        tile = Instantiate(tileFloorPrefabData.GetPrefab(TileFloorID.BOTTOM_TILE), pos, Quaternion.identity);
+        tile = Instantiate(levelData.tileFloorPrefabData.GetPrefab(TileFloorID.BOTTOM_TILE), pos, Quaternion.identity);
 
         spawnList.Add(new Tuple<Vector3, GameObject>(pos, tile));
     }
@@ -437,7 +446,7 @@ public class StageEditor : EditorWindow
         spawnList.Remove(data);
         DestroyImmediate(tile);
 
-        tile = Instantiate(tileFloorPrefabData.GetPrefab(pos.y % 1 != 0 ? TileFloorID.TOP_HALF_TILE : TileFloorID.TOP_TILE), pos, Quaternion.identity);
+        tile = Instantiate(levelData.tileFloorPrefabData.GetPrefab(pos.y % 1 != 0 ? TileFloorID.TOP_HALF_TILE : TileFloorID.TOP_TILE), pos, Quaternion.identity);
 
         spawnList.Add(new Tuple<Vector3, GameObject>(pos, tile));
     }
@@ -464,7 +473,7 @@ public class StageEditor : EditorWindow
                     tileFloorID = hasTop ? TileFloorID.BOTTOM_HALF_TILE : TileFloorID.TOP_HALF_TILE;
                 }
 
-                return tileFloorPrefabData.GetPrefab(tileFloorID);
+                return levelData.tileFloorPrefabData.GetPrefab(tileFloorID);
             default:
                 break;
         }
@@ -576,15 +585,15 @@ public class StageEditor : EditorWindow
 
     void LoadTileSet()
     {
-        if (tileSetData.tileSetList == null)
+        if (levelData.mainPreset.tileSetList == null)
             return;
         
         ClearSpawn();
         ClearTile();
 
-        foreach (var key in tileSetData.tileSetList.Keys)
+        foreach (var key in levelData.mainPreset.tileSetList.Keys)
         {
-            foreach (var tileSet in tileSetData.tileSetList[key])
+            foreach (var tileSet in levelData.mainPreset.tileSetList[key])
             {
                 if (!tileSetList.ContainsKey(key))
                 {
@@ -600,25 +609,25 @@ public class StageEditor : EditorWindow
 
     void SaveTileSet()
     {
-        if (tileSetData == null)
+        if (levelData.mainPreset == null)
             return;
         
-        tileSetData.tileSetList.Clear();
+        levelData.mainPreset.tileSetList.Clear();
         
         foreach (var key in tileSetList.Keys)
         {
             foreach (var tileSet in tileSetList[key].OrderBy(x => x.spawnFloor))
             {
-                if (!tileSetData.tileSetList.ContainsKey(key))
+                if (!levelData.mainPreset.tileSetList.ContainsKey(key))
                 {
-                    tileSetData.tileSetList.Add(key, new SubList<TileSet>());
+                    levelData.mainPreset.tileSetList.Add(key, new SubList<TileSet>());
                 }
             
-                tileSetData.tileSetList[key].Add(new TileSet(Vector2.zero, tileSet.spawnPos, tileSet.spawnFloor));
+                levelData.mainPreset.tileSetList[key].Add(new TileSet(Vector2.zero, tileSet.spawnPos, tileSet.spawnFloor));
             }
         }
 
-        EditorUtility.SetDirty(tileSetData);
+        EditorUtility.SetDirty(levelData.mainPreset);
         Save();
     }
 
@@ -654,6 +663,13 @@ public class StageEditor : EditorWindow
         numberStyle.fontStyle = FontStyle.Bold;
         numberStyle.fontSize = 16;
         GUIStyles.Add("NumberField", numberStyle);
+        
+        GUIStyle popupStyle = new GUIStyle(EditorStyles.popup);
+        popupStyle.alignment = TextAnchor.MiddleCenter;
+        popupStyle.fontStyle = FontStyle.Bold;
+        popupStyle.fontSize = 16;
+        popupStyle.fixedHeight = 30;
+        GUIStyles.Add("Popup", popupStyle);
     }
 
     GUIStyle GetStyle(string styleName)
