@@ -16,5 +16,4 @@ MonoBehaviour:
   tileFloorPrefabData: {fileID: 11400000, guid: f18d0095dee27164f91e4a87795ae11f, type: 2}
   mainPreset: {fileID: 11400000, guid: 7b7015fc849c73f4bbcfeb4ce9eb1a9c, type: 2}
   subPreset:
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 8bce98744d939e446aad2fe0dc4e7275, type: 2}

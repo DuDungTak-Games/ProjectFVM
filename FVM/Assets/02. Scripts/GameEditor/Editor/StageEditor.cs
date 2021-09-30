@@ -9,7 +9,7 @@ public class StageEditor : EditorWindow
 
     StageEditorHelper GizmoHelper;
 
-    bool isEditMode = false;
+    bool isEditMode = false, isSubPreset = false;
     
     public float tileFloor = 0;
     float tileUnit = 10;
@@ -107,9 +107,50 @@ public class StageEditor : EditorWindow
 
         EditorGUILayout.LabelField(string.Format("Edit Mode : {0}", isEditMode ? "ON" : "OFF"),
             GetStyle("Context", isEditMode ? Color.green : Color.red, true), GUILayout.MinHeight(30));
+        
+        EditorGUILayout.LabelField(string.Format("Current Preset : {0}", isSubPreset ? "Sub" : "Main"),
+            GetStyle("Context", isSubPreset ? Color.green : Color.red, true), GUILayout.MinHeight(30));
 
         EditorGUI.BeginChangeCheck();
         
+        DisplayLevelPopup();
+        DisplaySubTileSetPopup();
+
+        if (EditorGUI.EndChangeCheck())
+        {
+            Save();
+        }
+
+        EditorGUILayout.Space();
+        isEditMode = GUILayout.Toggle(isEditMode, "Edit Mode", GetStyle("Button", 24, Color.white), GUILayout.MinHeight(40));
+
+        if (isEditMode)
+        {
+            isSubPreset = GUILayout.Toggle(isSubPreset, "Preset Toggle", GetStyle("Button", 24, Color.white), GUILayout.MinHeight(40));
+        }
+        else
+        {
+            isSubPreset = false;
+        }
+
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            if(GUILayout.Button("Tileset Load (ALL)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
+            {
+                LoadTileSet();
+            }
+        
+            if(GUILayout.Button("Tileset Save (ALL)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
+            {
+                SaveTileSet();
+            }
+        }
+
+        UpdateHelper();
+    }
+
+    void DisplayLevelPopup()
+    {
         using (new EditorGUILayout.HorizontalScope())
         {
             EditorGUILayout.LabelField("Level Data", 
@@ -119,39 +160,54 @@ public class StageEditor : EditorWindow
             if (datas.Length > 0)
             {
                 lvlSelect = new string[datas.Length];
-                for (int i = 0; i < datas.Length; i++)
-                {
-                    lvlSelect[i] = datas[i].name;
-                }
-            
-                levelData = datas[lvlSelectIdx];            
-            
+
                 if (lvlSelect.Length > 0)
                 {
+                    for (int i = 0; i < datas.Length; i++)
+                    {
+                        lvlSelect[i] = datas[i].name;
+                    }
+                    
                     lvlSelectIdx = EditorGUILayout.Popup(lvlSelectIdx, lvlSelect, GetStyle("Popup"));
+                }
+                
+                levelData = datas[lvlSelectIdx];
+            }
+        }
+    }
+    
+    void DisplaySubTileSetPopup()
+    {
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            EditorGUILayout.LabelField("Sub TileSet", 
+                GetStyle("Context", TextAnchor.LowerLeft,true), GUILayout.MaxWidth(160), GUILayout.MinHeight(30));
+
+            if (levelData != null)
+            {
+                if (levelData.subPreset.Count > 0)
+                {
+                    subSelect = new string[levelData.subPreset.Count];
+
+                    if (subSelect.Length > 0)
+                    {
+                        for (int i = 0; i < levelData.subPreset.Count; i++)
+                        {
+                            if (levelData.subPreset[i] != null)
+                            {
+                                subSelect[i] = levelData.subPreset[i].name;
+                            }
+                            else
+                            {
+                                subSelect[i] = "NULL";
+                            }
+                        }
+                        
+                        subSelectIdx = EditorGUILayout.Popup(subSelectIdx, subSelect, GetStyle("Popup"));
+                    }
                 }
             }
         }
-
-        if (EditorGUI.EndChangeCheck())
-        {
-            Save();
-        }
-
-        EditorGUILayout.Space();
-        isEditMode = GUILayout.Toggle(isEditMode, "Edit Mode", GetStyle("Button", 24, Color.white), GUILayout.MinHeight(40));
-        
-        if(GUILayout.Button("TileSet Load", GetStyle("Button", 20, Color.white), GUILayout.MinHeight(40)))
-        {
-            LoadTileSet();
-        }
-        
-        if(GUILayout.Button("TileSet Save", GetStyle("Button", 20, Color.white), GUILayout.MinHeight(40)))
-        {
-            SaveTileSet();
-        }
-        
-        UpdateHelper();
     }
 
     void DisplaySceneGUI()
@@ -388,6 +444,7 @@ public class StageEditor : EditorWindow
         Save();
     }
 
+    #region MainTileset
     void CreateTile(bool isLoad = false)
     {
         if (!TileCheck() && curPrefab != null)
@@ -399,7 +456,14 @@ public class StageEditor : EditorWindow
 
             if (!isLoad)
             {
-                AddTileSet();
+                if (isSubPreset)
+                {
+                    AddSubTileSet();
+                }
+                else
+                {
+                    AddTileSet();
+                }
             }
         }
         
@@ -411,10 +475,14 @@ public class StageEditor : EditorWindow
         Tuple<Vector3, GameObject> tile = FindDuplicateTile();
         if (tile != null)
         {
-            spawnList.Remove(tile);
-            FindBottomTile(true);
-            DeleteTileSet(tile.Item1);
-            DestroyImmediate(tile.Item2);
+            if (isSubPreset)
+            {
+                DeleteSubTileSet(tile);                
+            }
+            else
+            {
+                DeleteTileSet(tile);
+            }
         }
 
         Save();
@@ -545,6 +613,7 @@ public class StageEditor : EditorWindow
     void ClearTile()
     {
         tileSetList.Clear();
+        subTileSetList.Clear();
     }
 
     void AddTileSet()
@@ -557,12 +626,17 @@ public class StageEditor : EditorWindow
         tileSetList[curTileID].Add(new TileSet(Vector2.zero, tilePos, tileFloor));
     }
 
-    void DeleteTileSet(Vector3 matchPos)
+    void DeleteTileSet(Tuple<Vector3, GameObject> tile)
     {
         foreach (var key in tileSetList.Keys)
         {
-            TileSet tileSet = tileSetList[key].Find(x => x.spawnPos == matchPos);
-            tileSetList[key].Remove(tileSet);
+            TileSet tileSet = tileSetList[key].Find(x => x.spawnPos == tile.Item1);
+            if (tileSetList[key].Remove(tileSet))
+            {
+                spawnList.Remove(tile);
+                FindBottomTile(true);
+                DestroyImmediate(tile.Item2);
+            }
         }
     }
 
@@ -581,6 +655,8 @@ public class StageEditor : EditorWindow
                 CreateTile(true);
             }
         }
+
+        SpawnSubTileSet();
     }
 
     void LoadTileSet()
@@ -603,6 +679,8 @@ public class StageEditor : EditorWindow
                 tileSetList[key].Add(new TileSet(Vector2.zero, tileSet.spawnPos, tileSet.spawnFloor));
             }
         }
+        
+        LoadSubTileSet();
 
         SpawnTileSet();
     }
@@ -628,8 +706,107 @@ public class StageEditor : EditorWindow
         }
 
         EditorUtility.SetDirty(levelData.mainPreset);
+        
+        SaveSubTileSet();
+        
         Save();
     }
+    #endregion
+
+    #region SubTileset
+    void AddSubTileSet()
+    {
+        if (!subTileSetList.ContainsKey(curTileID))
+        {
+            subTileSetList.Add(curTileID, new SubList<TileSet>());
+        }
+
+        subTileSetList[curTileID].Add(new TileSet(Vector2.zero, tilePos, tileFloor));
+    }
+    
+    void DeleteSubTileSet(Tuple<Vector3, GameObject> tile)
+    {
+        foreach (var key in subTileSetList.Keys)
+        {
+            TileSet tileSet = subTileSetList[key].Find(x => x.spawnPos == tile.Item1);
+            if (subTileSetList[key].Remove(tileSet))
+            {
+                spawnList.Remove(tile);
+                FindBottomTile(true);
+                DestroyImmediate(tile.Item2);
+            }
+        }
+    }
+    
+    void SpawnSubTileSet()
+    {
+        foreach (var key in subTileSetList.Keys)
+        {
+            foreach (var tileSet in subTileSetList[key])
+            {
+                curTileID = key;
+                tileFloor = tileSet.spawnFloor;
+                tilePos = tileSet.spawnPos;
+                
+                UpdateData();
+                
+                CreateTile(true);
+            }
+        }
+    }
+    
+    void LoadSubTileSet()
+    {
+        if (levelData.subPreset.Count <= 0)
+            return;
+
+        if (levelData.subPreset[subSelectIdx].tileSetList == null)
+        {
+            levelData.subPreset[subSelectIdx].tileSetList = new SerializeDictionary<TileID, SubList<TileSet>>();
+        }
+
+        foreach (var key in levelData.subPreset[subSelectIdx].tileSetList.Keys)
+        {
+            foreach (var tileSet in levelData.subPreset[subSelectIdx].tileSetList[key])
+            {
+                if (!subTileSetList.ContainsKey(key))
+                {
+                    subTileSetList.Add(key, new SubList<TileSet>());
+                }
+            
+                subTileSetList[key].Add(new TileSet(Vector2.zero, tileSet.spawnPos, tileSet.spawnFloor));
+            }
+        }
+    }
+
+    void SaveSubTileSet()
+    {
+        if (levelData.subPreset.Count <= 0)
+            return;
+
+        if (levelData.subPreset[subSelectIdx].tileSetList == null)
+        {
+            levelData.subPreset[subSelectIdx].tileSetList = new SerializeDictionary<TileID, SubList<TileSet>>();
+        }
+        
+        levelData.subPreset[subSelectIdx].tileSetList.Clear();
+        
+        foreach (var key in subTileSetList.Keys)
+        {
+            foreach (var tileSet in subTileSetList[key].OrderBy(x => x.spawnFloor))
+            {
+                if (!levelData.subPreset[subSelectIdx].tileSetList.ContainsKey(key))
+                {
+                    levelData.subPreset[subSelectIdx].tileSetList.Add(key, new SubList<TileSet>());
+                }
+            
+                levelData.subPreset[subSelectIdx].tileSetList[key].Add(new TileSet(Vector2.zero, tileSet.spawnPos, tileSet.spawnFloor));
+            }
+        }
+
+        EditorUtility.SetDirty(levelData.subPreset[subSelectIdx]);
+    }
+    #endregion
 
     void Save()
     {
