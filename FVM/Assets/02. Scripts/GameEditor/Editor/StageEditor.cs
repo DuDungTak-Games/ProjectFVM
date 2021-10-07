@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DuDungTakGames.Gimic;
 using UnityEditor;
 using UnityEngine;
 
@@ -13,22 +14,30 @@ public class StageEditor : EditorWindow
     
     public float tileFloor = 0;
     float tileUnit = 10;
-
     Vector3 tileSize = new Vector3(10, 10, 10);
+    
+    public enum EditType { SELECT, TILE_SINGLE, TILE_PAINT }
+    public EditType curEditType { get; private set; }
 
     TileID curTileID;
     GameObject curPrefab;
     float curFloorUnit;
 
+    EditorTile curEditorTile;
+    
     int lvlSelectIdx = 0, subSelectIdx = 0;
     string[] lvlSelect, subSelect;
-    
+
     public LevelData levelData;
     public LevelData[] datas;
 
     private List<Tuple<Vector3, GameObject>> spawnList = new List<Tuple<Vector3, GameObject>>();
+    
     private SerializeDictionary<TileID, SubList<TileSet>> tileSetList = new SerializeDictionary<TileID, SubList<TileSet>>();
+    private List<GimicSet> gimicSetList = new List<GimicSet>();
+    
     private SerializeDictionary<TileID, SubList<TileSet>> subTileSetList = new SerializeDictionary<TileID, SubList<TileSet>>();
+    private List<GimicSet> subGimicSetList = new List<GimicSet>();
     
     [MenuItem("DudungtakGames/Stage Editor")]
     private static void ShowWindow()
@@ -96,6 +105,9 @@ public class StageEditor : EditorWindow
             {
                 GameObject obj = new GameObject("/// StageEditorHelper ///");
                 GizmoHelper = obj.AddComponent<StageEditorHelper>();
+
+                tileFloor = 0;
+                GizmoResize();
             }
         }
     }
@@ -135,14 +147,42 @@ public class StageEditor : EditorWindow
 
         using (new EditorGUILayout.HorizontalScope())
         {
-            if(GUILayout.Button("Tileset Load (ALL)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
+            if(GUILayout.Button("TileSet Load (ALL)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
             {
-                LoadTileSet();
+                LoadTileSet(false); // NOTE : Main Preset (First Load)
+                LoadSubTileSet(true); // NOTE : Sub Preset (After Load)
             }
         
-            if(GUILayout.Button("Tileset Save (ALL)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
+            if(GUILayout.Button("TileSet Save (ALL)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
             {
                 SaveTileSet();
+                SaveSubTileSet();
+            }
+        }
+        
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            if(GUILayout.Button("TileSet Load (Main)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
+            {
+                LoadTileSet(true);
+            }
+        
+            if(GUILayout.Button("TileSet Save (Main)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
+            {
+                SaveTileSet();
+            }
+        }
+        
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            if(GUILayout.Button("TileSet Load (Sub)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
+            {
+                LoadSubTileSet(true);
+            }
+        
+            if(GUILayout.Button("TileSet Save (Sub)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
+            {
+                SaveSubTileSet();
             }
         }
 
@@ -220,6 +260,15 @@ public class StageEditor : EditorWindow
         
         ShowToolBox();
         ShowInfoBox();
+
+        if (curEditType == EditType.SELECT)
+        {
+            ShowTileBox();
+        }
+        else
+        {
+            DeselectTile();
+        }
         
         Handles.EndGUI();
     }
@@ -273,32 +322,112 @@ public class StageEditor : EditorWindow
             {
                 if (e.isMouse || e.isKey)
                 {
-                    if (e.type == EventType.MouseDown)
+                    switch (curEditType)
                     {
-                        if (e.button == 0) // NOTE : 타일 배치
-                        {
-                            CreateTile();
-                        }
+                        case EditType.SELECT:
+                            SelectInput(e);
+                            break;
+                        case EditType.TILE_SINGLE:
+                            SingleInput(e);
+                            break;
+                        case EditType.TILE_PAINT:
+                            PaintInput(e);
+                            break;
+                        default:
+                            break;
                     }
-
-                    if (e.type == EventType.KeyDown)
-                    {
-                        if (e.keyCode == KeyCode.V) // NOTE : 타일 배치
-                        {
-                            CreateTile();
-                        }
-                        
-                        if (e.keyCode == KeyCode.C) // NOTE : 타일 삭제
-                        {
-                            DeleteTile();
-                        }
-                    }
-
-                    if (e.type == EventType.MouseMove)
+                
+                    if (e.type == EventType.MouseMove || e.type == EventType.MouseDrag)
                     {
                         SceneView.RepaintAll();
                     }
                 }
+            }
+        }
+    }
+
+    void SelectInput(Event e)
+    {
+        if (e.type == EventType.MouseDown)
+        {
+            if (e.button == 0)
+            {
+                SelectTile();
+            }
+        }
+    }
+
+    bool isMouseDown = false; // NOTE : 마우스 드래그로 인한 삭제 방지
+    void SingleInput(Event e)
+    {
+        if (e.type == EventType.MouseDown)
+        {
+            if (e.button == 0)
+            {
+                CreateTile();
+            }
+            
+            if (e.button == 1)
+            {
+                isMouseDown = true;
+            }
+        }
+
+        if (e.type == EventType.MouseUp)
+        {
+            if (e.button == 1 && isMouseDown)
+            {
+                DeleteTile();
+            }
+        }
+
+        if (e.type == EventType.MouseDrag || e.type == EventType.MouseMove)
+        {
+            isMouseDown = false;
+        }
+    }
+
+    bool isCreate = true; // NOTE : 배치 or 삭제 모드 
+    void PaintInput(Event e)
+    {
+        if (e.type == EventType.MouseDown)
+        {
+            if (e.button == 0)
+            {
+                isMouseDown = true;
+            }
+        }
+
+        if (e.type == EventType.MouseUp)
+        {
+            if (e.button == 0)
+            {
+                isMouseDown = false;
+            }
+        }
+
+        if (e.type == EventType.MouseLeaveWindow)
+        {
+            isMouseDown = false;
+        }
+        
+        if (e.type == EventType.KeyDown)
+        {
+            if (e.keyCode == KeyCode.C)
+            {
+                isCreate = !isCreate;
+            }
+        }
+        
+        if (isMouseDown)
+        {
+            if (isCreate)
+            {
+                CreateTile();
+            }
+            else
+            {
+                DeleteTile();
             }
         }
     }
@@ -360,6 +489,26 @@ public class StageEditor : EditorWindow
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndHorizontal();
             
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField ("Edit Type", GetStyle("Context", 16, TextAnchor.LowerCenter, true), 
+                GUILayout.MaxWidth(80), GUILayout.MinHeight(30));
+
+            curEditType = (EditType)EditorGUILayout.EnumPopup(curEditType, GetStyle("Popup"));
+            EditorGUILayout.EndHorizontal();
+
+            switch (curEditType)
+            {
+                case EditType.TILE_PAINT:
+                    EditorGUILayout.LabelField (string.Format("Toggle : {0}", isCreate ? "Create" : "Delete"), 
+                        GetStyle("Context", isCreate ? Color.green : Color.magenta, true), GUILayout.MinHeight(30));
+                    EditorGUILayout.LabelField ("'C' 를 눌러서 배치 / 삭제 토글 가능", 
+                        GetStyle("Context", 16, TextAnchor.LowerLeft, true), GUILayout.MinHeight(30));
+                    EditorGUILayout.Space();
+                    break;
+                default:
+                    break;
+            }
+
             EditorGUILayout.LabelField (string.Format("Tile Count : {0}", spawnList.Count), 
                 GetStyle("Context", true), GUILayout.MinHeight(30));
 
@@ -369,10 +518,11 @@ public class StageEditor : EditorWindow
             if (GUILayout.Button("TileID Reset", GUILayout.MinHeight(30))) { curTileID = 0; }
             EditorGUILayout.EndHorizontal();
             
-            if (GUILayout.Button("TileSet Reset", GUILayout.MinHeight(30)))
+            if (GUILayout.Button("TileSet Reset (ALL)", GUILayout.MinHeight(30)))
             {
-                ClearSpawn();
                 ClearTile();
+                ClearSubTile();
+                ClearSpawn();
             }
 
             GUI.DragWindow();
@@ -399,6 +549,42 @@ public class StageEditor : EditorWindow
 
         }, "Info", GUILayout.MaxWidth(260));
     }
+    
+    int tileBoxWindowID = 1002;
+    Rect tileBoxRect = new Rect(390, 30, 260, 0);
+    void ShowTileBox()
+    {
+        tileBoxRect = GUILayout.Window (tileBoxWindowID, tileBoxRect, (id) => 
+        {
+            if (curEditorTile != null)
+            {
+                EditorGUILayout.LabelField (string.Format("Tile : {0}", curEditorTile.gameObject.name), 
+                    GetStyle("Context", true), GUILayout.MinHeight(30));
+                EditorGUILayout.Space();
+                
+                EditorGUILayout.LabelField (string.Format("Tile Floor : {0}", curEditorTile.floor), 
+                    GetStyle("Context", true), GUILayout.MinHeight(30));
+                EditorGUILayout.LabelField (string.Format("Tile Pos : {0}", curEditorTile.spawnPos), 
+                    GetStyle("Context", true), GUILayout.MinHeight(30));
+            }
+            else
+            {
+                EditorGUILayout.LabelField ("타일을 선택해주세요!", 
+                    GetStyle("Context", TextAnchor.MiddleCenter, true), GUILayout.MinHeight(30));
+            }
+
+            // TODO : 기믹일 경우에 추가 정보 또는 설정 표시
+            
+            GUI.DragWindow();
+
+        }, "Current Selected Tile", GUILayout.MaxWidth(260));
+    }
+
+    void GizmoResize()
+    {
+        tileSize = new Vector3(tileUnit, (Mathf.Abs(tileFloor) % 1) == 0.5f ? (tileUnit/2) : tileUnit, tileUnit);
+        GizmoHelper.SetSize(tileSize);
+    }
 
     void SetTileFloor(bool isUp)
     {
@@ -410,8 +596,9 @@ public class StageEditor : EditorWindow
             tileFloor = Mathf.RoundToInt(tileFloor);
         }
 
-        tileSize = new Vector3(tileUnit, remian == 0.5f ? (tileUnit/2) : tileUnit, tileUnit);
-        GizmoHelper.SetSize(tileSize);
+        DeselectTile();
+        
+        GizmoResize();
         
         Save();
     }
@@ -444,6 +631,34 @@ public class StageEditor : EditorWindow
         Save();
     }
 
+    void SelectTile()
+    {
+        GameObject tile = spawnList.Find(x =>
+            x.Item1 == tilePos || 
+            x.Item1 == tilePos + (Vector3.up * 2.5f) ||
+            x.Item1 == tilePos - (Vector3.up * 2.5f))?.Item2;
+        
+        if (tile != null)
+        {
+            if (tile.TryGetComponent(out curEditorTile))
+            {
+                tileSize = new Vector3(tileUnit, (Mathf.Abs(curEditorTile.floor) % 1) == 0.5f ? (tileUnit/2) : tileUnit, tileUnit);
+                GizmoHelper.SetSize(tileSize);
+                GizmoHelper.SetEditorTile(curEditorTile);
+            }
+        }
+        else
+        {
+            DeselectTile();
+        }
+    }
+
+    void DeselectTile()
+    {
+        curEditorTile = null;
+        GizmoHelper.SetEditorTile(curEditorTile);
+    }
+
     #region MainTileset
     void CreateTile(bool isLoad = false)
     {
@@ -451,8 +666,20 @@ public class StageEditor : EditorWindow
         {
             GameObject prefab = GetTilePrefab();
             GameObject tile = Instantiate(prefab, tilePos, Quaternion.identity);
-            
+
             spawnList.Add(new Tuple<Vector3, GameObject>(tilePos, tile));
+
+            EditorTile editorTile = tile.AddComponent<EditorTile>();
+            editorTile.floor = tileFloor;
+            editorTile.spawnPos = tilePos;
+
+            if ((int) curTileID >= 1000)
+            {
+                GimicObject gimic = tile.AddComponent<GimicObject>();
+                gimic.SetGimicID(0);
+                
+                // TODO : isLoad 인 경우, 이미 GimicSet 이 존재할 경우, GimicSet List 에서 불러오기
+            }
 
             if (!isLoad)
             {
@@ -493,6 +720,13 @@ public class StageEditor : EditorWindow
         Vector3 pos = data.Item1;
         GameObject tile = data.Item2;
         
+        float floor = 0;
+        EditorTile editorTile;
+        if (tile.TryGetComponent(out editorTile))
+        {
+            floor = editorTile.floor;
+        }
+        
         spawnList.Remove(data);
         DestroyImmediate(tile);
 
@@ -502,6 +736,10 @@ public class StageEditor : EditorWindow
         }
         
         tile = Instantiate(levelData.tileFloorPrefabData.GetPrefab(TileFloorID.BOTTOM_TILE), pos, Quaternion.identity);
+        
+        editorTile = tile.AddComponent<EditorTile>();
+        editorTile.floor = floor;
+        editorTile.spawnPos = pos;
 
         spawnList.Add(new Tuple<Vector3, GameObject>(pos, tile));
     }
@@ -511,11 +749,22 @@ public class StageEditor : EditorWindow
         Vector3 pos = data.Item1;
         GameObject tile = data.Item2;
 
+        float floor = 0;
+        EditorTile editorTile;
+        if (tile.TryGetComponent(out editorTile))
+        {
+            floor = editorTile.floor;
+        }
+
         spawnList.Remove(data);
         DestroyImmediate(tile);
 
         tile = Instantiate(levelData.tileFloorPrefabData.GetPrefab(pos.y % 1 != 0 ? TileFloorID.TOP_HALF_TILE : TileFloorID.TOP_TILE), pos, Quaternion.identity);
 
+        editorTile = tile.AddComponent<EditorTile>();
+        editorTile.floor = floor;
+        editorTile.spawnPos = pos;
+        
         spawnList.Add(new Tuple<Vector3, GameObject>(pos, tile));
     }
     
@@ -613,7 +862,13 @@ public class StageEditor : EditorWindow
     void ClearTile()
     {
         tileSetList.Clear();
+        gimicSetList.Clear();
+    }
+
+    void ClearSubTile()
+    {
         subTileSetList.Clear();
+        subGimicSetList.Clear();
     }
 
     void AddTileSet()
@@ -624,6 +879,11 @@ public class StageEditor : EditorWindow
         }
 
         tileSetList[curTileID].Add(new TileSet(Vector2.zero, tilePos, tileFloor));
+        
+        if ((int) curTileID >= 1000)
+        {
+            gimicSetList.Add(new GimicSet(tilePos, 0));
+        }
     }
 
     void DeleteTileSet(Tuple<Vector3, GameObject> tile)
@@ -633,6 +893,9 @@ public class StageEditor : EditorWindow
             TileSet tileSet = tileSetList[key].Find(x => x.spawnPos == tile.Item1);
             if (tileSetList[key].Remove(tileSet))
             {
+                GimicSet gimicSet = subGimicSetList.Find(x => x.targetPos == tile.Item1);
+                subGimicSetList.Remove(gimicSet);
+                
                 spawnList.Remove(tile);
                 FindBottomTile(true);
                 DestroyImmediate(tile.Item2);
@@ -659,12 +922,11 @@ public class StageEditor : EditorWindow
         SpawnSubTileSet();
     }
 
-    void LoadTileSet()
+    void LoadTileSet(bool canSpawn)
     {
         if (levelData.mainPreset.tileSetList == null)
             return;
         
-        ClearSpawn();
         ClearTile();
 
         foreach (var key in levelData.mainPreset.tileSetList.Keys)
@@ -680,9 +942,19 @@ public class StageEditor : EditorWindow
             }
         }
         
-        LoadSubTileSet();
+        foreach (var gimcset in levelData.mainPreset.gimicSetList)
+        {
+            gimicSetList.Add(new GimicSet(gimcset.targetPos, gimcset.gimicID));
+        }
 
-        SpawnTileSet();
+        if (canSpawn)
+        {
+            ClearSpawn();
+            
+            SpawnTileSet();
+            
+            // TODO : GIMIC 세팅 함수 호출
+        }
     }
 
     void SaveTileSet()
@@ -704,11 +976,16 @@ public class StageEditor : EditorWindow
                 levelData.mainPreset.tileSetList[key].Add(new TileSet(Vector2.zero, tileSet.spawnPos, tileSet.spawnFloor));
             }
         }
+        
+        levelData.mainPreset.gimicSetList.Clear();
+        
+        foreach (var gimcset in subGimicSetList)
+        {
+            levelData.mainPreset.gimicSetList.Add(new GimicSet(gimcset.targetPos, gimcset.gimicID));
+        }
 
         EditorUtility.SetDirty(levelData.mainPreset);
-        
-        SaveSubTileSet();
-        
+
         Save();
     }
     #endregion
@@ -722,6 +999,11 @@ public class StageEditor : EditorWindow
         }
 
         subTileSetList[curTileID].Add(new TileSet(Vector2.zero, tilePos, tileFloor));
+
+        if ((int) curTileID >= 1000)
+        {
+            subGimicSetList.Add(new GimicSet(tilePos, 0));
+        }
     }
     
     void DeleteSubTileSet(Tuple<Vector3, GameObject> tile)
@@ -731,6 +1013,9 @@ public class StageEditor : EditorWindow
             TileSet tileSet = subTileSetList[key].Find(x => x.spawnPos == tile.Item1);
             if (subTileSetList[key].Remove(tileSet))
             {
+                GimicSet gimicSet = subGimicSetList.Find(x => x.targetPos == tile.Item1);
+                subGimicSetList.Remove(gimicSet);
+                
                 spawnList.Remove(tile);
                 FindBottomTile(true);
                 DestroyImmediate(tile.Item2);
@@ -755,7 +1040,7 @@ public class StageEditor : EditorWindow
         }
     }
     
-    void LoadSubTileSet()
+    void LoadSubTileSet(bool canSpawn)
     {
         if (levelData.subPreset.Count <= 0)
             return;
@@ -764,6 +1049,8 @@ public class StageEditor : EditorWindow
         {
             levelData.subPreset[subSelectIdx].tileSetList = new SerializeDictionary<TileID, SubList<TileSet>>();
         }
+        
+        ClearSubTile();
 
         foreach (var key in levelData.subPreset[subSelectIdx].tileSetList.Keys)
         {
@@ -776,6 +1063,20 @@ public class StageEditor : EditorWindow
             
                 subTileSetList[key].Add(new TileSet(Vector2.zero, tileSet.spawnPos, tileSet.spawnFloor));
             }
+        }
+        
+        foreach (var gimcset in levelData.subPreset[subSelectIdx].gimicSetList)
+        {
+            gimicSetList.Add(new GimicSet(gimcset.targetPos, gimcset.gimicID));
+        }
+        
+        if (canSpawn)
+        {
+            ClearSpawn();
+            
+            SpawnTileSet();
+            
+            // TODO : GIMIC 세팅 함수 호출
         }
     }
 
@@ -803,8 +1104,17 @@ public class StageEditor : EditorWindow
                 levelData.subPreset[subSelectIdx].tileSetList[key].Add(new TileSet(Vector2.zero, tileSet.spawnPos, tileSet.spawnFloor));
             }
         }
+        
+        levelData.subPreset[subSelectIdx].gimicSetList.Clear();
+        
+        foreach (var gimcset in subGimicSetList)
+        {
+            levelData.subPreset[subSelectIdx].gimicSetList.Add(new GimicSet(gimcset.targetPos, gimcset.gimicID));
+        }
 
         EditorUtility.SetDirty(levelData.subPreset[subSelectIdx]);
+        
+        Save();
     }
     #endregion
 

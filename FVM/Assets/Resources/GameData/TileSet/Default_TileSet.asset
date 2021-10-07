@@ -13,5 +13,28 @@ MonoBehaviour:
   m_Name: Default_TileSet
   m_EditorClassIdentifier: 
   tileSetList:
-    keys: 
-    values: []
+    keys: 00000000
+    values:
+    - datas:
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 970, y: 0, z: 490}
+        spawnFloor: 0
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 960, y: 0, z: 490}
+        spawnFloor: 0
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 950, y: 0, z: 490}
+        spawnFloor: 0
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 960, y: 7.5, z: 490}
+        spawnFloor: 0.5
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 970, y: 7.5, z: 490}
+        spawnFloor: 0.5
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 950, y: 10, z: 490}
+        spawnFloor: 1
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 940, y: 10, z: 490}
+        spawnFloor: 1
+  gimicSetList: []
