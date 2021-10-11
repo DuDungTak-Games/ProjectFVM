@@ -1,3 +1,4 @@
+using System.Data;
 using UnityEngine;
 
 using DuDungTakGames.Extensions;
@@ -10,6 +11,7 @@ public class StageEditorHelper : MonoBehaviour
     bool isBlock = false;
 
     EditorTile editorTile;
+    GimicObject gimicObject;
     
     float tileUnit = 10;
     
@@ -29,6 +31,11 @@ public class StageEditorHelper : MonoBehaviour
     public void SetEditorTile(EditorTile editorTile)
     {
         this.editorTile = editorTile;
+    }
+    
+    public void SetGimicObject(GimicObject gimicObject)
+    {
+        this.gimicObject = gimicObject;
     }
 
     public void SetState(bool isBlock)
@@ -86,6 +93,11 @@ public class StageEditorHelper : MonoBehaviour
             DrawTileOutline(halfUnit);
             DrawMouseSphere();
 
+            if (gimicObject != null)
+            {
+                DrawGimicInfo();
+            }
+            
             if (editorTile != null)
             {
                 DrawTileInfo();
@@ -110,8 +122,19 @@ public class StageEditorHelper : MonoBehaviour
             
         Color redColor = Color.red;
         redColor.a = 0.5f;
+        
+        Color grayColor = Color.gray;
+        grayColor.a = 0.5f;
 
-        Gizmos.color = isBlock ? redColor : greenColor;
+        if (editorTile != null)
+        {
+            Gizmos.color = grayColor;
+        }
+        else
+        {
+            Gizmos.color = isBlock ? redColor : greenColor;
+        }
+        
         Gizmos.DrawCube(tilePos, tileSize);
     }
 
@@ -184,5 +207,40 @@ public class StageEditorHelper : MonoBehaviour
         
         Vector3 namePos = editorTile.spawnPos + (Vector3.up * 10f);
         Handles.Label(namePos, editorTile.gameObject.name, style);
+    }
+    
+    void DrawGimicInfo()
+    {
+        Gizmos.color = Color.magenta;
+        
+        if (gimicObject is GimicTrigger)
+        {
+            foreach (var actorObject in FindObjectsOfType<GimicActor>())
+            {
+                if (actorObject.ID == gimicObject.ID)
+                {
+                    Gizmos.DrawSphere(actorObject.transform.position, tileSize.y * 0.25f);
+                    
+                    DrawGimicLine(actorObject.transform.position);
+                }
+            }
+        }
+        else
+        {
+            Gizmos.DrawSphere(gimicObject.transform.position, tileSize.y * 0.25f);
+            
+            foreach (var actorObject in FindObjectsOfType<GimicTrigger>())
+            {
+                if (actorObject.ID == gimicObject.ID)
+                {
+                    DrawGimicLine(actorObject.transform.position);
+                }
+            }
+        }
+    }
+
+    void DrawGimicLine(Vector3 targetPos)
+    {
+        Gizmos.DrawLine(editorTile.spawnPos, targetPos);
     }
 }

@@ -24,6 +24,7 @@ public class StageEditor : EditorWindow
     float curFloorUnit;
 
     EditorTile curEditorTile;
+    GimicObject curGimicObject;
     
     int lvlSelectIdx = 0, subSelectIdx = 0;
     string[] lvlSelect, subSelect;
@@ -460,6 +461,30 @@ public class StageEditor : EditorWindow
         }
     }
 
+    void UpdateGimicData()
+    {
+        GimicSet gimicSet = new GimicSet(Vector3.zero, -1);
+
+        gimicSet = gimicSetList.Find(x => x.targetPos == curEditorTile.spawnPos);
+        if (gimicSet.Check(curEditorTile.spawnPos))
+        {
+            gimicSetList.Remove(gimicSet);
+            gimicSet.ID = curGimicObject.ID;
+            gimicSetList.Add(gimicSet);
+        }
+        else
+        {
+            gimicSet = subGimicSetList.Find(x => x.targetPos == curEditorTile.spawnPos);
+            
+            if (gimicSet.Check(curEditorTile.spawnPos))
+            {
+                subGimicSetList.Remove(gimicSet);
+                gimicSet.ID = curGimicObject.ID;
+                subGimicSetList.Add(gimicSet);
+            }
+        }
+    }
+
     int toolBoxWindowID = 1000;
     Rect toolBoxRect = new Rect(10,30, 360, 0);
     void ShowToolBox()
@@ -560,12 +585,24 @@ public class StageEditor : EditorWindow
             {
                 EditorGUILayout.LabelField (string.Format("Tile : {0}", curEditorTile.gameObject.name), 
                     GetStyle("Context", true), GUILayout.MinHeight(30));
-                EditorGUILayout.Space();
-                
                 EditorGUILayout.LabelField (string.Format("Tile Floor : {0}", curEditorTile.floor), 
                     GetStyle("Context", true), GUILayout.MinHeight(30));
                 EditorGUILayout.LabelField (string.Format("Tile Pos : {0}", curEditorTile.spawnPos), 
                     GetStyle("Context", true), GUILayout.MinHeight(30));
+
+                if (curGimicObject != null)
+                {
+                    EditorGUILayout.Space();
+                    
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField ("Gimic ID", GetStyle("Context", 16, TextAnchor.LowerCenter, true), 
+                        GUILayout.MaxWidth(80), GUILayout.MinHeight(30));
+                    
+                    if(GUILayout.Button("◀", GUILayout.MaxWidth(30), GUILayout.MaxHeight(30))) { SetGimicID(false); }
+                    EditorGUILayout.FloatField(curGimicObject.ID, GetStyle("NumberField"), GUILayout.MinHeight(30));
+                    if(GUILayout.Button("▶", GUILayout.MaxWidth(30), GUILayout.MaxHeight(30))) { SetGimicID(true); }
+                    EditorGUILayout.EndHorizontal();
+                }
             }
             else
             {
@@ -573,8 +610,6 @@ public class StageEditor : EditorWindow
                     GetStyle("Context", TextAnchor.MiddleCenter, true), GUILayout.MinHeight(30));
             }
 
-            // TODO : 기믹일 경우에 추가 정보 또는 설정 표시
-            
             GUI.DragWindow();
 
         }, "Current Selected Tile", GUILayout.MaxWidth(260));
@@ -614,7 +649,7 @@ public class StageEditor : EditorWindow
                 curTileID = Enum.GetValues(typeof(TileID)).Cast<TileID>().First();
                 return;
             }
-            
+
             curTileID += 1;
         }
         else
@@ -629,6 +664,24 @@ public class StageEditor : EditorWindow
         }
         
         Save();
+    }
+
+    void SetGimicID(bool isNext)
+    {
+        int id = curGimicObject.ID;
+        
+        if (isNext)
+        {
+            id += 1;
+        }
+        else
+        {
+            id = id <= 0 ? 0 : (id - 1);
+        }
+
+        curGimicObject.SetGimicID(id);
+
+        UpdateGimicData();
     }
 
     void SelectTile()
@@ -646,6 +699,11 @@ public class StageEditor : EditorWindow
                 GizmoHelper.SetSize(tileSize);
                 GizmoHelper.SetEditorTile(curEditorTile);
             }
+
+            if (tile.TryGetComponent(out curGimicObject))
+            {
+                GizmoHelper.SetGimicObject(curGimicObject);
+            }
         }
         else
         {
@@ -656,7 +714,9 @@ public class StageEditor : EditorWindow
     void DeselectTile()
     {
         curEditorTile = null;
+        curGimicObject = null;
         GizmoHelper.SetEditorTile(curEditorTile);
+        GizmoHelper.SetGimicObject(curGimicObject);
     }
 
     #region MainTileset
@@ -673,12 +733,31 @@ public class StageEditor : EditorWindow
             editorTile.floor = tileFloor;
             editorTile.spawnPos = tilePos;
 
-            if ((int) curTileID >= 1000)
+            if ((int) curTileID >= (int) TileID.FOOTHOLD_TRIGGER)
             {
-                GimicObject gimic = tile.AddComponent<GimicObject>();
-                gimic.SetGimicID(0);
+                GimicObject gimic;
+                if (!tile.TryGetComponent(out gimic))
+                {
+                    gimic = tile.AddComponent<GimicObject>();
+                }
                 
-                // TODO : isLoad 인 경우, 이미 GimicSet 이 존재할 경우, GimicSet List 에서 불러오기
+                gimic.SetGimicID(0);
+
+                if (isLoad)
+                {
+                    GimicSet gimicSet = new GimicSet(Vector3.zero, -1);
+        
+                    if (isSubPreset)
+                    {
+                        gimicSet = subGimicSetList.Find(x => x.targetPos == editorTile.spawnPos);
+                    }
+                    else
+                    {
+                        gimicSet = gimicSetList.Find(x => x.targetPos == editorTile.spawnPos);
+                    }
+
+                    gimic.SetGimicID(gimicSet.ID);
+                }
             }
 
             if (!isLoad)
@@ -880,7 +959,7 @@ public class StageEditor : EditorWindow
 
         tileSetList[curTileID].Add(new TileSet(Vector2.zero, tilePos, tileFloor));
         
-        if ((int) curTileID >= 1000)
+        if ((int) curTileID >= (int) TileID.FOOTHOLD_TRIGGER)
         {
             gimicSetList.Add(new GimicSet(tilePos, 0));
         }
@@ -944,7 +1023,7 @@ public class StageEditor : EditorWindow
         
         foreach (var gimcset in levelData.mainPreset.gimicSetList)
         {
-            gimicSetList.Add(new GimicSet(gimcset.targetPos, gimcset.gimicID));
+            gimicSetList.Add(new GimicSet(gimcset.targetPos, gimcset.ID));
         }
 
         if (canSpawn)
@@ -952,8 +1031,6 @@ public class StageEditor : EditorWindow
             ClearSpawn();
             
             SpawnTileSet();
-            
-            // TODO : GIMIC 세팅 함수 호출
         }
     }
 
@@ -979,9 +1056,9 @@ public class StageEditor : EditorWindow
         
         levelData.mainPreset.gimicSetList.Clear();
         
-        foreach (var gimcset in subGimicSetList)
+        foreach (var gimicSet in gimicSetList.OrderBy(x => x.ID))
         {
-            levelData.mainPreset.gimicSetList.Add(new GimicSet(gimcset.targetPos, gimcset.gimicID));
+            levelData.mainPreset.gimicSetList.Add(new GimicSet(gimicSet.targetPos, gimicSet.ID));
         }
 
         EditorUtility.SetDirty(levelData.mainPreset);
@@ -1000,7 +1077,7 @@ public class StageEditor : EditorWindow
 
         subTileSetList[curTileID].Add(new TileSet(Vector2.zero, tilePos, tileFloor));
 
-        if ((int) curTileID >= 1000)
+        if ((int) curTileID >= (int) TileID.FOOTHOLD_TRIGGER)
         {
             subGimicSetList.Add(new GimicSet(tilePos, 0));
         }
@@ -1038,6 +1115,9 @@ public class StageEditor : EditorWindow
                 CreateTile(true);
             }
         }
+
+        curTileID = 0;
+        tileFloor = 0;
     }
     
     void LoadSubTileSet(bool canSpawn)
@@ -1065,9 +1145,9 @@ public class StageEditor : EditorWindow
             }
         }
         
-        foreach (var gimcset in levelData.subPreset[subSelectIdx].gimicSetList)
+        foreach (var gimcset in levelData.subPreset[subSelectIdx].gimicSetList.OrderBy(x => x.ID))
         {
-            gimicSetList.Add(new GimicSet(gimcset.targetPos, gimcset.gimicID));
+            subGimicSetList.Add(new GimicSet(gimcset.targetPos, gimcset.ID));
         }
         
         if (canSpawn)
@@ -1075,8 +1155,6 @@ public class StageEditor : EditorWindow
             ClearSpawn();
             
             SpawnTileSet();
-            
-            // TODO : GIMIC 세팅 함수 호출
         }
     }
 
@@ -1107,9 +1185,9 @@ public class StageEditor : EditorWindow
         
         levelData.subPreset[subSelectIdx].gimicSetList.Clear();
         
-        foreach (var gimcset in subGimicSetList)
+        foreach (var gimicSet in subGimicSetList)
         {
-            levelData.subPreset[subSelectIdx].gimicSetList.Add(new GimicSet(gimcset.targetPos, gimcset.gimicID));
+            levelData.subPreset[subSelectIdx].gimicSetList.Add(new GimicSet(gimicSet.targetPos, gimicSet.ID));
         }
 
         EditorUtility.SetDirty(levelData.subPreset[subSelectIdx]);

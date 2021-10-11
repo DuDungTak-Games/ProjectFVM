@@ -13,19 +13,18 @@ MonoBehaviour:
   m_Name: LevelData_SubTileSet0
   m_EditorClassIdentifier: 
   tileSetList:
-    keys: 00000000
+    keys: 0a00000005000000
     values:
     - datas:
       - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 970, y: 0, z: 490}
+        spawnPos: {x: 910, y: 0, z: 550}
         spawnFloor: 0
+    - datas:
       - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 960, y: 0, z: 490}
+        spawnPos: {x: 910, y: 0, z: 580}
         spawnFloor: 0
-      - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 950, y: 0, z: 490}
-        spawnFloor: 0
-      - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 940, y: 0, z: 490}
-        spawnFloor: 0
-  gimicSetList: []
+  gimicSetList:
+  - targetPos: {x: 910, y: 0, z: 550}
+    ID: 0
+  - targetPos: {x: 910, y: 0, z: 580}
+    ID: 0

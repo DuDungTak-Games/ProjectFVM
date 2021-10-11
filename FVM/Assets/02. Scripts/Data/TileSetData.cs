@@ -6,5 +6,7 @@ public class TileSetData : ScriptableObject
 {
     [SerializeField]
     public SerializeDictionary<TileID, SubList<TileSet>> tileSetList;
+    
+    [SerializeField]
     public List<GimicSet> gimicSetList;
 }

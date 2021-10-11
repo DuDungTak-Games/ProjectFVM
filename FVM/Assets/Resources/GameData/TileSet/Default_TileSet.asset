@@ -13,28 +13,68 @@ MonoBehaviour:
   m_Name: Default_TileSet
   m_EditorClassIdentifier: 
   tileSetList:
-    keys: 00000000
+    keys: 050000000a000000
     values:
     - datas:
       - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 970, y: 0, z: 490}
+        spawnPos: {x: 890, y: 0, z: 570}
         spawnFloor: 0
       - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 960, y: 0, z: 490}
+        spawnPos: {x: 880, y: 0, z: 570}
         spawnFloor: 0
       - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 950, y: 0, z: 490}
+        spawnPos: {x: 880, y: 0, z: 560}
         spawnFloor: 0
       - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 960, y: 7.5, z: 490}
-        spawnFloor: 0.5
+        spawnPos: {x: 890, y: 0, z: 560}
+        spawnFloor: 0
+    - datas:
       - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 970, y: 7.5, z: 490}
-        spawnFloor: 0.5
+        spawnPos: {x: 880, y: 20, z: 590}
+        spawnFloor: 2
       - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 950, y: 10, z: 490}
-        spawnFloor: 1
+        spawnPos: {x: 890, y: 20, z: 590}
+        spawnFloor: 2
       - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 940, y: 10, z: 490}
-        spawnFloor: 1
-  gimicSetList: []
+        spawnPos: {x: 910, y: 20, z: 570}
+        spawnFloor: 2
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 910, y: 20, z: 560}
+        spawnFloor: 2
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 890, y: 20, z: 540}
+        spawnFloor: 2
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 880, y: 20, z: 540}
+        spawnFloor: 2
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 860, y: 20, z: 560}
+        spawnFloor: 2
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 860, y: 20, z: 570}
+        spawnFloor: 2
+  gimicSetList:
+  - targetPos: {x: 890, y: 20, z: 540}
+    ID: 0
+  - targetPos: {x: 880, y: 20, z: 540}
+    ID: 0
+  - targetPos: {x: 860, y: 20, z: 560}
+    ID: 0
+  - targetPos: {x: 860, y: 20, z: 570}
+    ID: 0
+  - targetPos: {x: 890, y: 0, z: 570}
+    ID: 1
+  - targetPos: {x: 880, y: 20, z: 590}
+    ID: 1
+  - targetPos: {x: 890, y: 20, z: 590}
+    ID: 1
+  - targetPos: {x: 890, y: 0, z: 560}
+    ID: 2
+  - targetPos: {x: 910, y: 20, z: 570}
+    ID: 2
+  - targetPos: {x: 880, y: 0, z: 570}
+    ID: 3
+  - targetPos: {x: 910, y: 20, z: 560}
+    ID: 3
+  - targetPos: {x: 880, y: 0, z: 560}
+    ID: 4

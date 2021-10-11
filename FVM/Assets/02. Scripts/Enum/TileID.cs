@@ -6,11 +6,11 @@ public enum TileID
     START_POINT,
     VM_POINT,
     
-    FOOTHOLD_TRIGGER = 1000,
-    LEVER_TRIGGER = 1001,
-    TRANSFER_SPOT = 1002,
-    JUMPT_SPOT = 1003,
-    PIT = 1004,
-    DOOR = 1005,
-    BOX = 1006
+    FOOTHOLD_TRIGGER,
+    LEVER_TRIGGER,
+    TRANSFER_SPOT,
+    JUMPT_SPOT,
+    PIT,
+    DOOR,
+    BOX,
 }
