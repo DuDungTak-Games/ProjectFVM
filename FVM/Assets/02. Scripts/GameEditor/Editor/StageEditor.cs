@@ -134,6 +134,19 @@ public class StageEditor : EditorWindow
             Save();
         }
 
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            if (curPrefab != null)
+            {
+                GUILayout.FlexibleSpace();
+            
+                Texture2D texture = AssetPreview.GetAssetPreview(curPrefab);
+                GUILayout.Label(texture, GUILayout.MaxWidth(120));
+                
+                GUILayout.FlexibleSpace();
+            }
+        }
+
         EditorGUILayout.Space();
         isEditMode = GUILayout.Toggle(isEditMode, "Edit Mode", GetStyle("Button", 24, Color.white), GUILayout.MinHeight(40));
 

@@ -3,11 +3,14 @@ using UnityEngine;
 public class GimicTrigger : GimicObject
 {
 
+    [TagSelector] 
+    public string targetTag;
+
     protected GimicActor gimic;
 
     void OnTriggerEnter(Collider col)
     {
-        if (col.gameObject.CompareTag("Player"))
+        if (col.gameObject.CompareTag(targetTag))
         {
             OnTrigger();
         }
