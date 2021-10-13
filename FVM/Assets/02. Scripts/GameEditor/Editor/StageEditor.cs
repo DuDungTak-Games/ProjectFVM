@@ -134,19 +134,6 @@ public class StageEditor : EditorWindow
             Save();
         }
 
-        using (new EditorGUILayout.HorizontalScope())
-        {
-            if (curPrefab != null)
-            {
-                GUILayout.FlexibleSpace();
-            
-                Texture2D texture = AssetPreview.GetAssetPreview(curPrefab);
-                GUILayout.Label(texture, GUILayout.MaxWidth(120));
-                
-                GUILayout.FlexibleSpace();
-            }
-        }
-
         EditorGUILayout.Space();
         isEditMode = GUILayout.Toggle(isEditMode, "Edit Mode", GetStyle("Button", 24, Color.white), GUILayout.MinHeight(40));
 
@@ -282,6 +269,11 @@ public class StageEditor : EditorWindow
         else
         {
             DeselectTile();
+        }
+
+        if (curPrefab != null)
+        {
+            ShowPreviewBox();
         }
         
         Handles.EndGUI();
@@ -626,6 +618,27 @@ public class StageEditor : EditorWindow
             GUI.DragWindow();
 
         }, "Current Selected Tile", GUILayout.MaxWidth(260));
+    }
+    
+    int previewBoxWindowID = 1003;
+    Rect previewBoxRect = new Rect(10, 320, 120, 0);
+    void ShowPreviewBox()
+    {
+        previewBoxRect = GUILayout.Window (previewBoxWindowID, previewBoxRect, (id) => 
+        {
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                GUILayout.FlexibleSpace();
+            
+                Texture2D texture = AssetPreview.GetAssetPreview(curPrefab);
+                GUILayout.Label(texture, GUILayout.MaxWidth(120));
+                
+                GUILayout.FlexibleSpace();
+            }
+
+            GUI.DragWindow();
+
+        }, "Prefab Preview", GUILayout.MaxWidth(260));
     }
 
     void GizmoResize()

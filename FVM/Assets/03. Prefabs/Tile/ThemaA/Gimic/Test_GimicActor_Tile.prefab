@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2792712573781151472}
   - component: {fileID: 7680510238902112346}
   - component: {fileID: 2900967446593424627}
-  - component: {fileID: 6777263420840398521}
+  - component: {fileID: 1241843772753896663}
   m_Layer: 3
   m_Name: Test_GimicActor_Tile
   m_TagString: Tile
@@ -84,7 +84,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &6777263420840398521
+--- !u!114 &1241843772753896663
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -93,6 +93,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 7719951445117833169}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36517058a2fd7244785304626821000f, type: 3}
+  m_Script: {fileID: 11500000, guid: 5f65006973e36634ca9126bcbf2120b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
