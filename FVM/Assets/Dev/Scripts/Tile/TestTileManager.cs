@@ -337,7 +337,7 @@ public class TestTileManager : MonoBehaviour
 
     TileSet CreateTileSet(Vector2 origin, Vector3 pos, float floor)
     {
-        TileSet tileSet = new TileSet(origin, pos, floor);
+        TileSet tileSet = new TileSet(origin, pos, Vector3.zero, floor);
         return tileSet;
     }
 }

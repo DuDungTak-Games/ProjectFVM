@@ -13,68 +13,163 @@ MonoBehaviour:
   m_Name: Default_TileSet
   m_EditorClassIdentifier: 
   tileSetList:
-    keys: 050000000a000000
+    keys: 00000000
     values:
     - datas:
       - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 890, y: 0, z: 570}
+        spawnPos: {x: 0, y: 30, z: 70}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 3
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: 27.5, z: 60}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 2.5
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: 20, z: 70}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 2
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: 20, z: 60}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 2
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: 20, z: 50}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 2
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: 17.5, z: 40}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 1.5
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: 10, z: 30}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 1
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: 10, z: 40}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 1
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: 10, z: 50}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 1
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: 10, z: 60}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 1
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: 10, z: 70}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 1
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: 7.5, z: 20}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0.5
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: 7.5, z: 20}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0.5
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: 0, z: -10}
+        spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 0
       - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 880, y: 0, z: 570}
+        spawnPos: {x: 0, y: 0, z: 10}
+        spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 0
       - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 880, y: 0, z: 560}
+        spawnPos: {x: -10, y: 0, z: 10}
+        spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 0
       - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 890, y: 0, z: 560}
+        spawnPos: {x: -10, y: 0, z: 0}
+        spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 0
-    - datas:
       - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 880, y: 20, z: 590}
-        spawnFloor: 2
+        spawnPos: {x: -10, y: 0, z: -10}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
       - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 890, y: 20, z: 590}
-        spawnFloor: 2
+        spawnPos: {x: 10, y: 0, z: 10}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
       - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 910, y: 20, z: 570}
-        spawnFloor: 2
+        spawnPos: {x: 10, y: 0, z: 0}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
       - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 910, y: 20, z: 560}
-        spawnFloor: 2
+        spawnPos: {x: 10, y: 0, z: -10}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
       - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 890, y: 20, z: 540}
-        spawnFloor: 2
+        spawnPos: {x: 0, y: 0, z: 20}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
       - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 880, y: 20, z: 540}
-        spawnFloor: 2
+        spawnPos: {x: 0, y: 0, z: 30}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
       - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 860, y: 20, z: 560}
-        spawnFloor: 2
+        spawnPos: {x: 0, y: 0, z: 40}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
       - tilePos: {x: 0, y: 0}
-        spawnPos: {x: 860, y: 20, z: 570}
-        spawnFloor: 2
-  gimicSetList:
-  - targetPos: {x: 890, y: 20, z: 540}
-    ID: 0
-  - targetPos: {x: 880, y: 20, z: 540}
-    ID: 0
-  - targetPos: {x: 860, y: 20, z: 560}
-    ID: 0
-  - targetPos: {x: 860, y: 20, z: 570}
-    ID: 0
-  - targetPos: {x: 890, y: 0, z: 570}
-    ID: 1
-  - targetPos: {x: 880, y: 20, z: 590}
-    ID: 1
-  - targetPos: {x: 890, y: 20, z: 590}
-    ID: 1
-  - targetPos: {x: 890, y: 0, z: 560}
-    ID: 2
-  - targetPos: {x: 910, y: 20, z: 570}
-    ID: 2
-  - targetPos: {x: 880, y: 0, z: 570}
-    ID: 3
-  - targetPos: {x: 910, y: 20, z: 560}
-    ID: 3
-  - targetPos: {x: 880, y: 0, z: 560}
-    ID: 4
+        spawnPos: {x: 0, y: 0, z: 50}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: 0, z: 60}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: 0, z: 70}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: 0, z: 0}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: -10, z: 70}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: -1
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: -10, z: 60}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: -1
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: -10, z: 50}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: -1
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: -10, z: 40}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: -1
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: -10, z: 30}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: -1
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: -10, z: 20}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: -1
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 10, y: -10, z: 10}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: -1
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 10, y: -10, z: 0}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: -1
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 10, y: -10, z: -10}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: -1
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: 0, y: -10, z: -10}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: -1
+      - tilePos: {x: 0, y: 0}
+        spawnPos: {x: -10, y: -10, z: -10}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: -1
+  gimicSetList: []

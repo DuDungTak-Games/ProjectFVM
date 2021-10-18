@@ -1,11 +1,53 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GimicManager : MonoBehaviour
 {
-    /* TODO : GimicManager
-     * 1. Gimic 스폰 목록 받아오기
-     * 2. Gimic Idx 별로 매칭하기 (Trigger 0 [n] => Gimic 0 [1])
-     */
+
+    [SerializeField] 
+    List<GimicTrigger> gimicTriggers = new List<GimicTrigger>();
+    
+    [SerializeField] 
+    List<GimicActor> gimicActors = new List<GimicActor>();
+
+    void Init()
+    {
+        foreach (var trigger in gimicTriggers)
+        {
+            bool isMatch = false;
+            
+            foreach (var actor in gimicActors)
+            {
+                if (trigger.ID == actor.ID)
+                {
+                    isMatch = true;
+                    
+                    trigger.AddEvent(actor.OnAction);
+                }
+            }
+
+            if (!isMatch)
+            {
+                Debug.LogWarningFormat("[GimicManager] GimicTrigger ({0}) 매칭이 되지 않아서 삭제됨!", trigger.ID);
+                
+                Destroy(trigger.gameObject);
+            }
+        }
+    }
+
+    public void AddTrigger(GimicTrigger trigger)
+    {
+        gimicTriggers.Add(trigger);
+    }
+
+    public void AddActor(GimicActor actor)
+    {
+        gimicActors.Add(actor);
+    }
+    
+    public void ResetData()
+    {
+        gimicTriggers.Clear();
+        gimicActors.Clear();
+    }
 }

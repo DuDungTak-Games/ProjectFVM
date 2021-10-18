@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-// NOTE : 이벤트가 여러 개라서 UnityEvent 를 사용함 (https://www.jacksondunstan.com/articles/3335)
 public class GimicTrigger : GimicObject
 {
 
@@ -22,5 +21,10 @@ public class GimicTrigger : GimicObject
     protected virtual void OnTrigger()
     {
         gimicEvent?.Invoke();
+    }
+
+    public void AddEvent(UnityAction action)
+    {
+        gimicEvent.AddListener(action);
     }
 }

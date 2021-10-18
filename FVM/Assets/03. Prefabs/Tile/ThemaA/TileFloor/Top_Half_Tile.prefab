@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2792712573781151472}
   - component: {fileID: 7680510238902112346}
   - component: {fileID: 2900967446593424627}
+  - component: {fileID: 5700573367803190005}
   m_Layer: 3
   m_Name: Top_Half_Tile
   m_TagString: Tile
@@ -83,3 +84,16 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &5700573367803190005
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7719951445117833169}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 10, y: 5, z: 10}
+  m_Center: {x: 0.078125, y: 0.078125, z: 0.078125}
