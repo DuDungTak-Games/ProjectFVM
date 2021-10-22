@@ -5,12 +5,6 @@ using UnityEngine;
 public class LevelData : ScriptableObject
 {
     [SerializeField]
-    public TilePrefabData tilePrefabData;
-
-    [SerializeField]
-    public TileFloorPrefabData tileFloorPrefabData;
-
-    [SerializeField]
     public TileSetData mainPreset;
     
     [SerializeField]

@@ -5,9 +5,12 @@ using UnityEngine;
 
 public class EditorTile : MonoBehaviour
 {
+    [HideInInspector] 
+    public TileID tileID;
+    
     [HideInInspector]
     public float floor;
     
     [HideInInspector]
-    public Vector3 spawnPos;
+    public Vector3 spawnPos, spawnRot;
 }

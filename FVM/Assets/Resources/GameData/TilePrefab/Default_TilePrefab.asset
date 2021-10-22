@@ -18,8 +18,8 @@ MonoBehaviour:
     - {fileID: 2343881085487667825, guid: e7595a15fe9afa14ca61da5c5cc50594, type: 3}
     - {fileID: 0}
     - {fileID: 4457105397523664863, guid: a1e6f14c02e50a341af48e0072452e6b, type: 3}
-    - {fileID: 0}
-    - {fileID: 0}
+    - {fileID: 4063330674251629501, guid: 12aee121ebf076446a71c61f4143f5b6, type: 3}
+    - {fileID: 4063330674251629501, guid: ad8cf0b49d58cd349bc9bffa78232ec2, type: 3}
     - {fileID: 7719951445117833169, guid: 5d30331def21e7449ae8584d7fee360e, type: 3}
     - {fileID: 0}
     - {fileID: 0}
@@ -32,10 +32,10 @@ MonoBehaviour:
     values:
     - 0
     - 0
-    - 12
-    - 0
-    - 0
-    - 0
+    - 1
+    - -5
+    - -5
+    - -5
     - 0
     - 0
     - 0

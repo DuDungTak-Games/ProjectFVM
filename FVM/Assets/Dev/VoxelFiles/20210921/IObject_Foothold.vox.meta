@@ -13,7 +13,7 @@ ScriptedImporter:
   gameObjectName: IObject_Foothold
   meshMode: 1
   importMode: 1
-  importScale: {x: 1, y: 1, z: 1}
+  importScale: {x: 0.25, y: 0.25, z: 0.25}
   importOffset: {x: 0, y: 0, z: 0}
   combineFaces: 1
   ignoreCavity: 1
@@ -34,9 +34,71 @@ ScriptedImporter:
   createContactChunkFaces: 1
   materialMode: 1
   materials:
-  - {fileID: -156486658544998735, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -7243801432929835188, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: 7312158941740743834, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -2161748032366795029, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -5023227458279549278, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -2518046609667999627, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -5194634019922558755, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: 2172142493696151824, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -5622447159331479776, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -3394822414990007474, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -5595989392532013576, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: 6368793589755975588, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: 7006982396042532221, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -5928007800524719232, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: 3262829220283153611, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: 3155393942108489495, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: 5441972909647496835, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: 1865793754489965357, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: 8830187310841439476, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -8576343786615110487, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -7848562328642525097, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -1864450467124417365, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -843016071361439186, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -3496479702225161721, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: 575607939170025344, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -3516678119704821089, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: 1753570847383993774, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -8917761753447379908, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: 2126813514460367143, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -613754011302882070, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -3356390932480297861, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -7433814515903076439, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: 4671263225850740937, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
   materialNames:
-  - IObject_Foothold_0
+  - IObject_Foothold_0_0
+  - IObject_Foothold_1_0
+  - IObject_Foothold_10_0
+  - IObject_Foothold_11_0
+  - IObject_Foothold_12_0
+  - IObject_Foothold_13_0
+  - IObject_Foothold_14_0
+  - IObject_Foothold_15_0
+  - IObject_Foothold_16_0
+  - IObject_Foothold_17_0
+  - IObject_Foothold_18_0
+  - IObject_Foothold_19_0
+  - IObject_Foothold_2_0
+  - IObject_Foothold_20_0
+  - IObject_Foothold_21_0
+  - IObject_Foothold_22_0
+  - IObject_Foothold_23_0
+  - IObject_Foothold_24_0
+  - IObject_Foothold_25_0
+  - IObject_Foothold_26_0
+  - IObject_Foothold_28_0
+  - IObject_Foothold_29_0
+  - IObject_Foothold_3_0
+  - IObject_Foothold_30_0
+  - IObject_Foothold_31_0
+  - IObject_Foothold_32_0
+  - IObject_Foothold_4_0
+  - IObject_Foothold_5_0
+  - IObject_Foothold_6_0
+  - IObject_Foothold_7_0
+  - IObject_Foothold_8_0
+  - IObject_Foothold_9_0
   remappedMaterials: []
   export: 0
   legacyVoxImport: 0

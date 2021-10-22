@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,7 +11,17 @@ public class GimicManager : MonoBehaviour
     [SerializeField] 
     List<GimicActor> gimicActors = new List<GimicActor>();
 
-    void Init()
+    private void Awake()
+    {
+        ResetData();
+    }
+
+    public void Init()
+    {
+        MatchingGimic();
+    }
+
+    void MatchingGimic()
     {
         foreach (var trigger in gimicTriggers)
         {
@@ -28,23 +39,26 @@ public class GimicManager : MonoBehaviour
 
             if (!isMatch)
             {
-                Debug.LogWarningFormat("[GimicManager] GimicTrigger ({0}) 매칭이 되지 않아서 삭제됨!", trigger.ID);
+                Debug.LogWarningFormat("[GimicManager] GimicTrigger ({0}) 매칭이 되지 않아서 삭제함!", trigger.ID);
                 
                 Destroy(trigger.gameObject);
             }
         }
     }
 
-    public void AddTrigger(GimicTrigger trigger)
+    public void AddGimic(GimicObject gimic)
     {
-        gimicTriggers.Add(trigger);
+        if (gimic is GimicTrigger)
+        {
+            gimicTriggers.Add(gimic as GimicTrigger);
+        }
+        
+        if(gimic is GimicActor)
+        {
+            gimicActors.Add(gimic as GimicActor);
+        }
     }
 
-    public void AddActor(GimicActor actor)
-    {
-        gimicActors.Add(actor);
-    }
-    
     public void ResetData()
     {
         gimicTriggers.Clear();

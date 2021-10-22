@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using UnityEngine;
 
@@ -65,6 +66,7 @@ public class StageEditorHelper : MonoBehaviour
     {
         if (isEditMode)
         {
+            plane = GameObject.Find("Plane");
             if (plane == null)
             {
                 plane = GameObject.CreatePrimitive(PrimitiveType.Plane);

@@ -165,7 +165,9 @@ public class Player : MonoBehaviour
     bool CheckDirection(Vector3 direction)
     {
         RaycastHit hit;
-        if(Physics.Raycast(GetRayOrigin(), direction, out hit, 10f, ~(1 << LayerMask.NameToLayer("Player") | 1 << LayerMask.NameToLayer("Item"))))
+        int layerMask = ~(1 << LayerMask.NameToLayer("Player") | 1 << LayerMask.NameToLayer("Item") |
+                          1 << LayerMask.NameToLayer("Gimic"));
+        if(Physics.Raycast(GetRayOrigin(), direction, out hit, 10f, layerMask))
         {
             GameObject obj = hit.collider.gameObject;
             if (obj.TryGetComponent(out directionFloor))
