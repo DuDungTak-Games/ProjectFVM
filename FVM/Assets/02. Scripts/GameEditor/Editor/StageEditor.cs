@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DuDungTakGames.Extensions;
 using DuDungTakGames.Gimic;
+using PlasticPipe.PlasticProtocol.Messages;
 using UnityEditor;
 using UnityEngine;
 
@@ -21,9 +22,10 @@ public class StageEditor : EditorWindow
     public EditType curEditType { get; private set; }
 
     TileID curTileID;
-    GameObject curPrefab;
+    GameObject curPrefab, prevPrefab;
     float curFloorUnit;
 
+    GameObject previewTile;
     EditorTile curEditorTile;
     GimicObject curGimicObject;
     
@@ -342,6 +344,8 @@ public class StageEditor : EditorWindow
             ShowPreviewBox();
         }
         
+        ShowPreviewTile();
+        
         Handles.EndGUI();
     }
 
@@ -379,7 +383,7 @@ public class StageEditor : EditorWindow
                     TileCheck();
                 }
 
-                GizmoHelper.SetPos(tilePos, gridPos, mousePos);
+                GizmoHelper.SetPos(tilePos, tileRot, gridPos, mousePos);
             }
         }
     }
@@ -426,6 +430,14 @@ public class StageEditor : EditorWindow
             if (e.button == 0)
             {
                 SelectTile();
+            }
+        }
+        
+        if (e.type == EventType.KeyDown)
+        {
+            if (e.keyCode == KeyCode.C)
+            {
+                RotateTile();
             }
         }
     }
@@ -733,6 +745,41 @@ public class StageEditor : EditorWindow
         }, "Prefab Preview", GUILayout.MaxWidth(260));
     }
 
+    void ShowPreviewTile()
+    {
+        if (prevPrefab != GetTilePrefab(false))
+        {
+            prevPrefab = GetTilePrefab(false);
+
+            if (previewTile != null)
+            {
+                DestroyImmediate(previewTile);
+            }
+        }
+        
+        if (previewTile == null)
+        {
+            if (curPrefab != null)
+            {
+                GameObject prefab = GetTilePrefab(false);
+                previewTile = Instantiate(prefab, GetUnitTilePos(), Quaternion.Euler(tileRot));
+                previewTile.name = previewTile.name.Replace("(Clone)", "(Preview)").Trim();
+
+                ClearCollider(previewTile);
+            }
+        }
+        else
+        {
+            previewTile.transform.SetPosition(GetUnitTilePos());
+            previewTile.transform.SetRotation(Quaternion.Euler(tileRot));
+            
+            if (curPrefab == null)
+            {
+                DestroyImmediate(previewTile);
+            }
+        }
+    }
+
     void GizmoResize()
     {
         tileSize = new Vector3(tileUnit, (Mathf.Abs(tileFloor) % 1) == 0.5f ? (tileUnit/2) : tileUnit, tileUnit);
@@ -940,8 +987,9 @@ public class StageEditor : EditorWindow
     
     void ReplaceBottomTile(Tuple<Vector3, GameObject> data)
     {
-        Vector3 pos = data.Item1;
         GameObject tile = data.Item2;
+        Vector3 pos = tile.transform.position;
+        Quaternion rot = tile.transform.rotation;
         
         float floor = 0;
         EditorTile editorTile;
@@ -958,7 +1006,7 @@ public class StageEditor : EditorWindow
             pos.y += 2.5f;
         }
         
-        tile = Instantiate(themeData.tileFloorPrefabData.GetPrefab(TileFloorID.BOTTOM_TILE), pos, Quaternion.identity);
+        tile = Instantiate(themeData.tileFloorPrefabData.GetPrefab(TileFloorID.BOTTOM_TILE), pos, rot);
         
         editorTile = tile.AddComponent<EditorTile>();
         editorTile.tileID = curTileID;
@@ -970,8 +1018,9 @@ public class StageEditor : EditorWindow
     
     void ReplaceTopTile(Tuple<Vector3, GameObject> data)
     {
-        Vector3 pos = data.Item1;
         GameObject tile = data.Item2;
+        Vector3 pos = tile.transform.position;
+        Quaternion rot = tile.transform.rotation;
 
         float floor = 0;
         EditorTile editorTile;
@@ -983,7 +1032,7 @@ public class StageEditor : EditorWindow
         spawnList.Remove(data);
         DestroyImmediate(tile);
 
-        tile = Instantiate(themeData.tileFloorPrefabData.GetPrefab(pos.y % 1 != 0 ? TileFloorID.TOP_HALF_TILE : TileFloorID.TOP_TILE), pos, Quaternion.identity);
+        tile = Instantiate(themeData.tileFloorPrefabData.GetPrefab(pos.y % 1 != 0 ? TileFloorID.TOP_HALF_TILE : TileFloorID.TOP_TILE), pos, rot);
 
         editorTile = tile.AddComponent<EditorTile>();
         editorTile.tileID = curTileID;
@@ -1002,12 +1051,12 @@ public class StageEditor : EditorWindow
         return isAlready;
     }
 
-    GameObject GetTilePrefab()
+    GameObject GetTilePrefab(bool checkTop = true)
     {
         switch (curTileID)
         {
             case TileID.TILE:
-                bool hasTop = FindTopTile();
+                bool hasTop = checkTop ? FindTopTile() : false;
                 TileFloorID tileFloorID = hasTop ? TileFloorID.BOTTOM_TILE : TileFloorID.TOP_TILE;
                 
                 if (tileFloor % 1 != 0)

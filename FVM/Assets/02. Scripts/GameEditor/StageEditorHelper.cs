@@ -17,6 +17,7 @@ public class StageEditorHelper : MonoBehaviour
     float tileUnit = 10;
     
     Vector3 tilePos = Vector3.zero;
+    Vector3 tileRot = Vector3.zero;
     Vector3 tileSize = Vector3.zero;
     Vector3 gridPos = Vector3.zero;
     Vector3 mousePos = Vector3.zero;
@@ -49,9 +50,10 @@ public class StageEditorHelper : MonoBehaviour
         tileSize = size;
     }
 
-    public void SetPos(Vector3 curTilePos, Vector3 curGridPos, Vector3 curMousePos)
+    public void SetPos(Vector3 curTilePos, Vector3 curTileRot, Vector3 curGridPos, Vector3 curMousePos)
     {
         tilePos = curTilePos;
+        tileRot = curTileRot;
         gridPos = curGridPos;
         mousePos = curMousePos;
     }
@@ -93,6 +95,7 @@ public class StageEditorHelper : MonoBehaviour
 
             DrawTile();
             DrawTileOutline(halfUnit);
+            DrawDirection(halfUnit);
             DrawMouseSphere();
 
             if (gimicObject != null)
@@ -164,6 +167,22 @@ public class StageEditorHelper : MonoBehaviour
         Gizmos.DrawLine(bcrh + upUnit, bclh + upUnit);
         Gizmos.DrawLine(fwrh + upUnit, bcrh + upUnit);
         Gizmos.DrawLine(fwlh + upUnit, bclh + upUnit);
+    }
+
+    void DrawDirection(float halfUnit)
+    {
+        Gizmos.color = Color.cyan;
+        
+        transform.SetRotation(Quaternion.Euler(tileRot));
+
+        Vector3 unit = gridPos + (Vector3.up * halfUnit);
+        Vector3 fw = (transform.forward * tileUnit) + unit;
+        Vector3 rh = (-transform.forward + transform.right * halfUnit) + unit;
+        Vector3 lh = (-transform.forward + -transform.right * halfUnit) + unit;
+        
+        Gizmos.DrawLine(unit, fw);
+        Gizmos.DrawLine(fw, rh);
+        Gizmos.DrawLine(fw, lh);
     }
 
     void DrawGrid(Vector3 linePos)
