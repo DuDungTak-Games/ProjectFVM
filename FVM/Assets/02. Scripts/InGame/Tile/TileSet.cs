@@ -2,23 +2,19 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public struct TileSet
+public class TileSet
 {
-    public TileSet(Vector2 tilePos, Vector3 spawnPos, Vector3 spawnRot, float spawnFloor)
+    public TileSet(TileSet tileSet = null)
     {
-        this.tilePos = tilePos;
-        this.spawnPos = spawnPos;
-        this.spawnRot = spawnRot;
-        this.spawnFloor = spawnFloor;
+        if (tileSet != null)
+        {
+            this.spawnPos = tileSet.spawnPos;
+            this.spawnRot = tileSet.spawnRot;
+            this.spawnFloor = tileSet.spawnFloor;
+        }
     }
 
-    public bool Check(TileSet tileSet, bool compare)
-    {
-        return Equals(tilePos, tileSet.tilePos) && compare;
-    }
-
-    public Vector2 tilePos;
-    public Vector3 spawnPos;
+    public Vector3 spawnPos; // 보정된 타일 스폰 위치
     public Vector3 spawnRot;
-    public float spawnFloor;
+    public float spawnFloor; // 타일 위치 층
 }

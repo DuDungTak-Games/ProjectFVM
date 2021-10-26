@@ -166,7 +166,7 @@ public class TestTileManager : MonoBehaviour
             {
                 float spawnFloor = tileSet.spawnFloor;
                 tileFloor.floor = spawnFloor;
-                tileFloor.tilePos = tileSet.tilePos;
+                // tileFloor.tilePos = tileSet.tilePos;
 
                 if (spawnFloor % 1f == 0.5f)
                 {
@@ -177,8 +177,8 @@ public class TestTileManager : MonoBehaviour
 
                 bool isTop = false;
                 bool isBottom = false;
-                tileList.Find(x => isTop = x.Check(tileSet, x.spawnFloor == spawnFloor+1 || x.spawnFloor == spawnFloor+0.5f));
-                tileList.Find(x => isBottom = x.Check(tileSet, x.spawnFloor == spawnFloor-1));
+                tileList.Find(x => isTop = x.spawnFloor == spawnFloor+1 || x.spawnFloor == spawnFloor+0.5f);
+                tileList.Find(x => isBottom = x.spawnFloor == spawnFloor-1);
 
                 //tileFloor.Init(isTop, isBottom);
             }
@@ -337,7 +337,11 @@ public class TestTileManager : MonoBehaviour
 
     TileSet CreateTileSet(Vector2 origin, Vector3 pos, float floor)
     {
-        TileSet tileSet = new TileSet(origin, pos, Vector3.zero, floor);
+        TileSet tileSet = new TileSet();
+        tileSet.spawnPos = pos;
+        tileSet.spawnRot = Vector3.zero;
+        tileSet.spawnFloor = floor;
+        
         return tileSet;
     }
 }

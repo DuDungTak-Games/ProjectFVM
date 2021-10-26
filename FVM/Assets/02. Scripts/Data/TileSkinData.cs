@@ -6,7 +6,7 @@ public class TileSkinData : ScriptableObject
 {
     
     [SerializeField]
-    public List<SubList<Texture>> textureList;
+    public List<SubList<Texture>> textureList = new List<SubList<Texture>>();
 
     public Texture GetTexture(int idx, int id)
     {

@@ -27,4 +27,9 @@ public class SubList<T> : List<T>, ISerializationCallbackReceiver
             this.Add(datas[i]);
         }
     }
+
+    public void Clear()
+    {
+        datas.Clear();
+    }
 }

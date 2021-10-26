@@ -5,8 +5,8 @@ using UnityEngine;
 public class TileSetData : ScriptableObject
 {
     [SerializeField]
-    public SerializeDictionary<TileID, SubList<TileSet>> tileSetList;
+    public SerializeDictionary<TileID, SubList<TileSet>> tileSetList = new SerializeDictionary<TileID, SubList<TileSet>>();
     
     [SerializeField]
-    public List<GimicSet> gimicSetList;
+    public List<GimicSet> gimicSetList = new List<GimicSet>();
 }

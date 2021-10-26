@@ -2,17 +2,15 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public struct GimicSet
+public class GimicSet
 {
-    public GimicSet(Vector3 targetPos, int ID)
+    public GimicSet(GimicSet gimicSet = null)
     {
-        this.targetPos = targetPos;
-        this.ID = ID;
-    }
-    
-    public bool Check(Vector3 comparePos)
-    {
-        return Vector3.Equals(targetPos, comparePos);
+        if (gimicSet != null)
+        {
+            this.targetPos = gimicSet.targetPos;
+            this.ID = gimicSet.ID;
+        }
     }
 
     public Vector3 targetPos;

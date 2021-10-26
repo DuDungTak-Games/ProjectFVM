@@ -79,7 +79,7 @@ public class TileManager : MonoBehaviour
         if ((int) tileID >= (int) TileID.FOOTHOLD_TRIGGER)
         {
             GimicObject gimic;
-            if (tile.TryGetComponent(out gimic))
+            if (tile.TryGetComponent(out gimic) && gimicSet != null)
             {
                 gimic.SetGimicID(gimicSet.ID);
                 gimicManager.AddGimic(gimic);
@@ -92,7 +92,7 @@ public class TileManager : MonoBehaviour
             Floor tileFloor = tile.AddComponent<Floor>();
             
             tileFloor.floor = spawnFloor;
-            tileFloor.tilePos = tileSet.tilePos; // NOTE : DEBUG ONLY
+            // tileFloor.tilePos = tileSet.tilePos;
         }
     }
     
@@ -123,15 +123,13 @@ public class TileManager : MonoBehaviour
 
     GimicSet GetGimicSet(List<GimicSet> gimicSetList, Vector3 spawnPos)
     {
-        GimicSet gimicSet;
-        
-        gimicSet = gimicSetList.Find(x => Vector3.Equals(x.targetPos, spawnPos));
-        if (gimicSet.Check(spawnPos))
+        GimicSet gimicSet = gimicSetList.Find(x => Vector3.Equals(x.targetPos, spawnPos));
+        if (gimicSet != null)
         {
             return gimicSet;
         }
         
-        return new GimicSet(Vector3.zero, -1);
+        return null;
     }
     
     bool FindTopTile(Vector3 tilePos)

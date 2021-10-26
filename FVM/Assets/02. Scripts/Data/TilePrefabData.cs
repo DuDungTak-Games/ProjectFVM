@@ -3,8 +3,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "TilePrefabData", menuName = "Scriptable Object/TilePrefabData")]
 public class TilePrefabData : ScriptableObject
 {
-    public SerializeDictionary<TileID, GameObject> prefabList;
-    public SerializeDictionary<TileID, float> floorUnitList;
+    public SerializeDictionary<TileID, GameObject> prefabList = new SerializeDictionary<TileID, GameObject>();
+    public SerializeDictionary<TileID, float> floorUnitList = new SerializeDictionary<TileID, float>();
     
     public GameObject GetPrefab(TileID id)
     {

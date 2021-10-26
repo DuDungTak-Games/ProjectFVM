@@ -43,10 +43,10 @@ public class StageEditor : EditorWindow
 
     private List<Tuple<Vector3, GameObject>> spawnList = new List<Tuple<Vector3, GameObject>>();
     
-    private SerializeDictionary<TileID, SubList<TileSet>> tileSetList = new SerializeDictionary<TileID, SubList<TileSet>>();
+    private Dictionary<TileID, List<TileSet>> tileSetList = new Dictionary<TileID, List<TileSet>>();
     private List<GimicSet> gimicSetList = new List<GimicSet>();
     
-    private SerializeDictionary<TileID, SubList<TileSet>> subTileSetList = new SerializeDictionary<TileID, SubList<TileSet>>();
+    private Dictionary<TileID, List<TileSet>> subTileSetList = new Dictionary<TileID, List<TileSet>>();
     private List<GimicSet> subGimicSetList = new List<GimicSet>();
     
     [MenuItem("DudungtakGames/Stage Editor")]
@@ -170,14 +170,24 @@ public class StageEditor : EditorWindow
         {
             if(GUILayout.Button("TileSet Load (ALL)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
             {
-                LoadTileSet(false); // NOTE : Main Preset (First Load)
-                LoadSubTileSet(true); // NOTE : Sub Preset (After Load)
+                ClearSpawnTile();
+                
+                LoadTileSet(levelData.mainPreset, ref tileSetList, ref gimicSetList);
+                LoadTileSet(levelData.subPreset[subSelectIdx], ref subTileSetList, ref subGimicSetList);
+                
+                SpawnTileSet(tileSetList);
+                SpawnTileSet(subTileSetList);
+
+                ResetState();
             }
         
             if(GUILayout.Button("TileSet Save (ALL)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
             {
-                SaveTileSet();
-                SaveSubTileSet();
+                if (CheckLevelData())
+                {
+                    SaveTileSet(levelData.mainPreset, tileSetList, gimicSetList);
+                    SaveTileSet(levelData.subPreset[subSelectIdx], subTileSetList, subGimicSetList);
+                }
             }
         }
         
@@ -185,12 +195,24 @@ public class StageEditor : EditorWindow
         {
             if(GUILayout.Button("TileSet Load (Main)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
             {
-                LoadTileSet(true);
+                if (CheckLevelData())
+                {
+                    ClearSpawnTile();
+                    
+                    LoadTileSet(levelData.mainPreset, ref tileSetList, ref gimicSetList);
+                    
+                    SpawnTileSet(tileSetList);
+
+                    ResetState();
+                }
             }
         
             if(GUILayout.Button("TileSet Save (Main)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
             {
-                SaveTileSet();
+                if (CheckLevelData())
+                {
+                    SaveTileSet(levelData.mainPreset, tileSetList, gimicSetList);
+                }
             }
         }
         
@@ -198,12 +220,24 @@ public class StageEditor : EditorWindow
         {
             if(GUILayout.Button("TileSet Load (Sub)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
             {
-                LoadSubTileSet(true);
+                if (CheckLevelData())
+                {
+                    ClearSpawnTile();
+                    
+                    LoadTileSet(levelData.subPreset[subSelectIdx], ref subTileSetList, ref subGimicSetList);
+                    
+                    SpawnTileSet(subTileSetList);
+
+                    ResetState();
+                }
             }
         
             if(GUILayout.Button("TileSet Save (Sub)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
             {
-                SaveSubTileSet();
+                if (CheckLevelData())
+                {
+                    SaveTileSet(levelData.subPreset[subSelectIdx], subTileSetList, subGimicSetList);
+                }
             }
         }
         
@@ -214,9 +248,11 @@ public class StageEditor : EditorWindow
                 TileManager tm = GameObject.FindObjectOfType<TileManager>();
                 if (tm != null)
                 {
-                    ClearTile();
-                    ClearSubTile();
-                    ClearSpawn();
+                    ClearTileSet(ref tileSetList, ref gimicSetList);
+                    ClearTileSet(ref subTileSetList, ref subGimicSetList);
+                    ClearSpawnTile();
+
+                    ResetState();
 
                     tm.prefabData = themeData.tilePrefabData;
                     tm.floorPrefabData = themeData.tileFloorPrefabData;
@@ -334,7 +370,7 @@ public class StageEditor : EditorWindow
         {
             ShowTileBox();
         }
-        else
+        else if(curEditorTile != null)
         {
             DeselectTile();
         }
@@ -349,11 +385,8 @@ public class StageEditor : EditorWindow
         Handles.EndGUI();
     }
 
-    void UpdateHelper()
-    {
-        GizmoHelper.SetInfo(isEditMode, tileUnit);
-    }
-
+    
+    
     Vector3 tilePos = Vector3.zero;
     Vector3 tileRot = Vector3.zero;
     Vector3 prevTilePos = Vector3.zero;
@@ -386,6 +419,11 @@ public class StageEditor : EditorWindow
                 GizmoHelper.SetPos(tilePos, tileRot, gridPos, mousePos);
             }
         }
+    }
+    
+    void UpdateHelper()
+    {
+        GizmoHelper.SetInfo(isEditMode, tileUnit);
     }
 
     void UpdateInput()
@@ -557,27 +595,14 @@ public class StageEditor : EditorWindow
         }
     }
 
-    void UpdateGimicData()
+    void UpdateGimicData(ref List<GimicSet> gimicSetList)
     {
-        GimicSet gimicSet = new GimicSet(Vector3.zero, -1);
-
-        gimicSet = gimicSetList.Find(x => x.targetPos == curEditorTile.spawnPos);
-        if (gimicSet.Check(curEditorTile.spawnPos))
+        GimicSet gimicSet = gimicSetList.Find(x => x.targetPos == curEditorTile.spawnPos);
+        if (gimicSet != null)
         {
             gimicSetList.Remove(gimicSet);
             gimicSet.ID = curGimicObject.ID;
             gimicSetList.Add(gimicSet);
-        }
-        else
-        {
-            gimicSet = subGimicSetList.Find(x => x.targetPos == curEditorTile.spawnPos);
-            
-            if (gimicSet.Check(curEditorTile.spawnPos))
-            {
-                subGimicSetList.Remove(gimicSet);
-                gimicSet.ID = curGimicObject.ID;
-                subGimicSetList.Add(gimicSet);
-            }
         }
     }
 
@@ -613,12 +638,17 @@ public class StageEditor : EditorWindow
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField ("Edit Type", GetStyle("Context", 16, TextAnchor.LowerCenter, true), 
                 GUILayout.MaxWidth(80), GUILayout.MinHeight(30));
-
+            
             curEditType = (EditType)EditorGUILayout.EnumPopup(curEditType, GetStyle("Popup"));
             EditorGUILayout.EndHorizontal();
 
             switch (curEditType)
             {
+                case EditType.SELECT:
+                    EditorGUILayout.LabelField ("'C' 를 눌러서 회전 가능 (타일 기준 Y축 우회전)", 
+                        GetStyle("Context", 16, TextAnchor.LowerLeft, true), GUILayout.MinHeight(30));
+                    EditorGUILayout.Space();
+                    break;
                 case EditType.TILE_SINGLE:
                     EditorGUILayout.LabelField ("'C' 를 눌러서 회전 가능 (타일 기준 Y축 우회전)", 
                         GetStyle("Context", 16, TextAnchor.LowerLeft, true), GUILayout.MinHeight(30));
@@ -627,9 +657,9 @@ public class StageEditor : EditorWindow
                 case EditType.TILE_PAINT:
                     EditorGUILayout.LabelField (string.Format("Toggle : {0}", isCreate ? "Create" : "Delete"), 
                         GetStyle("Context", isCreate ? Color.green : Color.magenta, true), GUILayout.MinHeight(30));
-                    EditorGUILayout.LabelField ("'C' 를 눌러서 회전 가능 (타일 기준 우회전)", 
+                    EditorGUILayout.LabelField ("'C' 를 눌러서 회전 가능 (타일 기준 Y축 우회전)", 
                         GetStyle("Context", 16, TextAnchor.LowerLeft, true), GUILayout.MinHeight(30));
-                    EditorGUILayout.LabelField ("'F' 를 눌러서 배치 / 삭제 토글 가능", 
+                    EditorGUILayout.LabelField ("'F' 를 눌러서 배치 & 삭제 토글 가능", 
                         GetStyle("Context", 16, TextAnchor.LowerLeft, true), GUILayout.MinHeight(30));
                     EditorGUILayout.Space();
                     break;
@@ -648,9 +678,9 @@ public class StageEditor : EditorWindow
             
             if (GUILayout.Button("TileSet Reset (ALL)", GUILayout.MinHeight(30)))
             {
-                ClearTile();
-                ClearSubTile();
-                ClearSpawn();
+                ClearTileSet(ref tileSetList, ref gimicSetList);
+                ClearTileSet(ref subTileSetList, ref subGimicSetList);
+                ClearSpawnTile();
             }
 
             GUI.DragWindow();
@@ -780,6 +810,8 @@ public class StageEditor : EditorWindow
         }
     }
 
+    
+    
     void GizmoResize()
     {
         tileSize = new Vector3(tileUnit, (Mathf.Abs(tileFloor) % 1) == 0.5f ? (tileUnit/2) : tileUnit, tileUnit);
@@ -808,7 +840,6 @@ public class StageEditor : EditorWindow
         if (isNext)
         {
             int last = (int)Enum.GetValues(typeof(TileID)).Cast<TileID>().Last();
-            
             if ((int) curTileID >= last)
             {
                 curTileID = Enum.GetValues(typeof(TileID)).Cast<TileID>().First();
@@ -834,223 +865,68 @@ public class StageEditor : EditorWindow
     void SetGimicID(bool isNext)
     {
         int id = curGimicObject.ID;
-        
-        if (isNext)
-        {
-            id += 1;
-        }
-        else
-        {
-            id = id <= 0 ? 0 : (id - 1);
-        }
+        id += isNext ? 1 : -1;
+        id = Mathf.Clamp(id, 0, 9999);
 
         curGimicObject.SetGimicID(id);
 
-        UpdateGimicData();
-    }
-
-    void SelectTile()
-    {
-        GameObject tile = spawnList.Find(x =>
-            x.Item1 == tilePos || 
-            x.Item1 == tilePos + (Vector3.up * 2.5f) ||
-            x.Item1 == tilePos - (Vector3.up * 2.5f))?.Item2;
-        
-        if (tile != null)
+        if (isSubPreset)
         {
-            if (tile.TryGetComponent(out curEditorTile))
-            {
-                tileSize = new Vector3(tileUnit, (Mathf.Abs(curEditorTile.floor) % 1) == 0.5f ? (tileUnit/2) : tileUnit, tileUnit);
-                GizmoHelper.SetSize(tileSize);
-                GizmoHelper.SetEditorTile(curEditorTile);
-            }
-
-            if (tile.TryGetComponent(out curGimicObject))
-            {
-                GizmoHelper.SetGimicObject(curGimicObject);
-            }
+            UpdateGimicData(ref subGimicSetList);
         }
         else
         {
-            DeselectTile();
+            UpdateGimicData(ref gimicSetList);
         }
     }
 
-    void DeselectTile()
+    void ResetState()
     {
-        curEditorTile = null;
-        curGimicObject = null;
-        GizmoHelper.SetEditorTile(curEditorTile);
-        GizmoHelper.SetGimicObject(curGimicObject);
-    }
-
-    void RotateTile()
-    {
-        float y = Mathf.Repeat((tileRot.y + 90), 360);
-        tileRot.SetY(y);
-    }
-
-    #region MainTileset
-    void CreateTile(bool isLoad = false)
-    {
-        if (!TileCheck() && curPrefab != null)
-        {
-            GameObject prefab = GetTilePrefab();
-            GameObject tile = Instantiate(prefab, GetUnitTilePos(), Quaternion.Euler(tileRot));
-            tile.name = tile.name.Replace("(Clone)", "").Trim();
-
-            spawnList.Add(new Tuple<Vector3, GameObject>(tilePos, tile));
-
-            ClearCollider(tile);
-
-            EditorTile editorTile = tile.AddComponent<EditorTile>();
-            editorTile.tileID = curTileID;
-            editorTile.floor = tileFloor;
-            editorTile.spawnPos = tilePos;
-
-            if ((int) curTileID >= (int) TileID.FOOTHOLD_TRIGGER)
-            {
-                GimicObject gimic;
-                if (!tile.TryGetComponent(out gimic))
-                {
-                    gimic = tile.AddComponent<GimicObject>();
-                }
-                
-                gimic.SetGimicID(0);
-
-                if (isLoad)
-                {
-                    GimicSet gimicSet = new GimicSet(Vector3.zero, -1);
-        
-                    if (isSubPreset)
-                    {
-                        gimicSet = subGimicSetList.Find(x => x.targetPos == editorTile.spawnPos);
-                    }
-                    else
-                    {
-                        gimicSet = gimicSetList.Find(x => x.targetPos == editorTile.spawnPos);
-                    }
-
-                    gimic.SetGimicID(gimicSet.ID);
-                }
-            }
-
-            if (!isLoad)
-            {
-                if (curTileID == TileID.START_POINT || curTileID == TileID.VM_POINT)
-                {
-                    Tuple<Vector3, GameObject> targetTile = FindTile(curTileID);
-                    if (targetTile != null)
-                    {
-                        if (isSubPreset)
-                        {
-                            DeleteSubTileSet(targetTile);
-                        }
-                        else
-                        {
-                            DeleteTileSet(targetTile);
-                        }
-                    }
-                }
-                
-                if (isSubPreset)
-                {
-                    AddSubTileSet();
-                }
-                else
-                {
-                    AddTileSet();
-                }
-            }
-        }
-        
-        Save();
-    }
-
-    void DeleteTile()
-    {
-        Tuple<Vector3, GameObject> tile = FindDuplicateTile();
-        if (tile != null)
-        {
-            if (isSubPreset)
-            {
-                DeleteSubTileSet(tile);                
-            }
-            else
-            {
-                DeleteTileSet(tile);
-            }
-        }
-
-        Save();
+        curTileID = 0;
+        tileFloor = 0;
+        tileRot.Set(Vector3.zero);
     }
     
-    void ReplaceBottomTile(Tuple<Vector3, GameObject> data)
+    bool CheckLevelData()
     {
-        GameObject tile = data.Item2;
-        Vector3 pos = tile.transform.position;
-        Quaternion rot = tile.transform.rotation;
-        
-        float floor = 0;
-        EditorTile editorTile;
-        if (tile.TryGetComponent(out editorTile))
+        if (levelData == null)
         {
-            floor = editorTile.floor;
+            Debug.LogWarningFormat("[EDITOR] Level Data 가 존재하지 않습니다!");
+            return false;
+        }
+
+        if (levelData.mainPreset == null)
+        {
+            Debug.LogWarningFormat("[EDITOR] '{0}' Level Data 의 Main Preset 이 존재하지 않습니다!", levelData.name);
+            return false;
+        }
+
+        if (levelData.subPreset.Count <= 0)
+        {
+            Debug.LogWarningFormat("[EDITOR] '{0}' Level Data 의 Sub Preset 이 1개 이상이라도 존재해야 합니다!", levelData.name);
+            return false;
         }
         
-        spawnList.Remove(data);
-        DestroyImmediate(tile);
-
-        if (pos.y % 1 != 0)
+        if (levelData.mainPreset.tileSetList == null)
         {
-            pos.y += 2.5f;
+            levelData.mainPreset.tileSetList = new SerializeDictionary<TileID, SubList<TileSet>>();
+        }
+
+        if (subSelectIdx > levelData.subPreset.Count - 1)
+        {
+            subSelectIdx = 0;
         }
         
-        tile = Instantiate(themeData.tileFloorPrefabData.GetPrefab(TileFloorID.BOTTOM_TILE), pos, rot);
-        
-        editorTile = tile.AddComponent<EditorTile>();
-        editorTile.tileID = curTileID;
-        editorTile.floor = floor;
-        editorTile.spawnPos = pos;
+        if (levelData.subPreset[subSelectIdx].tileSetList == null)
+        {
+            levelData.subPreset[subSelectIdx].tileSetList = new SerializeDictionary<TileID, SubList<TileSet>>();
+        }
 
-        spawnList.Add(new Tuple<Vector3, GameObject>(pos, tile));
+        return true;
     }
+
+
     
-    void ReplaceTopTile(Tuple<Vector3, GameObject> data)
-    {
-        GameObject tile = data.Item2;
-        Vector3 pos = tile.transform.position;
-        Quaternion rot = tile.transform.rotation;
-
-        float floor = 0;
-        EditorTile editorTile;
-        if (tile.TryGetComponent(out editorTile))
-        {
-            floor = editorTile.floor;
-        }
-
-        spawnList.Remove(data);
-        DestroyImmediate(tile);
-
-        tile = Instantiate(themeData.tileFloorPrefabData.GetPrefab(pos.y % 1 != 0 ? TileFloorID.TOP_HALF_TILE : TileFloorID.TOP_TILE), pos, rot);
-
-        editorTile = tile.AddComponent<EditorTile>();
-        editorTile.tileID = curTileID;
-        editorTile.floor = floor;
-        editorTile.spawnPos = pos;
-        
-        spawnList.Add(new Tuple<Vector3, GameObject>(pos, tile));
-    }
-    
-    bool TileCheck()
-    {
-        bool isAlready = FindDuplicateTile() != null;
-        
-        GizmoHelper.SetState(isAlready);
-        
-        return isAlready;
-    }
-
     GameObject GetTilePrefab(bool checkTop = true)
     {
         switch (curTileID)
@@ -1066,17 +942,37 @@ public class StageEditor : EditorWindow
 
                 return themeData.tileFloorPrefabData.GetPrefab(tileFloorID);
             default:
-                break;
+                return curPrefab;
         }
-        
-        return curPrefab;
     }
 
     Vector3 GetUnitTilePos()
     {
         return tilePos + new Vector3(0, curFloorUnit, 0);
     }
+    
+    Tuple<Vector3, GameObject> FindDuplicateTile()
+    {
+        return spawnList.Find(x =>
+            x.Item1 == tilePos || 
+            x.Item1 == tilePos + (Vector3.up * 2.5f) ||
+            x.Item1 == tilePos - (Vector3.up * 2.5f));
+    }
+    
+    // TODO : 추가 리팩터링 필요
+    Tuple<Vector3, GameObject> FindTile(TileID tileID, Dictionary<TileID, List<TileSet>> tileSetList)
+    {
+        if (!tileSetList.ContainsKey(tileID))
+            return null;
+        
+        if (tileSetList[tileID] == null || tileSetList[tileID].Count <= 0)
+            return null;
+        
+        Vector3 targetPos = tileSetList[tileID][0].spawnPos;
 
+        return spawnList.Find(x => Vector3.Equals(x.Item1, targetPos));
+    }
+    
     bool FindTopTile()
     {
         Tuple<Vector3, GameObject> data = spawnList.Find(x =>
@@ -1125,37 +1021,238 @@ public class StageEditor : EditorWindow
             
         return true;
     }
-
-    Tuple<Vector3, GameObject> FindDuplicateTile()
+    
+    bool TileCheck()
     {
-        return spawnList.Find(x =>
-            x.Item1 == tilePos || 
-            x.Item1 == tilePos + (Vector3.up * 2.5f) ||
-            x.Item1 == tilePos - (Vector3.up * 2.5f));
+        bool isAlready = FindDuplicateTile() != null;
+        
+        GizmoHelper.SetState(isAlready);
+        
+        return isAlready;
     }
     
-    Tuple<Vector3, GameObject> FindTile(TileID tileID)
+    bool IsGimic(TileID tileID)
     {
-        Vector3 targetPos = Vector3.one;
+        return ((int)tileID) >= ((int)TileID.FOOTHOLD_TRIGGER);
+    }
+    
+    // TODO : 추가 리팩터링 필요
+    void ReplaceBottomTile(Tuple<Vector3, GameObject> data)
+    {
+        GameObject tile = data.Item2;
+        Vector3 pos = tile.transform.position;
+        Quaternion rot = tile.transform.rotation;
         
-        if (isSubPreset)
+        float floor = 0;
+        EditorTile editorTile;
+        if (tile.TryGetComponent(out editorTile))
         {
-            if (subTileSetList[tileID] == null || subTileSetList[tileID].Count <= 0)
-                return null;
+            floor = editorTile.floor;
+        }
         
-            targetPos = subTileSetList[tileID][0].spawnPos;
+        spawnList.Remove(data);
+        DestroyImmediate(tile);
+
+        if (pos.y % 1 != 0)
+        {
+            pos.y += 2.5f;
+        }
+        
+        tile = Instantiate(themeData.tileFloorPrefabData.GetPrefab(TileFloorID.BOTTOM_TILE), pos, rot);
+        
+        editorTile = tile.AddComponent<EditorTile>();
+        editorTile.tileID = curTileID;
+        editorTile.floor = floor;
+        editorTile.spawnPos = pos;
+        editorTile.spawnRot = rot.eulerAngles;
+
+        spawnList.Add(new Tuple<Vector3, GameObject>(pos, tile));
+    }
+    
+    // TODO : 추가 리팩터링 필요
+    void ReplaceTopTile(Tuple<Vector3, GameObject> data)
+    {
+        GameObject tile = data.Item2;
+        Vector3 pos = tile.transform.position;
+        Quaternion rot = tile.transform.rotation;
+
+        float floor = 0;
+        EditorTile editorTile;
+        if (tile.TryGetComponent(out editorTile))
+        {
+            floor = editorTile.floor;
+        }
+
+        spawnList.Remove(data);
+        DestroyImmediate(tile);
+
+        tile = Instantiate(themeData.tileFloorPrefabData.GetPrefab(pos.y % 1 != 0 ? TileFloorID.TOP_HALF_TILE : TileFloorID.TOP_TILE), pos, rot);
+
+        editorTile = tile.AddComponent<EditorTile>();
+        editorTile.tileID = curTileID;
+        editorTile.floor = floor;
+        editorTile.spawnPos = pos;
+        editorTile.spawnRot = rot.eulerAngles;
+        
+        spawnList.Add(new Tuple<Vector3, GameObject>(pos, tile));
+    }
+    
+    void SelectTile()
+    {
+        GameObject tile = spawnList.Find(x =>
+            x.Item1 == tilePos || 
+            x.Item1 == tilePos + (Vector3.up * 2.5f) ||
+            x.Item1 == tilePos - (Vector3.up * 2.5f))?.Item2;
+        
+        if (tile != null)
+        {
+            if (tile.TryGetComponent(out curEditorTile))
+            {
+                tileSize = new Vector3(tileUnit, (Mathf.Abs(curEditorTile.floor) % 1) == 0.5f ? (tileUnit/2) : tileUnit, tileUnit);
+                tileRot.Set(tile.transform.eulerAngles);
+                GizmoHelper.SetSize(tileSize);
+                GizmoHelper.SetEditorTile(curEditorTile);
+            }
+
+            if (tile.TryGetComponent(out curGimicObject))
+            {
+                GizmoHelper.SetGimicObject(curGimicObject);
+            }
         }
         else
         {
-            if (tileSetList[tileID] == null || tileSetList[tileID].Count <= 0)
-                return null;
-        
-            targetPos = tileSetList[tileID][0].spawnPos;
+            DeselectTile();
         }
-
-        return spawnList.Find(x => Vector3.Equals(x.Item1, targetPos));
     }
 
+    void DeselectTile()
+    {
+        curEditorTile = null;
+        curGimicObject = null;
+        tileRot.Set(Vector3.zero);
+
+        GizmoHelper.SetEditorTile(curEditorTile);
+        GizmoHelper.SetGimicObject(curGimicObject);
+    }
+
+    void RotateTile()
+    {
+        float y = Mathf.Repeat((tileRot.y + 90), 360);
+        tileRot.SetY(y);
+    }
+    
+    // TODO : 추가 리팩터링 필요
+    void CreateTile(bool isLoad = false)
+    {
+        if (!TileCheck() && curPrefab != null)
+        {
+            GameObject prefab = GetTilePrefab();
+            GameObject tile = Instantiate(prefab, GetUnitTilePos(), Quaternion.Euler(tileRot));
+            tile.name = tile.name.Replace("(Clone)", "").Trim();
+
+            spawnList.Add(new Tuple<Vector3, GameObject>(tilePos, tile));
+
+            ClearCollider(tile);
+
+            EditorTile editorTile = tile.AddComponent<EditorTile>();
+            editorTile.tileID = curTileID;
+            editorTile.floor = tileFloor;
+            editorTile.spawnPos = tilePos;
+            editorTile.spawnRot = tileRot;
+
+            if ((int) curTileID >= (int) TileID.FOOTHOLD_TRIGGER)
+            {
+                GimicObject gimic;
+                if (!tile.TryGetComponent(out gimic))
+                {
+                    gimic = tile.AddComponent<GimicObject>();
+                }
+                
+                gimic.SetGimicID(0);
+
+                if (isLoad)
+                {
+                    GimicSet gimicSet = new GimicSet();
+                    if (isSubPreset)
+                    {
+                        gimicSet = subGimicSetList.Find(x => x.targetPos == editorTile.spawnPos);
+                    }
+                    else
+                    {
+                        gimicSet = gimicSetList.Find(x => x.targetPos == editorTile.spawnPos);
+                    }
+
+                    if (gimicSet != null)
+                    {
+                        gimic.SetGimicID(gimicSet.ID);
+                    }
+                }
+            }
+
+            if (!isLoad)
+            {
+                if (curTileID == TileID.START_POINT || curTileID == TileID.VM_POINT)
+                {
+                    var targetTile = FindTile(curTileID, isSubPreset ? subTileSetList : tileSetList);
+                    if (targetTile != null)
+                    {
+                        GameObject obj;
+                        
+                        if (isSubPreset)
+                        {
+                            obj = RemoveTileSet(targetTile, ref subTileSetList, ref subGimicSetList);
+                        }
+                        else
+                        {
+                            obj = RemoveTileSet(targetTile, ref tileSetList, ref gimicSetList);
+                        }
+
+                        if (obj != null)
+                        {
+                            DestroyImmediate(obj);
+                        }
+                    }
+                }
+                
+                if (isSubPreset)
+                {
+                    AddTileSet(ref subTileSetList, ref subGimicSetList);
+                }
+                else
+                {
+                    AddTileSet(ref tileSetList, ref gimicSetList);
+                }
+            }
+        }
+        
+        Save();
+    }
+    
+    void DeleteTile()
+    {
+        var data = FindDuplicateTile();
+        if (data != null)
+        {
+            GameObject tile;
+
+            if (isSubPreset)
+            {
+                tile = RemoveTileSet(data, ref subTileSetList, ref subGimicSetList);                
+            }
+            else
+            {
+                tile = RemoveTileSet(data, ref tileSetList, ref gimicSetList);
+            }
+
+            if (tile != null)
+            {
+                DestroyImmediate(tile);
+            }
+            
+            Save();
+        }
+    }
+    
     void ClearCollider(GameObject tile)
     {
         Collider collider;
@@ -1170,8 +1267,8 @@ public class StageEditor : EditorWindow
             DestroyImmediate(col);
         }
     }
-
-    void ClearSpawn()
+    
+    void ClearSpawnTile()
     {
         foreach (var tile in spawnList)
         {
@@ -1185,61 +1282,8 @@ public class StageEditor : EditorWindow
         
         spawnList.Clear();
     }
-
-    void ClearTile()
-    {
-        tileSetList.Clear();
-        gimicSetList.Clear();
-    }
-
-    void ClearSubTile()
-    {
-        subTileSetList.Clear();
-        subGimicSetList.Clear();
-    }
-
-    void AddTileSet()
-    {
-        if (!tileSetList.ContainsKey(curTileID))
-        {
-            tileSetList.Add(curTileID, new SubList<TileSet>());
-        }
-
-        tileSetList[curTileID].Add(new TileSet(Vector2.zero, tilePos, tileRot, tileFloor));
-        
-        if ((int) curTileID >= (int) TileID.FOOTHOLD_TRIGGER)
-        {
-            gimicSetList.Add(new GimicSet(tilePos, 0));
-        }
-    }
-
-    void DeleteTileSet(Tuple<Vector3, GameObject> tile)
-    {
-        foreach (var key in tileSetList.Keys)
-        {
-            TileSet tileSet = tileSetList[key].Find(x => Vector3.Equals(x.spawnPos, tile.Item1));
-
-            if (Vector3.Equals(tileSet.spawnPos, tile.Item1))
-            {
-                if (tileSetList[key].Remove(tileSet))
-                {
-                    GimicSet gimicSet = gimicSetList.Find(x => x.targetPos == tile.Item1);
-                    gimicSetList.Remove(gimicSet);
-                
-                    spawnList.Remove(tile);
-
-                    if (key == TileID.TILE)
-                    {
-                        FindBottomTile(true);
-                    }
-                
-                    DestroyImmediate(tile.Item2);
-                }
-            }
-        }
-    }
-
-    void SpawnTileSet()
+    
+    void SpawnTileSet(Dictionary<TileID, List<TileSet>> tileSetList)
     {
         foreach (var key in tileSetList.Keys)
         {
@@ -1247,222 +1291,148 @@ public class StageEditor : EditorWindow
             {
                 curTileID = key;
                 tileFloor = tileSet.spawnFloor;
-                tilePos = tileSet.spawnPos;
-                tileRot = tileSet.spawnRot;
+                tilePos.Set(tileSet.spawnPos);
+                tileRot.Set(tileSet.spawnRot);
 
                 UpdateData();
                 
                 CreateTile(true);
             }
         }
+    }
+    
+    void AddTileSet(ref Dictionary<TileID, List<TileSet>> tileSetList, ref List<GimicSet> gimicSetList)
+    {
+        if (!tileSetList.ContainsKey(curTileID))
+        {
+            tileSetList.Add(curTileID, new SubList<TileSet>());
+        }
 
-        SpawnSubTileSet();
+        TileSet tileSet = new TileSet();
+        tileSet.spawnPos = tilePos;
+        tileSet.spawnRot = tileRot;
+        tileSet.spawnFloor = tileFloor;
+        
+        tileSetList[curTileID].Add(tileSet);
+
+        if (IsGimic(curTileID))
+        {
+            GimicSet gimicSet = new GimicSet();
+            gimicSet.targetPos = tilePos;
+            gimicSet.ID = 0;
+
+            gimicSetList.Add(gimicSet);
+        }
     }
 
-    void LoadTileSet(bool canSpawn)
+    // TODO : FindBottomTile 메서드 체크
+    GameObject RemoveTileSet(Tuple<Vector3, GameObject> targetTile, ref Dictionary<TileID, List<TileSet>> tileSetList, ref List<GimicSet> gimicSetList)
     {
-        if (levelData.mainPreset.tileSetList == null)
-            return;
-        
-        ClearTile();
-
-        foreach (var key in levelData.mainPreset.tileSetList.Keys)
+        foreach (var key in tileSetList.Keys)
         {
-            foreach (var tileSet in levelData.mainPreset.tileSetList[key])
+            TileSet tileSet = tileSetList[key].Find(x => Vector3.Equals(x.spawnPos, targetTile.Item1));
+            if (tileSetList[key].Remove(tileSet))
+            {
+                spawnList.Remove(targetTile);
+                
+                GimicSet gimicSet = gimicSetList.Find(x => x.targetPos == targetTile.Item1);
+                gimicSetList.Remove(gimicSet);
+                
+                if (key == TileID.TILE)
+                {
+                    FindBottomTile(true);
+                }
+
+                return targetTile.Item2;
+            }
+        }
+
+        return null;
+    }
+
+    void LoadTileSet(TileSetData tileSetData, ref Dictionary<TileID, List<TileSet>> tileSetList, ref List<GimicSet> gimicSetList)
+    {
+        ClearTileSet(ref tileSetList, ref gimicSetList);
+
+        foreach (var key in tileSetData.tileSetList.Keys)
+        {
+            foreach (var tileSet in tileSetData.tileSetList[key])
             {
                 if (!tileSetList.ContainsKey(key))
                 {
                     tileSetList.Add(key, new SubList<TileSet>());
                 }
             
-                tileSetList[key].Add(new TileSet(Vector2.zero, tileSet.spawnPos, tileSet.spawnRot, tileSet.spawnFloor));
+                tileSetList[key].Add(new TileSet(tileSet));
             }
         }
         
-        foreach (var gimcset in levelData.mainPreset.gimicSetList)
+        foreach (var gimicSet in tileSetData.gimicSetList.OrderBy(x => x.ID))
         {
-            gimicSetList.Add(new GimicSet(gimcset.targetPos, gimcset.ID));
-        }
-
-        if (canSpawn)
-        {
-            ClearSpawn();
-            
-            SpawnTileSet();
+            gimicSetList.Add(new GimicSet(gimicSet));
         }
     }
-
-    void SaveTileSet()
+    
+    void SaveTileSet(TileSetData tileSetData, Dictionary<TileID, List<TileSet>> tileSetList, List<GimicSet> gimicSetList)
     {
-        if (levelData.mainPreset == null)
-            return;
-        
-        levelData.mainPreset.tileSetList.Clear();
-        
-        foreach (var key in tileSetList.Keys)
+        ClearTileSet(ref tileSetData);
+
+        if (tileSetList.Count > 0)
         {
-            foreach (var tileSet in tileSetList[key].OrderByDescending(x => x.spawnFloor))
+            foreach (var key in tileSetList.Keys)
             {
-                if (!levelData.mainPreset.tileSetList.ContainsKey(key))
+                foreach (var tileSet in tileSetList[key].OrderByDescending(x => x.spawnFloor))
                 {
-                    levelData.mainPreset.tileSetList.Add(key, new SubList<TileSet>());
-                }
+                    if (!tileSetData.tileSetList.ContainsKey(key))
+                    {
+                        tileSetData.tileSetList.Add(key, new SubList<TileSet>());
+                    }
             
-                levelData.mainPreset.tileSetList[key].Add(new TileSet(Vector2.zero, tileSet.spawnPos, tileSet.spawnRot, tileSet.spawnFloor));
+                    tileSetData.tileSetList[key].Add(new TileSet(tileSet));
+                }
             }
         }
-        
-        levelData.mainPreset.gimicSetList.Clear();
-        
-        foreach (var gimicSet in gimicSetList.OrderBy(x => x.ID))
+
+        foreach (var gimicSet in gimicSetList)
         {
-            levelData.mainPreset.gimicSetList.Add(new GimicSet(gimicSet.targetPos, gimicSet.ID));
+            tileSetData.gimicSetList.Add(new GimicSet(gimicSet));
         }
 
-        EditorUtility.SetDirty(levelData.mainPreset);
-
+        EditorUtility.SetDirty(tileSetData);
         Save();
     }
-    #endregion
 
-    #region SubTileset
-    void AddSubTileSet()
+    void ClearTileSet(ref TileSetData tileSetData)
     {
-        if (!subTileSetList.ContainsKey(curTileID))
+        if (tileSetData.tileSetList.Count > 0)
         {
-            subTileSetList.Add(curTileID, new SubList<TileSet>());
-        }
-
-        subTileSetList[curTileID].Add(new TileSet(Vector2.zero, tilePos, tileRot, tileFloor));
-
-        if ((int) curTileID >= (int) TileID.FOOTHOLD_TRIGGER)
-        {
-            subGimicSetList.Add(new GimicSet(tilePos, 0));
-        }
-    }
-    
-    void DeleteSubTileSet(Tuple<Vector3, GameObject> tile)
-    {
-        foreach (var key in subTileSetList.Keys)
-        {
-            TileSet tileSet = subTileSetList[key].Find(x => Vector3.Equals(x.spawnPos, tile.Item1));
-            if (subTileSetList[key].Remove(tileSet) && Vector3.Equals(tileSet.spawnPos, tile.Item1))
+            foreach (var key in tileSetData.tileSetList.Keys)
             {
-                GimicSet gimicSet = subGimicSetList.Find(x => x.targetPos == tile.Item1);
-                subGimicSetList.Remove(gimicSet);
-                
-                spawnList.Remove(tile);
-                
-                if (key == TileID.TILE)
-                {
-                    FindBottomTile(true);
-                }
-                
-                DestroyImmediate(tile.Item2);
-            }
-        }
-    }
-    
-    void SpawnSubTileSet()
-    {
-        foreach (var key in subTileSetList.Keys)
-        {
-            foreach (var tileSet in subTileSetList[key])
-            {
-                curTileID = key;
-                tileFloor = tileSet.spawnFloor;
-                tilePos = tileSet.spawnPos;
-                tileRot = tileSet.spawnRot;
-                
-                UpdateData();
-                
-                CreateTile(true);
+                tileSetData.tileSetList[key].Clear();
             }
         }
 
-        curTileID = 0;
-        tileFloor = 0;
+        tileSetData.tileSetList.Clear();
+        tileSetData.gimicSetList.Clear();
     }
-    
-    void LoadSubTileSet(bool canSpawn)
+
+    void ClearTileSet(ref Dictionary<TileID, List<TileSet>> tileSetList, ref List<GimicSet> gimicSetList)
     {
-        if (levelData.subPreset.Count <= 0)
-            return;
-
-        if (levelData.subPreset[subSelectIdx].tileSetList == null)
+        if (tileSetList.Count > 0)
         {
-            levelData.subPreset[subSelectIdx].tileSetList = new SerializeDictionary<TileID, SubList<TileSet>>();
-        }
-        
-        ClearSubTile();
-
-        foreach (var key in levelData.subPreset[subSelectIdx].tileSetList.Keys)
-        {
-            foreach (var tileSet in levelData.subPreset[subSelectIdx].tileSetList[key])
+            foreach (var key in tileSetList.Keys)
             {
-                if (!subTileSetList.ContainsKey(key))
-                {
-                    subTileSetList.Add(key, new SubList<TileSet>());
-                }
-            
-                subTileSetList[key].Add(new TileSet(Vector2.zero, tileSet.spawnPos, tileSet.spawnRot, tileSet.spawnFloor));
+                tileSetList[key].Clear();
             }
         }
-        
-        foreach (var gimcset in levelData.subPreset[subSelectIdx].gimicSetList.OrderBy(x => x.ID))
-        {
-            subGimicSetList.Add(new GimicSet(gimcset.targetPos, gimcset.ID));
-        }
-        
-        if (canSpawn)
-        {
-            ClearSpawn();
-            
-            SpawnTileSet();
-        }
+
+        tileSetList.Clear();
+        gimicSetList.Clear();
     }
-
-    void SaveSubTileSet()
-    {
-        if (levelData.subPreset.Count <= 0)
-            return;
-
-        if (levelData.subPreset[subSelectIdx].tileSetList == null)
-        {
-            levelData.subPreset[subSelectIdx].tileSetList = new SerializeDictionary<TileID, SubList<TileSet>>();
-        }
-        
-        levelData.subPreset[subSelectIdx].tileSetList.Clear();
-        
-        foreach (var key in subTileSetList.Keys)
-        {
-            foreach (var tileSet in subTileSetList[key].OrderByDescending(x => x.spawnFloor))
-            {
-                if (!levelData.subPreset[subSelectIdx].tileSetList.ContainsKey(key))
-                {
-                    levelData.subPreset[subSelectIdx].tileSetList.Add(key, new SubList<TileSet>());
-                }
-            
-                levelData.subPreset[subSelectIdx].tileSetList[key].Add(new TileSet(Vector2.zero, tileSet.spawnPos, tileSet.spawnRot, tileSet.spawnFloor));
-            }
-        }
-        
-        levelData.subPreset[subSelectIdx].gimicSetList.Clear();
-        
-        foreach (var gimicSet in subGimicSetList)
-        {
-            levelData.subPreset[subSelectIdx].gimicSetList.Add(new GimicSet(gimicSet.targetPos, gimicSet.ID));
-        }
-
-        EditorUtility.SetDirty(levelData.subPreset[subSelectIdx]);
-        
-        Save();
-    }
-    #endregion
 
     void Save()
     {
-        SaveChanges();
+        this.SaveChanges();
         
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
