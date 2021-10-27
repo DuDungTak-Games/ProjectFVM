@@ -92,7 +92,6 @@ public class TileManager : MonoBehaviour
             Floor tileFloor = tile.AddComponent<Floor>();
             
             tileFloor.floor = spawnFloor;
-            // tileFloor.tilePos = tileSet.tilePos;
         }
     }
     

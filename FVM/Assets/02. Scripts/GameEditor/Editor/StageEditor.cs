@@ -932,7 +932,7 @@ public class StageEditor : EditorWindow
         switch (curTileID)
         {
             case TileID.TILE:
-                bool hasTop = checkTop ? FindTopTile() : false;
+                bool hasTop = checkTop ? CheckTopTile() : false;
                 TileFloorID tileFloorID = hasTop ? TileFloorID.BOTTOM_TILE : TileFloorID.TOP_TILE;
                 
                 if (tileFloor % 1 != 0)
@@ -958,28 +958,24 @@ public class StageEditor : EditorWindow
             x.Item1 == tilePos + (Vector3.up * 2.5f) ||
             x.Item1 == tilePos - (Vector3.up * 2.5f));
     }
-    
-    // TODO : 추가 리팩터링 필요
+
     Tuple<Vector3, GameObject> FindTile(TileID tileID, Dictionary<TileID, List<TileSet>> tileSetList)
     {
-        if (!tileSetList.ContainsKey(tileID))
+        if (!tileSetList.ContainsKey(tileID) || tileSetList[tileID].Count <= 0)
             return null;
-        
-        if (tileSetList[tileID] == null || tileSetList[tileID].Count <= 0)
-            return null;
-        
+
         Vector3 targetPos = tileSetList[tileID][0].spawnPos;
 
         return spawnList.Find(x => Vector3.Equals(x.Item1, targetPos));
     }
     
-    bool FindTopTile()
+    bool CheckTopTile()
     {
         Tuple<Vector3, GameObject> data = spawnList.Find(x =>
             x.Item1 == tilePos + (Vector3.up * 7.5f) ||
             x.Item1 == tilePos + (Vector3.up * 10));
 
-        FindBottomTile();
+        CheckBottomTile();
         
         if (data == null)
             return false;
@@ -994,7 +990,7 @@ public class StageEditor : EditorWindow
         return true;
     }
 
-    bool FindBottomTile(bool isDelete = false)
+    bool CheckBottomTile(bool isDelete = false)
     {
         Tuple<Vector3, GameObject> data = spawnList.Find(x =>
             x.Item1 == tilePos - (Vector3.up * 7.5f) ||
@@ -1035,48 +1031,44 @@ public class StageEditor : EditorWindow
     {
         return ((int)tileID) >= ((int)TileID.FOOTHOLD_TRIGGER);
     }
-    
-    // TODO : 추가 리팩터링 필요
+
+    bool IsSpecial(TileID tileID)
+    {
+        if (tileID == TileID.START_POINT || tileID == TileID.VM_POINT)
+            return true;
+
+        return false;
+    }
+
     void ReplaceBottomTile(Tuple<Vector3, GameObject> data)
     {
         GameObject tile = data.Item2;
         Vector3 pos = tile.transform.position;
-        Quaternion rot = tile.transform.rotation;
-        
         float floor = 0;
+        
         EditorTile editorTile;
         if (tile.TryGetComponent(out editorTile))
         {
             floor = editorTile.floor;
+            
+            if (pos.y % 1 != 0)
+            {
+                pos.y += 2.5f;
+            }
         }
         
         spawnList.Remove(data);
         DestroyImmediate(tile);
 
-        if (pos.y % 1 != 0)
-        {
-            pos.y += 2.5f;
-        }
-        
-        tile = Instantiate(themeData.tileFloorPrefabData.GetPrefab(TileFloorID.BOTTOM_TILE), pos, rot);
-        
-        editorTile = tile.AddComponent<EditorTile>();
-        editorTile.tileID = curTileID;
-        editorTile.floor = floor;
-        editorTile.spawnPos = pos;
-        editorTile.spawnRot = rot.eulerAngles;
-
-        spawnList.Add(new Tuple<Vector3, GameObject>(pos, tile));
+        GameObject prefab = themeData.tileFloorPrefabData.GetPrefab(TileFloorID.BOTTOM_TILE);
+        RespawnTile(prefab, pos, tile.transform.eulerAngles, floor);
     }
-    
-    // TODO : 추가 리팩터링 필요
+
     void ReplaceTopTile(Tuple<Vector3, GameObject> data)
     {
         GameObject tile = data.Item2;
-        Vector3 pos = tile.transform.position;
-        Quaternion rot = tile.transform.rotation;
-
         float floor = 0;
+        
         EditorTile editorTile;
         if (tile.TryGetComponent(out editorTile))
         {
@@ -1086,13 +1078,14 @@ public class StageEditor : EditorWindow
         spawnList.Remove(data);
         DestroyImmediate(tile);
 
-        tile = Instantiate(themeData.tileFloorPrefabData.GetPrefab(pos.y % 1 != 0 ? TileFloorID.TOP_HALF_TILE : TileFloorID.TOP_TILE), pos, rot);
+        GameObject prefab = themeData.tileFloorPrefabData.GetPrefab(floor % 1 != 0 ? TileFloorID.TOP_HALF_TILE : TileFloorID.TOP_TILE);
+        RespawnTile(prefab, tile.transform.position, tile.transform.eulerAngles, floor);
+    }
 
-        editorTile = tile.AddComponent<EditorTile>();
-        editorTile.tileID = curTileID;
-        editorTile.floor = floor;
-        editorTile.spawnPos = pos;
-        editorTile.spawnRot = rot.eulerAngles;
+    void RespawnTile(GameObject prefab, Vector3 pos, Vector3 rot, float floor)
+    {
+        GameObject tile = Instantiate(prefab, pos, Quaternion.Euler(rot));
+        SetEditorTile(tile, pos, rot, floor);
         
         spawnList.Add(new Tuple<Vector3, GameObject>(pos, tile));
     }
@@ -1140,94 +1133,37 @@ public class StageEditor : EditorWindow
         float y = Mathf.Repeat((tileRot.y + 90), 360);
         tileRot.SetY(y);
     }
-    
-    // TODO : 추가 리팩터링 필요
+
     void CreateTile(bool isLoad = false)
     {
         if (!TileCheck() && curPrefab != null)
         {
-            GameObject prefab = GetTilePrefab();
-            GameObject tile = Instantiate(prefab, GetUnitTilePos(), Quaternion.Euler(tileRot));
-            tile.name = tile.name.Replace("(Clone)", "").Trim();
+            GameObject tile = SpawnTile();
+            EditorTile editorTile = SetEditorTile(tile);
+            ClearCollider(tile);
 
             spawnList.Add(new Tuple<Vector3, GameObject>(tilePos, tile));
 
-            ClearCollider(tile);
-
-            EditorTile editorTile = tile.AddComponent<EditorTile>();
-            editorTile.tileID = curTileID;
-            editorTile.floor = tileFloor;
-            editorTile.spawnPos = tilePos;
-            editorTile.spawnRot = tileRot;
-
-            if ((int) curTileID >= (int) TileID.FOOTHOLD_TRIGGER)
+            if (IsGimic(curTileID))
             {
-                GimicObject gimic;
-                if (!tile.TryGetComponent(out gimic))
-                {
-                    gimic = tile.AddComponent<GimicObject>();
-                }
-                
-                gimic.SetGimicID(0);
-
-                if (isLoad)
-                {
-                    GimicSet gimicSet = new GimicSet();
-                    if (isSubPreset)
-                    {
-                        gimicSet = subGimicSetList.Find(x => x.targetPos == editorTile.spawnPos);
-                    }
-                    else
-                    {
-                        gimicSet = gimicSetList.Find(x => x.targetPos == editorTile.spawnPos);
-                    }
-
-                    if (gimicSet != null)
-                    {
-                        gimic.SetGimicID(gimicSet.ID);
-                    }
-                }
+                GimicObject gimic = CreateGimic(tile);
+                LoadGimic(gimic, editorTile.spawnPos);
             }
 
             if (!isLoad)
             {
-                if (curTileID == TileID.START_POINT || curTileID == TileID.VM_POINT)
+                if (IsSpecial(curTileID))
                 {
-                    var targetTile = FindTile(curTileID, isSubPreset ? subTileSetList : tileSetList);
-                    if (targetTile != null)
-                    {
-                        GameObject obj;
-                        
-                        if (isSubPreset)
-                        {
-                            obj = RemoveTileSet(targetTile, ref subTileSetList, ref subGimicSetList);
-                        }
-                        else
-                        {
-                            obj = RemoveTileSet(targetTile, ref tileSetList, ref gimicSetList);
-                        }
-
-                        if (obj != null)
-                        {
-                            DestroyImmediate(obj);
-                        }
-                    }
+                    DeleteDuplicateTile();
                 }
                 
-                if (isSubPreset)
-                {
-                    AddTileSet(ref subTileSetList, ref subGimicSetList);
-                }
-                else
-                {
-                    AddTileSet(ref tileSetList, ref gimicSetList);
-                }
+                AddTileSet();
             }
         }
         
         Save();
     }
-    
+
     void DeleteTile()
     {
         var data = FindDuplicateTile();
@@ -1251,6 +1187,91 @@ public class StageEditor : EditorWindow
             
             Save();
         }
+    }
+
+    GimicObject CreateGimic(GameObject tile)
+    {
+        GimicObject gimic;
+        if (!tile.TryGetComponent(out gimic))
+        {
+            gimic = tile.AddComponent<GimicObject>();
+        }
+
+        gimic.SetGimicID(0);
+        
+        return gimic;
+    }
+
+    void LoadGimic(GimicObject gimic, Vector3 gimicPos)
+    {
+        GimicSet gimicSet = new GimicSet();
+        if (isSubPreset)
+        {
+            gimicSet = subGimicSetList.Find(x => x.targetPos == gimicPos);
+        }
+        else
+        {
+            gimicSet = gimicSetList.Find(x => x.targetPos == gimicPos);
+        }
+
+        if (gimicSet != null)
+        {
+            gimic.SetGimicID(gimicSet.ID);
+        }
+    }
+
+    void DeleteDuplicateTile()
+    {
+        var tile = FindTile(curTileID, isSubPreset ? subTileSetList : tileSetList);
+        if (tile != null)
+        {
+            GameObject targetTile = RemoveTileSet(tile);
+            if (targetTile != null)
+            {
+                DestroyImmediate(targetTile);
+            }
+        }
+    }
+    
+    GameObject SpawnTile()
+    {
+        GameObject prefab = GetTilePrefab();
+        GameObject tile = Instantiate(prefab, GetUnitTilePos(), Quaternion.Euler(tileRot));
+        tile.name = tile.name.Replace("(Clone)", "").Trim();
+
+        return tile;
+    }
+
+    EditorTile SetEditorTile(GameObject tile, Vector3 pos, Vector3 rot, float floor)
+    {
+        EditorTile editorTile;
+        if (!tile.TryGetComponent(out editorTile))
+        {
+            editorTile = tile.AddComponent<EditorTile>();
+        }
+        
+        editorTile.tileID = curTileID;
+        editorTile.spawnPos = pos;
+        editorTile.spawnRot = rot;
+        editorTile.floor = floor;
+
+        return editorTile;
+    }
+    
+    EditorTile SetEditorTile(GameObject tile)
+    {
+        EditorTile editorTile;
+        if (!tile.TryGetComponent(out editorTile))
+        {
+            editorTile = tile.AddComponent<EditorTile>();
+        }
+        
+        editorTile.tileID = curTileID;
+        editorTile.spawnPos = tilePos;
+        editorTile.spawnRot = tileRot;
+        editorTile.floor = tileFloor;
+
+        return editorTile;
     }
     
     void ClearCollider(GameObject tile)
@@ -1300,6 +1321,18 @@ public class StageEditor : EditorWindow
             }
         }
     }
+
+    void AddTileSet()
+    {
+        if (isSubPreset)
+        {
+            AddTileSet(ref subTileSetList, ref subGimicSetList);
+        }
+        else
+        {
+            AddTileSet(ref tileSetList, ref gimicSetList);
+        }
+    }
     
     void AddTileSet(ref Dictionary<TileID, List<TileSet>> tileSetList, ref List<GimicSet> gimicSetList)
     {
@@ -1325,7 +1358,21 @@ public class StageEditor : EditorWindow
         }
     }
 
-    // TODO : FindBottomTile 메서드 체크
+    GameObject RemoveTileSet(Tuple<Vector3, GameObject> targetTile)
+    {
+        GameObject tile;
+        if (isSubPreset)
+        {
+            tile = RemoveTileSet(targetTile, ref subTileSetList, ref subGimicSetList);
+        }
+        else
+        {
+            tile = RemoveTileSet(targetTile, ref tileSetList, ref gimicSetList);
+        }
+
+        return tile;
+    }
+    
     GameObject RemoveTileSet(Tuple<Vector3, GameObject> targetTile, ref Dictionary<TileID, List<TileSet>> tileSetList, ref List<GimicSet> gimicSetList)
     {
         foreach (var key in tileSetList.Keys)
@@ -1340,7 +1387,7 @@ public class StageEditor : EditorWindow
                 
                 if (key == TileID.TILE)
                 {
-                    FindBottomTile(true);
+                    CheckBottomTile(true);
                 }
 
                 return targetTile.Item2;
