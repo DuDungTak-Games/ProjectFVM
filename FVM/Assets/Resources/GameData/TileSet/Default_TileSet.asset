@@ -13,85 +13,88 @@ MonoBehaviour:
   m_Name: Default_TileSet
   m_EditorClassIdentifier: 
   tileSetList:
-    keys: 000000000300000004000000
+    keys: 00000000
     values:
     - datas:
-      - spawnPos: {x: 0, y: 10, z: 40}
+      - spawnPos: {x: 10, y: 27.5, z: 70}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 2.5
+      - spawnPos: {x: 10, y: 20, z: 70}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 2
+      - spawnPos: {x: 10, y: 17.5, z: 60}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 1.5
+      - spawnPos: {x: -10, y: 17.5, z: 70}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 1.5
+      - spawnPos: {x: 70, y: 17.5, z: 60}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 1.5
+      - spawnPos: {x: 40, y: 17.5, z: 60}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 1.5
+      - spawnPos: {x: 40, y: 17.5, z: 50}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 1.5
+      - spawnPos: {x: 0, y: 10, z: 70}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 1
-      - spawnPos: {x: -30, y: 10, z: 20}
+      - spawnPos: {x: -10, y: 10, z: 70}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 1
-      - spawnPos: {x: -40, y: 10, z: 10}
+      - spawnPos: {x: 10, y: 10, z: 70}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 1
-      - spawnPos: {x: 0, y: 7.5, z: 30}
+      - spawnPos: {x: -10, y: 10, z: 60}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 1
+      - spawnPos: {x: 10, y: 10, z: 60}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 1
+      - spawnPos: {x: 60, y: 10, z: 60}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 1
+      - spawnPos: {x: 70, y: 10, z: 60}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 1
+      - spawnPos: {x: 40, y: 10, z: 60}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 1
+      - spawnPos: {x: 40, y: 10, z: 50}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 1
+      - spawnPos: {x: 0, y: 7.5, z: 60}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 0.5
-      - spawnPos: {x: -30, y: 7.5, z: 10}
+      - spawnPos: {x: 80, y: 7.5, z: 60}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 0.5
-      - spawnPos: {x: -40, y: 7.5, z: 20}
-        spawnRot: {x: 0, y: 0, z: 0}
-        spawnFloor: 0.5
-      - spawnPos: {x: 10, y: 0, z: 0}
-        spawnRot: {x: 0, y: 0, z: 0}
-        spawnFloor: 0
       - spawnPos: {x: 0, y: 0, z: 0}
-        spawnRot: {x: 0, y: 0, z: 0}
-        spawnFloor: 0
-      - spawnPos: {x: -10, y: 0, z: 0}
-        spawnRot: {x: 0, y: 0, z: 0}
-        spawnFloor: 0
-      - spawnPos: {x: 0, y: 0, z: -10}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 0
       - spawnPos: {x: 0, y: 0, z: 10}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 0
-      - spawnPos: {x: -10, y: 0, z: -10}
-        spawnRot: {x: 0, y: 0, z: 0}
-        spawnFloor: 0
-      - spawnPos: {x: -10, y: 0, z: 10}
+      - spawnPos: {x: 0, y: 0, z: -10}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 0
       - spawnPos: {x: 10, y: 0, z: -10}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 0
+      - spawnPos: {x: 10, y: 0, z: 0}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
       - spawnPos: {x: 10, y: 0, z: 10}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 0
-      - spawnPos: {x: -20, y: 0, z: 0}
+      - spawnPos: {x: -10, y: 0, z: -10}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 0
-      - spawnPos: {x: -30, y: 0, z: 0}
+      - spawnPos: {x: -10, y: 0, z: 0}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 0
-      - spawnPos: {x: -40, y: 0, z: 0}
-        spawnRot: {x: 0, y: 0, z: 0}
-        spawnFloor: 0
-      - spawnPos: {x: -20, y: 0, z: -10}
-        spawnRot: {x: 0, y: 0, z: 0}
-        spawnFloor: 0
-      - spawnPos: {x: -20, y: 0, z: 10}
-        spawnRot: {x: 0, y: 0, z: 0}
-        spawnFloor: 0
-      - spawnPos: {x: 0, y: 0, z: -20}
-        spawnRot: {x: 0, y: 0, z: 0}
-        spawnFloor: 0
-      - spawnPos: {x: 0, y: 0, z: -30}
-        spawnRot: {x: 0, y: 0, z: 0}
-        spawnFloor: 0
-      - spawnPos: {x: 0, y: 0, z: -40}
-        spawnRot: {x: 0, y: 0, z: 0}
-        spawnFloor: 0
-      - spawnPos: {x: 20, y: 0, z: 0}
-        spawnRot: {x: 0, y: 0, z: 0}
-        spawnFloor: 0
-      - spawnPos: {x: 30, y: 0, z: 0}
-        spawnRot: {x: 0, y: 0, z: 0}
-        spawnFloor: 0
-      - spawnPos: {x: 40, y: 0, z: 0}
+      - spawnPos: {x: -10, y: 0, z: 10}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 0
       - spawnPos: {x: 0, y: 0, z: 20}
@@ -103,27 +106,58 @@ MonoBehaviour:
       - spawnPos: {x: 0, y: 0, z: 40}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 0
-      - spawnPos: {x: 40, y: 0, z: -10}
+      - spawnPos: {x: 0, y: 0, z: 50}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 0
-      - spawnPos: {x: 40, y: 0, z: 10}
+      - spawnPos: {x: 10, y: 0, z: 50}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 0
-      - spawnPos: {x: 50, y: 0, z: 0}
+      - spawnPos: {x: -10, y: 0, z: 50}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 0
-      - spawnPos: {x: 50, y: 0, z: 10}
+      - spawnPos: {x: -10, y: 0, z: 60}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 0
-      - spawnPos: {x: 50, y: 0, z: -10}
+      - spawnPos: {x: 0, y: 0, z: 60}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 0
-    - datas:
-      - spawnPos: {x: 0, y: 10, z: -40}
+      - spawnPos: {x: 10, y: 0, z: 60}
         spawnRot: {x: 0, y: 0, z: 0}
-        spawnFloor: 1
-    - datas:
-      - spawnPos: {x: 50, y: 10, z: 0}
-        spawnRot: {x: 0, y: 270, z: 0}
-        spawnFloor: 1
+        spawnFloor: 0
+      - spawnPos: {x: -10, y: 0, z: 70}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
+      - spawnPos: {x: 0, y: 0, z: 70}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
+      - spawnPos: {x: 10, y: 0, z: 70}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
+      - spawnPos: {x: 50, y: 0, z: 60}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
+      - spawnPos: {x: 60, y: 0, z: 60}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
+      - spawnPos: {x: 70, y: 0, z: 60}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
+      - spawnPos: {x: 80, y: 0, z: 60}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
+      - spawnPos: {x: 40, y: 0, z: 60}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
+      - spawnPos: {x: 40, y: 0, z: 50}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
+      - spawnPos: {x: 40, y: 0, z: 70}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
+      - spawnPos: {x: 50, y: 0, z: 70}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
+      - spawnPos: {x: 50, y: 0, z: 50}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 0
   gimicSetList: []

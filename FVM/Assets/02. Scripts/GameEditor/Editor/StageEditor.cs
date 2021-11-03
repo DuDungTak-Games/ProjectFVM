@@ -777,6 +777,16 @@ public class StageEditor : EditorWindow
 
     void ShowPreviewTile()
     {
+        if (curEditType == EditType.SELECT)
+        {
+            if (previewTile != null)
+            {
+                DestroyImmediate(previewTile);
+            }
+
+            return;
+        }
+        
         if (prevPrefab != GetTilePrefab(false))
         {
             prevPrefab = GetTilePrefab(false);
@@ -1044,16 +1054,19 @@ public class StageEditor : EditorWindow
     {
         GameObject tile = data.Item2;
         Vector3 pos = tile.transform.position;
+        Vector3 rot  = tile.transform.eulerAngles;
         float floor = 0;
         
         EditorTile editorTile;
         if (tile.TryGetComponent(out editorTile))
         {
             floor = editorTile.floor;
-            
-            if (pos.y % 1 != 0)
+
+            if (floor % 1 != 0)
             {
+                floor = Mathf.Ceil(floor);
                 pos.y += 2.5f;
+                ReplaceTileSet(editorTile, pos, floor);
             }
         }
         
@@ -1061,12 +1074,14 @@ public class StageEditor : EditorWindow
         DestroyImmediate(tile);
 
         GameObject prefab = themeData.tileFloorPrefabData.GetPrefab(TileFloorID.BOTTOM_TILE);
-        RespawnTile(prefab, pos, tile.transform.eulerAngles, floor);
+        RespawnTile(prefab, pos, rot, floor);
     }
 
     void ReplaceTopTile(Tuple<Vector3, GameObject> data)
     {
         GameObject tile = data.Item2;
+        Vector3 pos = tile.transform.position;
+        Vector3 rot  = tile.transform.eulerAngles;
         float floor = 0;
         
         EditorTile editorTile;
@@ -1079,7 +1094,7 @@ public class StageEditor : EditorWindow
         DestroyImmediate(tile);
 
         GameObject prefab = themeData.tileFloorPrefabData.GetPrefab(floor % 1 != 0 ? TileFloorID.TOP_HALF_TILE : TileFloorID.TOP_TILE);
-        RespawnTile(prefab, tile.transform.position, tile.transform.eulerAngles, floor);
+        RespawnTile(prefab, pos, rot, floor);
     }
 
     void RespawnTile(GameObject prefab, Vector3 pos, Vector3 rot, float floor)
@@ -1088,6 +1103,25 @@ public class StageEditor : EditorWindow
         SetEditorTile(tile, pos, rot, floor);
         
         spawnList.Add(new Tuple<Vector3, GameObject>(pos, tile));
+    }
+
+    void ReplaceTileSet(EditorTile editorTile, Vector3 newPos, float newFloor)
+    {
+        TileSet tileSet;
+        if (isSubPreset)
+        {
+            tileSet = subTileSetList[curTileID].Find(x => x.spawnPos == editorTile.spawnPos);
+        }
+        else
+        {
+            tileSet = tileSetList[curTileID].Find(x => x.spawnPos == editorTile.spawnPos);
+        }
+
+        if (tileSet != null)
+        {
+            tileSet.spawnPos = newPos;
+            tileSet.spawnFloor = newFloor;
+        }
     }
     
     void SelectTile()
@@ -1440,7 +1474,7 @@ public class StageEditor : EditorWindow
             }
         }
 
-        foreach (var gimicSet in gimicSetList)
+        foreach (var gimicSet in gimicSetList.OrderBy(x => x.ID))
         {
             tileSetData.gimicSetList.Add(new GimicSet(gimicSet));
         }
