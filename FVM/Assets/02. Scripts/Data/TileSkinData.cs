@@ -6,16 +6,14 @@ public class TileSkinData : ScriptableObject
 {
     
     [SerializeField]
-    public List<SubList<Texture>> textureList = new List<SubList<Texture>>();
+    public Material[] materials;
 
-    public Texture GetTexture(int idx, int id)
+    public Material GetMaterial(int id)
     {
-        idx = Mathf.Clamp(id, 0, textureList.Count-1);
-        
-        if(textureList.Count <= 0)
+        if(materials.Length <= 0)
             return null;
-        
-        id = Mathf.Clamp(id, 0, textureList[idx].Count-1);
-        return textureList[idx][id];
+
+        id = Mathf.Clamp(id, 0, materials.Length-1);
+        return materials[id];
     }
 }

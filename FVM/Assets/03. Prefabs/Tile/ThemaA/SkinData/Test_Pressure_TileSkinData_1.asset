@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faaa821cffdeed240881be0f59d42623, type: 3}
+  m_Name: Test_Pressure_TileSkinData_1
+  m_EditorClassIdentifier: 
+  materials:
+  - {fileID: 575607939170025344, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -1864450467124417365, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: 1865793754489965357, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: 3155393942108489495, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: 7006982396042532221, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -5595989392532013576, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -5622447159331479776, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -5194634019922558755, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -5023227458279549278, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: 4671263225850740937, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -3356390932480297861, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: 2126813514460367143, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: -3496479702225161721, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  - {fileID: 7312158941740743834, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}

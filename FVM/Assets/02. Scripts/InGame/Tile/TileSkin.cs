@@ -3,19 +3,26 @@ using UnityEngine;
 public class TileSkin : MonoBehaviour
 {
 
-    public TileSkinData skinData;
+    public TileSkinData[] skinDatas;
 
     public void Init(int ID)
     {
-        if(skinData == null)
+        if(skinDatas.Length <= 0)
             return;
         
         MeshRenderer mr;
         if (TryGetComponent(out mr))
         {
-            for (int i = 0; i < mr.materials.Length; i++)
+            if (skinDatas.Length == 1)
             {
-                mr.materials[i].mainTexture = skinData.GetTexture(i, ID);
+                mr.material = skinDatas[0].GetMaterial(ID);
+            }
+            else
+            {
+                for (int i = 0; i < mr.materials.Length; i++)
+                {
+                    mr.materials[i] = skinDatas[i].GetMaterial(ID);
+                }
             }
         }
     }

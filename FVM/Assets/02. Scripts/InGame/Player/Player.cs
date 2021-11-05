@@ -10,16 +10,16 @@ public class Player : MonoBehaviour
 {
     public Vector3 rayHeightOffset = new Vector3(0, 5, 0);
 
-    public float moveUnit = 10f, moveSpeed = 16f;
-    public float rotateSpeed = 20f;
+    public float moveUnit = 10f;
     public float heightUnit = 5f;
 
+    public PlayerController pc;
+    
     public VMInputSwipe vmInput;
     
     float currentFloor = 0;
     Floor directionFloor;
-
-    Coroutine moveCoroutine, rotateCoroutine;
+    GimicTrigger forwardGimic;
 
     void Awake()
     {
@@ -50,7 +50,7 @@ public class Player : MonoBehaviour
         if (!TestGameManager.Instance.IsGameState(GameState.COIN_GAME))
             return;
         
-        if (rotateCoroutine == null)
+        if (!pc.isRotating())
         {
             Vector3 direction = Vector3.zero;
 
@@ -84,25 +84,10 @@ public class Player : MonoBehaviour
                     return;
             }
             
-            RotateCoroutine(direction).Start(ref rotateCoroutine, this);
+            pc.Rotate(direction);
 
             Move(direction);
         }
-    }
-    
-    IEnumerator RotateCoroutine(Vector3 direction)
-    {
-        Quaternion startRot = transform.rotation;
-        Quaternion endRot = Quaternion.LookRotation(direction, Vector3.up);
-
-        yield return ProcessAction(rotateSpeed, (t) =>
-        {
-            transform.rotation = Quaternion.Lerp(startRot, endRot, t);
-        });
-
-        transform.SetRotation(endRot);
-
-        rotateCoroutine = null;
     }
 
     void Move()
@@ -110,7 +95,7 @@ public class Player : MonoBehaviour
         if (!TestGameManager.Instance.IsGameState(GameState.COIN_GAME))
             return;
         
-        if (rotateCoroutine == null)
+        if (!pc.isRotating())
         {
             Move(transform.forward);
         }
@@ -118,7 +103,7 @@ public class Player : MonoBehaviour
 
     void Move(Vector3 direction)
     {
-        if (moveCoroutine == null)
+        if (!pc.isMoving())
         {
             directionFloor = null;
 
@@ -129,36 +114,7 @@ public class Player : MonoBehaviour
                 return;
 
             Vector3 movePos = transform.position + GetMoveUnit(direction) + GetMoveHeight();
-            MoveCoroutine(transform.position, movePos).Start(ref moveCoroutine, this);
-        }
-    }
-
-    IEnumerator MoveCoroutine(Vector3 startPos, Vector3 movePos)
-    {
-        yield return ProcessAction(moveSpeed, (t) =>
-        {
-            transform.BezierCurvePosition(startPos, movePos, (Vector3.up * 4f), t);
-        });
-
-        transform.SetPosition(movePos);
-
-        moveCoroutine = null;
-    }
-
-    // TODO : 추후에 코루틴 확장 or 매니저 클래스에 넣기
-    // NOTE : 이동하거나 회전이 필요한 오브젝트에 자주 쓰일 것으로 예상됨
-    IEnumerator ProcessAction(float speed, Action<float> action)
-    {
-        float progress = 0f;
-
-        while (progress < 1f)
-        {
-            action(progress);
-
-            // NOTE : Lerp 에 0.1f 추가로 보정
-            progress = Mathf.Lerp(progress, 1.1f, speed * Time.smoothDeltaTime);
-
-            yield return null;
+            pc.Move(transform.position, movePos);
         }
     }
 
@@ -166,7 +122,7 @@ public class Player : MonoBehaviour
     {
         RaycastHit hit;
         int layerMask = ~(1 << LayerMask.NameToLayer("Player") | 1 << LayerMask.NameToLayer("Item") |
-                          1 << LayerMask.NameToLayer("Gimic"));
+                          1 << LayerMask.NameToLayer("Trigger"));
         if(Physics.Raycast(GetRayOrigin(), direction, out hit, 10f, layerMask))
         {
             GameObject obj = hit.collider.gameObject;
@@ -175,6 +131,10 @@ public class Player : MonoBehaviour
                 float result = (directionFloor.floor - currentFloor);
                 if (Mathf.Abs(result) == 0.5f)
                     return false;
+            }
+            if (obj.TryGetComponent(out forwardGimic))
+            {
+                forwardGimic.OnTrigger();
             }
             return true;
         }

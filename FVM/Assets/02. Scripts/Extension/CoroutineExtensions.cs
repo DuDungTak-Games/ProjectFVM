@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -34,6 +35,35 @@ namespace DuDungTakGames.Extensions
         {
             monoBehaviour.StopCoroutine(logic);
             yield break;
+        }
+        
+        public static IEnumerator ProcessAction(float speed, Action action)
+        {
+            float progress = 0f;
+
+            while (progress < 1f)
+            {
+                action.Invoke();
+
+                // NOTE : Lerp 에 0.1f 추가로 보정
+                progress = Mathf.Lerp(progress, 1.1f, speed * Time.smoothDeltaTime);
+
+                yield return null;
+            }
+        }
+
+        public static IEnumerator ProcessAction(float speed, Action<float> action)
+        {
+            float progress = 0f;
+
+            while (progress < 1f)
+            {
+                action.Invoke(progress);
+
+                progress = Mathf.Lerp(progress, 1.1f, speed * Time.smoothDeltaTime);
+
+                yield return null;
+            }
         }
     }
 }

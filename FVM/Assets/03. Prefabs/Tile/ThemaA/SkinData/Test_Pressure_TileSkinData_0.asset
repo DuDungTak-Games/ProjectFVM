@@ -10,8 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: faaa821cffdeed240881be0f59d42623, type: 3}
-  m_Name: Test_GimicTrigger_TileSkinData_0
+  m_Name: Test_Pressure_TileSkinData_0
   m_EditorClassIdentifier: 
-  textureList:
-  - datas:
-    - {fileID: 2794323447949540421, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  materials:
+  - {fileID: -7243801432929835188, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}

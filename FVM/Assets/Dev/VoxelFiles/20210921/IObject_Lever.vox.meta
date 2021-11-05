@@ -13,7 +13,7 @@ ScriptedImporter:
   gameObjectName: IObject_Lever
   meshMode: 1
   importMode: 1
-  importScale: {x: 1, y: 1, z: 1}
+  importScale: {x: 0.5, y: 0.5, z: 0.5}
   importOffset: {x: 0, y: 0, z: 0}
   combineFaces: 1
   ignoreCavity: 1

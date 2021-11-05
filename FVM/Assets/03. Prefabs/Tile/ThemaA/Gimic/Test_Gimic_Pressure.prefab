@@ -40,7 +40,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1897608745705185176}
-  m_Mesh: {fileID: 3502037041922201981, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
+  m_Mesh: {fileID: -7368913425412790870, guid: 0a92aeb0f71ec69418ce7937df28a87c, type: 3}
 --- !u!23 &970178745432760479
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -95,7 +95,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ec1c24819ee861469eff64da30496e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skinData: {fileID: 11400000, guid: d447ad1a58ac1cb4ea84c34583aa653e, type: 2}
+  skinDatas:
+  - {fileID: 11400000, guid: 9fe6d12693687ef4a8aa29a40fff14ac, type: 2}
 --- !u!1 &4231621094103076655
 GameObject:
   m_ObjectHideFlags: 0
@@ -191,7 +192,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ec1c24819ee861469eff64da30496e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skinData: {fileID: 11400000, guid: 9fe6d12693687ef4a8aa29a40fff14ac, type: 2}
+  skinDatas:
+  - {fileID: 11400000, guid: d447ad1a58ac1cb4ea84c34583aa653e, type: 2}
 --- !u!1 &7719951445117833169
 GameObject:
   m_ObjectHideFlags: 0
@@ -202,9 +204,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2792712573781151472}
   - component: {fileID: 1230787175019970371}
-  - component: {fileID: 6174136130784808017}
+  - component: {fileID: 1980451204669321641}
   m_Layer: 8
-  m_Name: Test_GimicTrigger_Tile
+  m_Name: Test_Gimic_Pressure
   m_TagString: Tile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -239,7 +241,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 8, y: 2, z: 8}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &6174136130784808017
+--- !u!114 &1980451204669321641
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -248,7 +250,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7719951445117833169}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c14ffd2c6ddf7c84c83fd482b904e1b4, type: 3}
+  m_Script: {fileID: 11500000, guid: bb183678c254a3149907479cb9865b24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   targetTag: Player

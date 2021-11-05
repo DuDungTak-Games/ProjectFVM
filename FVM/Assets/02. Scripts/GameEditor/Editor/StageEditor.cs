@@ -1489,7 +1489,7 @@ public class StageEditor : EditorWindow
         {
             foreach (var key in tileSetData.tileSetList.Keys)
             {
-                tileSetData.tileSetList[key].Clear();
+                tileSetData.tileSetList[key].ClearData();
             }
         }
 

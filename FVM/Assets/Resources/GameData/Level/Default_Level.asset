@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8b24dfe68cf30724883b5d2d1b5f06ad, type: 3}
-  m_Name: LevelData
+  m_Name: Default_Level
   m_EditorClassIdentifier: 
   tilePrefabData: {fileID: 11400000, guid: 821275003637d344194dee1688f91257, type: 2}
   tileFloorPrefabData: {fileID: 11400000, guid: f18d0095dee27164f91e4a87795ae11f, type: 2}

@@ -107,7 +107,7 @@ GameObject:
   - component: {fileID: 2792712573781151472}
   - component: {fileID: 1241843772753896663}
   m_Layer: 3
-  m_Name: Test_GimicActor_Tile
+  m_Name: Test_GimicActor_Box
   m_TagString: Tile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

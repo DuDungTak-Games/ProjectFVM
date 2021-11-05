@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -11,15 +10,24 @@ public class GimicTrigger : GimicObject
     [HideInInspector]
     public UnityEvent gimicEvent;
 
-    void OnTriggerEnter(Collider col)
+    TileSkin[] tileSkins;
+    
+    void Start()
     {
-        if (col.gameObject.CompareTag(targetTag))
+        Init();
+    }
+    
+    void Init()
+    {
+        tileSkins = GetComponentsInChildren<TileSkin>();
+
+        foreach (var skin in tileSkins)
         {
-            OnTrigger();
+            skin.Init(ID);
         }
     }
 
-    protected virtual void OnTrigger()
+    public virtual void OnTrigger()
     {
         gimicEvent?.Invoke();
     }
