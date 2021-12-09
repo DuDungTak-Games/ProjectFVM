@@ -12,10 +12,12 @@ public class TileManager : MonoBehaviour
     public TileSetData mainTileSetData;
     public TileSetData subTileSetData;
 
-    // NOTE : TEST ONLY
-    public GimicManager gimicManager;
+    public const float tileUnit = 10f;
+    public const float halfHeightUnit = 7.5f;
+
+    List<Tuple<Vector3, GameObject>> spawnList = new List<Tuple<Vector3, GameObject>>();
     
-    private List<Tuple<Vector3, GameObject>> spawnList = new List<Tuple<Vector3, GameObject>>();
+    GimicManager gimicManager;
     
     Transform rootTrf;
 
@@ -26,6 +28,8 @@ public class TileManager : MonoBehaviour
 
     void Init()
     {
+        gimicManager = FindObjectOfType<GimicManager>();
+        
         GameObject tileFolder = new GameObject("Tile Folder");
         rootTrf = tileFolder.transform;
 
@@ -49,23 +53,24 @@ public class TileManager : MonoBehaviour
     void SpawnTile(TileID tileID, TileSet tileSet, GimicSet gimicSet)
     {
         GameObject prefab = GetTilePrefab(tileID, tileSet);
-        GameObject tile = Instantiate(prefab, GetUnitTilePos(tileID, tileSet.spawnPos), 
+        GameObject tileObj = Instantiate(prefab, GetPosByOffset(tileID, tileSet.spawnPos), 
                             Quaternion.Euler(tileSet.spawnRot), rootTrf);
-        tile.name = tile.name.Replace("(Clone)", "").Trim();
+        tileObj.name = tileObj.name.Replace("(Clone)", "").Trim();
         
-        spawnList.Add(new Tuple<Vector3, GameObject>(tileSet.spawnPos, tile));
+        spawnList.Add(new Tuple<Vector3, GameObject>(tileSet.spawnPos, tileObj));
 
         float spawnFloor = tileSet.spawnFloor;
         switch (tileID)
         {
             case TileID.START_POINT:
-                Transform playerTrf = FindObjectOfType<Player>().transform;
-                playerTrf.SetPosition(tile.transform.position);
-                playerTrf.SetRotation(tile.transform.rotation);
+                PlayerController pc = GameManager.Instance.player.controller;
+                pc.transform.SetPosition(tileObj.transform.position);
+                pc.transform.SetRotation(tileObj.transform.rotation);
+                pc.SetFloor(spawnFloor, true);
                 break;
             case TileID.VM_POINT:
-                GameObject triggerPrefab = GetTilePrefab(TileID.FOOTHOLD_TRIGGER, tileSet);
-                Vector3 triggerPos = GetUnitTilePos(TileID.FOOTHOLD_TRIGGER, tileSet.spawnPos) + (tile.transform.forward.normalized * 10f);
+                GameObject triggerPrefab = GetTilePrefab(TileID.PRESSURE_TOGGLE, tileSet);
+                Vector3 triggerPos = GetPosByOffset(TileID.PRESSURE_TOGGLE, tileSet.spawnPos) + (tileObj.transform.forward.normalized * 10f);
                     
                 GameObject triggerObj = Instantiate(triggerPrefab, triggerPos, Quaternion.Euler(tileSet.spawnRot), rootTrf);
                 GimicTrigger trigger = triggerObj.GetComponent<GimicTrigger>();
@@ -76,10 +81,10 @@ public class TileManager : MonoBehaviour
                 break;
         }
         
-        if ((int) tileID >= (int) TileID.FOOTHOLD_TRIGGER)
+        if ((int) tileID >= (int) TileID.GIMIC_CUSTOM)
         {
             GimicObject gimic;
-            if (tile.TryGetComponent(out gimic) && gimicSet != null)
+            if (tileObj.TryGetComponent(out gimic) && gimicSet != null)
             {
                 gimic.SetGimicID(gimicSet.ID);
                 gimicManager.AddGimic(gimic);
@@ -87,11 +92,11 @@ public class TileManager : MonoBehaviour
         }
 
         BoxCollider boxCollider;
-        if (tile.TryGetComponent(out boxCollider))
+        if (tileObj.TryGetComponent(out boxCollider))
         {
-            Floor tileFloor = tile.AddComponent<Floor>();
-            
-            tileFloor.floor = spawnFloor;
+            Tile tile = tileObj.AddComponent<Tile>();
+            tile.tileID = tileID;
+            tile.floor = spawnFloor;
         }
     }
     
@@ -113,11 +118,11 @@ public class TileManager : MonoBehaviour
                 return prefabData.GetPrefab(tileID);
         }
     }
-    
-    Vector3 GetUnitTilePos(TileID tileID, Vector3 tilePos)
+
+    Vector3 GetPosByOffset(TileID tileID, Vector3 tilePos)
     {
-        float floorUnit = prefabData.GetUnit(tileID);
-        return tilePos + new Vector3(0, floorUnit, 0);
+        Vector3 offset = prefabData.GetOffset(tileID);
+        return (tilePos + offset);
     }
 
     GimicSet GetGimicSet(List<GimicSet> gimicSetList, Vector3 spawnPos)
@@ -134,8 +139,8 @@ public class TileManager : MonoBehaviour
     bool FindTopTile(Vector3 tilePos)
     {
         var data = spawnList.Find(x =>
-            x.Item1 == tilePos + (Vector3.up * 7.5f) || 
-            x.Item1 == tilePos + (Vector3.up * 10));
+            x.Item1 == tilePos + (Vector3.up * halfHeightUnit) || 
+            x.Item1 == tilePos + (Vector3.up * tileUnit));
 
         return (data != null);
     }

@@ -210,27 +210,27 @@ public class TestTileManager : MonoBehaviour
     {
         foreach (TileSet tileSet in gimicList)
         {
-            GameObject tile = Instantiate(testTile_Prefab, tileSet.spawnPos, Quaternion.identity, rootTrf);
+            GameObject tileObj = Instantiate(testTile_Prefab, tileSet.spawnPos, Quaternion.identity, rootTrf);
 
-            if (tile.TryGetComponent(out Floor tileFloor))
+            if (tileObj.TryGetComponent(out Tile tile))
             {
                 float spawnFloor = tileSet.spawnFloor;
-                tileFloor.floor = spawnFloor;
+                tile.floor = spawnFloor;
 
                 if (spawnFloor % 1f == 0.5f)
                 {
-                    Vector3 scale = tile.transform.localScale;
+                    Vector3 scale = tileObj.transform.localScale;
                     scale.y *= 0.5f;
-                    tile.transform.localScale = scale;
+                    tileObj.transform.localScale = scale;
                 }
             }
 
-            if (tile.TryGetComponent(out MeshRenderer mr))
+            if (tileObj.TryGetComponent(out MeshRenderer mr))
             {
                 mr.material.color = Color.red;
             }
 
-            gimicObjList.Add(tile);
+            gimicObjList.Add(tileObj);
         }
     }
 

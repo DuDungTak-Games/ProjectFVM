@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DuDungTakGames.Extensions;
-using DuDungTakGames.Gimic;
-using PlasticPipe.PlasticProtocol.Messages;
 using UnityEditor;
 using UnityEngine;
+
+using DuDungTakGames.Extensions;
 
 public class StageEditor : EditorWindow
 {
@@ -16,6 +15,7 @@ public class StageEditor : EditorWindow
     
     public float tileFloor = 0;
     float tileUnit = 10;
+    float halfHeightUnit = 7.5f;
     Vector3 tileSize = new Vector3(10, 10, 10);
     
     public enum EditType { SELECT, TILE_SINGLE, TILE_PAINT }
@@ -23,7 +23,7 @@ public class StageEditor : EditorWindow
 
     TileID curTileID;
     GameObject curPrefab, prevPrefab;
-    float curFloorUnit;
+    Vector3 curOffset;
 
     GameObject previewTile;
     EditorTile curEditorTile;
@@ -49,7 +49,7 @@ public class StageEditor : EditorWindow
     private Dictionary<TileID, List<TileSet>> subTileSetList = new Dictionary<TileID, List<TileSet>>();
     private List<GimicSet> subGimicSetList = new List<GimicSet>();
     
-    [MenuItem("DudungtakGames/Stage Editor")]
+    [MenuItem("Custom Editor/Stage Editor")]
     private static void ShowWindow()
     {
         StageEditor window = (StageEditor)EditorWindow.GetWindow(typeof(StageEditor));
@@ -193,7 +193,7 @@ public class StageEditor : EditorWindow
         
         using (new EditorGUILayout.HorizontalScope())
         {
-            if(GUILayout.Button("TileSet Load (Main)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
+            if(GUILayout.Button("TileSet Load (Main Preset)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
             {
                 if (CheckLevelData())
                 {
@@ -207,7 +207,7 @@ public class StageEditor : EditorWindow
                 }
             }
         
-            if(GUILayout.Button("TileSet Save (Main)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
+            if(GUILayout.Button("TileSet Save (Main Preset)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
             {
                 if (CheckLevelData())
                 {
@@ -218,7 +218,7 @@ public class StageEditor : EditorWindow
         
         using (new EditorGUILayout.HorizontalScope())
         {
-            if(GUILayout.Button("TileSet Load (Sub)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
+            if(GUILayout.Button("TileSet Load (Sub Preset)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
             {
                 if (CheckLevelData())
                 {
@@ -232,7 +232,7 @@ public class StageEditor : EditorWindow
                 }
             }
         
-            if(GUILayout.Button("TileSet Save (Sub)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
+            if(GUILayout.Button("TileSet Save (Sub Preset)", GetStyle("Button", 16, Color.white), GUILayout.MinHeight(40)))
             {
                 if (CheckLevelData())
                 {
@@ -388,6 +388,7 @@ public class StageEditor : EditorWindow
     
     
     Vector3 tilePos = Vector3.zero;
+    Vector3 multiTilePos = Vector3.zero;
     Vector3 tileRot = Vector3.zero;
     Vector3 prevTilePos = Vector3.zero;
     Vector3 gridPos = Vector3.zero;
@@ -403,8 +404,11 @@ public class StageEditor : EditorWindow
             {
                 mousePos = hit.point;
 
+                // NOTE : 일반 타일만 halfHeightUnit 사용
+                float offsetY = (IsGimic(curTileID) ? (halfHeightUnit - 2.5f) : halfHeightUnit);
+
                 float posX = (Mathf.RoundToInt(mousePos.x / tileUnit) * tileUnit);
-                float posY = (Mathf.FloorToInt(tileFloor) * tileUnit) + (tileFloor % 1 != 0 ? 7.5f : 0);
+                float posY = (Mathf.FloorToInt(tileFloor) * tileUnit) + (tileFloor % 1 != 0 ? offsetY : 0);
                 float posZ = (Mathf.RoundToInt(mousePos.z / tileUnit) * tileUnit);
 
                 tilePos = new Vector3(posX, posY, posZ);
@@ -416,7 +420,7 @@ public class StageEditor : EditorWindow
                     TileCheck();
                 }
 
-                GizmoHelper.SetPos(tilePos, tileRot, gridPos, mousePos);
+                GizmoHelper.SetPos(tilePos, multiTilePos, tileRot, gridPos, mousePos);
             }
         }
     }
@@ -451,7 +455,9 @@ public class StageEditor : EditorWindow
                         default:
                             break;
                     }
-                
+
+                    CommonInput(e);
+
                     if (e.type == EventType.MouseMove || e.type == EventType.MouseDrag)
                     {
                         SceneView.RepaintAll();
@@ -477,6 +483,12 @@ public class StageEditor : EditorWindow
             {
                 RotateTile();
             }
+
+            // NOTE : 기믹 ID 표시 토글
+            if (e.keyCode == KeyCode.F)
+            {
+                EditorTile.showGimicID = !EditorTile.showGimicID;
+            }
         }
     }
 
@@ -487,7 +499,14 @@ public class StageEditor : EditorWindow
         {
             if (e.button == 0)
             {
-                CreateTile();
+                if (multiTilePos == Vector3.zero)
+                {
+                    CreateTile();
+                }
+                else
+                {
+                    CreateMultiTile();
+                }
             }
             
             if (e.button == 1)
@@ -500,7 +519,14 @@ public class StageEditor : EditorWindow
         {
             if (e.button == 1 && isMouseDown)
             {
-                DeleteTile();
+                if (multiTilePos == Vector3.zero)
+                {
+                    DeleteTile();
+                }
+                else
+                {
+                    DeleteMultiTile();
+                }
             }
         }
         
@@ -559,11 +585,41 @@ public class StageEditor : EditorWindow
         {
             if (isCreate)
             {
-                CreateTile();
+                if(multiTilePos == Vector3.zero)
+                {
+                    CreateTile();
+                }
+                else
+                {
+                    CreateMultiTile();
+                }
             }
             else
             {
-                DeleteTile();
+                if (multiTilePos == Vector3.zero)
+                {
+                    DeleteTile();
+                }
+                else
+                {
+                    DeleteMultiTile();
+                }
+            }
+        }
+    }
+
+    void CommonInput(Event e)
+    {
+        if (e.type == EventType.KeyDown)
+        {
+            if (e.keyCode == KeyCode.V)
+            {
+                SetTileFloor(false);
+            }
+
+            if (e.keyCode == KeyCode.B)
+            {
+                SetTileFloor(true);
             }
         }
     }
@@ -583,13 +639,13 @@ public class StageEditor : EditorWindow
                     curPrefab = null;
                 }
 
-                if (themeData.tilePrefabData.floorUnitList.ContainsKey(curTileID))
+                if (themeData.tilePrefabData.offsetList.ContainsKey(curTileID))
                 {
-                    curFloorUnit = themeData.tilePrefabData.floorUnitList[curTileID];
+                    curOffset = themeData.tilePrefabData.offsetList[curTileID];
                 }
                 else
                 {
-                    curFloorUnit = 0;
+                    curOffset = Vector3.zero;
                 }
             }
         }
@@ -597,7 +653,7 @@ public class StageEditor : EditorWindow
 
     void UpdateGimicData(ref List<GimicSet> gimicSetList)
     {
-        GimicSet gimicSet = gimicSetList.Find(x => x.targetPos == curEditorTile.spawnPos);
+        GimicSet gimicSet = gimicSetList.Find(x => x.targetPos == curEditorTile.tilePos);
         if (gimicSet != null)
         {
             gimicSetList.Remove(gimicSet);
@@ -620,8 +676,15 @@ public class StageEditor : EditorWindow
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.LabelField (string.Format("Prefab ({0})", curPrefab ? curPrefab.name : "NULL"), 
                 GetStyle("Context", curPrefab ? Color.green : Color.gray, true), GUILayout.MinHeight(30));
-            EditorGUILayout.LabelField (string.Format("Floor Unit ({0})", curFloorUnit), 
-                GetStyle("Context", curFloorUnit > 0 ? Color.cyan : Color.gray, true), GUILayout.MinHeight(30));
+            EditorGUILayout.LabelField (string.Format("Offset ({0}, {1}, {2})", curOffset.x, curOffset.y, curOffset.z), 
+                GetStyle("Context", curOffset != Vector3.zero ? Color.cyan : Color.gray, true), GUILayout.MinHeight(30));
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Multi Tile Pos", GetStyle("Context", Color.cyan, true), GUILayout.MinHeight(30));
+            multiTilePos.x = EditorGUILayout.FloatField(multiTilePos.x, GetStyle("NumberField"), GUILayout.MinHeight(30));
+            multiTilePos.y = EditorGUILayout.FloatField(multiTilePos.y, GetStyle("NumberField"), GUILayout.MinHeight(30));
+            multiTilePos.z = EditorGUILayout.FloatField(multiTilePos.z, GetStyle("NumberField"), GUILayout.MinHeight(30));
+            EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField ("Floor", GetStyle("Context", 16, TextAnchor.LowerCenter, true), 
@@ -647,12 +710,12 @@ public class StageEditor : EditorWindow
                 case EditType.SELECT:
                     EditorGUILayout.LabelField ("'C' 를 눌러서 회전 가능 (타일 기준 Y축 우회전)", 
                         GetStyle("Context", 16, TextAnchor.LowerLeft, true), GUILayout.MinHeight(30));
-                    EditorGUILayout.Space();
+                    EditorGUILayout.LabelField("'F' 를 눌러서 기믹 ID 표시 토글 가능",
+                        GetStyle("Context", 16, TextAnchor.LowerLeft, true), GUILayout.MinHeight(30));
                     break;
                 case EditType.TILE_SINGLE:
                     EditorGUILayout.LabelField ("'C' 를 눌러서 회전 가능 (타일 기준 Y축 우회전)", 
                         GetStyle("Context", 16, TextAnchor.LowerLeft, true), GUILayout.MinHeight(30));
-                    EditorGUILayout.Space();
                     break;
                 case EditType.TILE_PAINT:
                     EditorGUILayout.LabelField (string.Format("Toggle : {0}", isCreate ? "Create" : "Delete"), 
@@ -661,12 +724,15 @@ public class StageEditor : EditorWindow
                         GetStyle("Context", 16, TextAnchor.LowerLeft, true), GUILayout.MinHeight(30));
                     EditorGUILayout.LabelField ("'F' 를 눌러서 배치 & 삭제 토글 가능", 
                         GetStyle("Context", 16, TextAnchor.LowerLeft, true), GUILayout.MinHeight(30));
-                    EditorGUILayout.Space();
                     break;
                 default:
                     break;
             }
 
+            EditorGUILayout.LabelField("'V' 와 'B' 를 눌러서 Floor 업/다운 가능",
+                        GetStyle("Context", 16, TextAnchor.LowerLeft, true), GUILayout.MinHeight(30));
+
+            EditorGUILayout.Space();
             EditorGUILayout.LabelField (string.Format("Tile Count : {0}", spawnList.Count), 
                 GetStyle("Context", true), GUILayout.MinHeight(30));
 
@@ -722,11 +788,11 @@ public class StageEditor : EditorWindow
                     GetStyle("Context", true), GUILayout.MinHeight(30));
                 EditorGUILayout.LabelField (string.Format("Tile ID : {0}", curEditorTile.tileID), 
                     GetStyle("Context", true), GUILayout.MinHeight(30));
-                EditorGUILayout.LabelField (string.Format("Tile Floor : {0}", curEditorTile.floor), 
+                EditorGUILayout.LabelField (string.Format("Spawn Pos : {0}", curEditorTile.transform.position), 
                     GetStyle("Context", true), GUILayout.MinHeight(30));
-                EditorGUILayout.LabelField (string.Format("Tile Pos : {0}", curEditorTile.spawnPos), 
+                EditorGUILayout.LabelField (string.Format("Spawn Rot : {0}", curEditorTile.spawnRot), 
                     GetStyle("Context", true), GUILayout.MinHeight(30));
-                EditorGUILayout.LabelField (string.Format("Tile Rot : {0}", curEditorTile.spawnRot), 
+                EditorGUILayout.LabelField (string.Format("Spawn Floor : {0}", curEditorTile.floor), 
                     GetStyle("Context", true), GUILayout.MinHeight(30));
 
                 if (curGimicObject != null)
@@ -736,10 +802,12 @@ public class StageEditor : EditorWindow
                     EditorGUILayout.BeginHorizontal();
                     EditorGUILayout.LabelField ("Gimic ID", GetStyle("Context", 16, TextAnchor.LowerCenter, true), 
                         GUILayout.MaxWidth(80), GUILayout.MinHeight(30));
-                    
-                    if(GUILayout.Button("◀", GUILayout.MaxWidth(30), GUILayout.MaxHeight(30))) { SetGimicID(false); }
+
+                    if (GUILayout.Button("◀◀", GUILayout.MaxWidth(30), GUILayout.MaxHeight(30))) { SetGimicID(-10); }
+                    if (GUILayout.Button("◀", GUILayout.MaxWidth(30), GUILayout.MaxHeight(30))) { SetGimicID(false); }
                     EditorGUILayout.FloatField(curGimicObject.ID, GetStyle("NumberField"), GUILayout.MinHeight(30));
-                    if(GUILayout.Button("▶", GUILayout.MaxWidth(30), GUILayout.MaxHeight(30))) { SetGimicID(true); }
+                    if (GUILayout.Button("▶", GUILayout.MaxWidth(30), GUILayout.MaxHeight(30))) { SetGimicID(true); }
+                    if (GUILayout.Button("▶▶", GUILayout.MaxWidth(30), GUILayout.MaxHeight(30))) { SetGimicID(10); }
                     EditorGUILayout.EndHorizontal();
                 }
             }
@@ -802,15 +870,15 @@ public class StageEditor : EditorWindow
             if (curPrefab != null)
             {
                 GameObject prefab = GetTilePrefab(false);
-                previewTile = Instantiate(prefab, GetUnitTilePos(), Quaternion.Euler(tileRot));
-                previewTile.name = previewTile.name.Replace("(Clone)", "(Preview)").Trim();
+                previewTile = Instantiate(prefab, GetPosByOffset(), Quaternion.Euler(tileRot));
+                previewTile.name = previewTile.name.Replace("(Clone)", " (Preview)").Trim();
 
                 ClearCollider(previewTile);
             }
         }
         else
         {
-            previewTile.transform.SetPosition(GetUnitTilePos());
+            previewTile.transform.SetPosition(GetPosByOffset());
             previewTile.transform.SetRotation(Quaternion.Euler(tileRot));
             
             if (curPrefab == null)
@@ -856,7 +924,7 @@ public class StageEditor : EditorWindow
                 return;
             }
 
-            curTileID += 1;
+            curTileID = curTileID.Next();
         }
         else
         {
@@ -866,7 +934,7 @@ public class StageEditor : EditorWindow
                 return;
             }
 
-            curTileID -= 1;
+            curTileID = curTileID.Previous();
         }
         
         Save();
@@ -874,11 +942,21 @@ public class StageEditor : EditorWindow
 
     void SetGimicID(bool isNext)
     {
-        int id = curGimicObject.ID;
-        id += isNext ? 1 : -1;
-        id = Mathf.Clamp(id, 0, 9999);
+        int id = curGimicObject.ID + (isNext ? 1 : -1);
+        ChangeGimicID(id);
+    }
 
-        curGimicObject.SetGimicID(id);
+    void SetGimicID(int value)
+    {
+        int id = (curGimicObject.ID + value);
+        ChangeGimicID(id);
+    }
+
+    void ChangeGimicID(int newID)
+    {
+        newID = Mathf.Clamp(newID, -1, 9999);
+
+        curGimicObject.SetGimicID(newID);
 
         if (isSubPreset)
         {
@@ -901,19 +979,19 @@ public class StageEditor : EditorWindow
     {
         if (levelData == null)
         {
-            Debug.LogWarningFormat("[EDITOR] Level Data 가 존재하지 않습니다!");
+            Debug.LogWarningFormat("[STAGE EDITOR] Level Data 가 존재하지 않습니다!");
             return false;
         }
 
         if (levelData.mainPreset == null)
         {
-            Debug.LogWarningFormat("[EDITOR] '{0}' Level Data 의 Main Preset 이 존재하지 않습니다!", levelData.name);
+            Debug.LogWarningFormat("[STAGE EDITOR] '{0}' Level Data 의 Main Preset 이 존재하지 않습니다!", levelData.name);
             return false;
         }
 
         if (levelData.subPreset.Count <= 0)
         {
-            Debug.LogWarningFormat("[EDITOR] '{0}' Level Data 의 Sub Preset 이 1개 이상이라도 존재해야 합니다!", levelData.name);
+            Debug.LogWarningFormat("[STAGE EDITOR] '{0}' Level Data 의 Sub Preset 이 1개 이상이라도 존재해야 합니다!", levelData.name);
             return false;
         }
         
@@ -956,9 +1034,9 @@ public class StageEditor : EditorWindow
         }
     }
 
-    Vector3 GetUnitTilePos()
+    Vector3 GetPosByOffset()
     {
-        return tilePos + new Vector3(0, curFloorUnit, 0);
+        return tilePos + curOffset;
     }
     
     Tuple<Vector3, GameObject> FindDuplicateTile()
@@ -982,8 +1060,8 @@ public class StageEditor : EditorWindow
     bool CheckTopTile()
     {
         Tuple<Vector3, GameObject> data = spawnList.Find(x =>
-            x.Item1 == tilePos + (Vector3.up * 7.5f) ||
-            x.Item1 == tilePos + (Vector3.up * 10));
+            x.Item1 == tilePos + (Vector3.up * halfHeightUnit) ||
+            x.Item1 == tilePos + (Vector3.up * tileUnit));
 
         CheckBottomTile();
         
@@ -1003,8 +1081,8 @@ public class StageEditor : EditorWindow
     bool CheckBottomTile(bool isDelete = false)
     {
         Tuple<Vector3, GameObject> data = spawnList.Find(x =>
-            x.Item1 == tilePos - (Vector3.up * 7.5f) ||
-            x.Item1 == tilePos - (Vector3.up * 10));
+            x.Item1 == tilePos - (Vector3.up * halfHeightUnit) ||
+            x.Item1 == tilePos - (Vector3.up * tileUnit));
 
         if (data == null)
             return false;
@@ -1027,6 +1105,12 @@ public class StageEditor : EditorWindow
             
         return true;
     }
+
+    bool CheckSaveSafety()
+    {
+        int tileCount = GameObject.FindGameObjectsWithTag("Tile").Length;
+        return (tileCount > 0 && spawnList.Count > 0 && (tileSetList.Count > 0 || subTileSetList.Count > 0));
+    }
     
     bool TileCheck()
     {
@@ -1039,7 +1123,7 @@ public class StageEditor : EditorWindow
     
     bool IsGimic(TileID tileID)
     {
-        return ((int)tileID) >= ((int)TileID.FOOTHOLD_TRIGGER);
+        return ((int)tileID) >= ((int)TileID.GIMIC_CUSTOM);
     }
 
     bool IsSpecial(TileID tileID)
@@ -1110,11 +1194,11 @@ public class StageEditor : EditorWindow
         TileSet tileSet;
         if (isSubPreset)
         {
-            tileSet = subTileSetList[curTileID].Find(x => x.spawnPos == editorTile.spawnPos);
+            tileSet = subTileSetList[curTileID].Find(x => x.spawnPos == editorTile.tilePos);
         }
         else
         {
-            tileSet = tileSetList[curTileID].Find(x => x.spawnPos == editorTile.spawnPos);
+            tileSet = tileSetList[curTileID].Find(x => x.spawnPos == editorTile.tilePos);
         }
 
         if (tileSet != null)
@@ -1139,10 +1223,16 @@ public class StageEditor : EditorWindow
                 tileRot.Set(tile.transform.eulerAngles);
                 GizmoHelper.SetSize(tileSize);
                 GizmoHelper.SetEditorTile(curEditorTile);
-            }
 
-            if (tile.TryGetComponent(out curGimicObject))
-            {
+                if(curEditorTile.gimicObject != null)
+                {
+                    curGimicObject = curEditorTile.gimicObject;
+                }
+                else
+                {
+                    curGimicObject = null;
+                }
+
                 GizmoHelper.SetGimicObject(curGimicObject);
             }
         }
@@ -1156,6 +1246,7 @@ public class StageEditor : EditorWindow
     {
         curEditorTile = null;
         curGimicObject = null;
+
         tileRot.Set(Vector3.zero);
 
         GizmoHelper.SetEditorTile(curEditorTile);
@@ -1166,6 +1257,34 @@ public class StageEditor : EditorWindow
     {
         float y = Mathf.Repeat((tileRot.y + 90), 360);
         tileRot.SetY(y);
+    }
+
+    void ActionMultiTile(Action action)
+    {
+        multiTilePos.x = Mathf.Clamp(multiTilePos.x, 0, 100);
+        multiTilePos.y = Mathf.Clamp(multiTilePos.y, 0, 100);
+        multiTilePos.z = Mathf.Clamp(multiTilePos.z, 0, 100);
+
+        Vector3 prevPos = tilePos;
+        for (int x = 0; x <= multiTilePos.x; x++)
+        {
+            for (int y = 0; y <= multiTilePos.y; y++)
+            {
+                for (int z = 0; z <= multiTilePos.z; z++)
+                {
+                    tilePos = new Vector3(tilePos.x + (tileUnit * x),
+                                        tilePos.y + (tileUnit * y),
+                                        tilePos.z + (tileUnit * z));
+                    action?.Invoke();
+                    tilePos = prevPos;
+                }
+            }
+        }
+    }
+
+    void CreateMultiTile()
+    {
+        ActionMultiTile(() => { CreateTile(); });
     }
 
     void CreateTile(bool isLoad = false)
@@ -1181,7 +1300,7 @@ public class StageEditor : EditorWindow
             if (IsGimic(curTileID))
             {
                 GimicObject gimic = CreateGimic(tile);
-                LoadGimic(gimic, editorTile.spawnPos);
+                LoadGimic(gimic, editorTile.tilePos);
             }
 
             if (!isLoad)
@@ -1196,6 +1315,11 @@ public class StageEditor : EditorWindow
         }
         
         Save();
+    }
+
+    void DeleteMultiTile()
+    {
+        ActionMultiTile(() => { DeleteTile(); });
     }
 
     void DeleteTile()
@@ -1270,7 +1394,7 @@ public class StageEditor : EditorWindow
     GameObject SpawnTile()
     {
         GameObject prefab = GetTilePrefab();
-        GameObject tile = Instantiate(prefab, GetUnitTilePos(), Quaternion.Euler(tileRot));
+        GameObject tile = Instantiate(prefab, GetPosByOffset(), Quaternion.Euler(tileRot));
         tile.name = tile.name.Replace("(Clone)", "").Trim();
 
         return tile;
@@ -1285,7 +1409,7 @@ public class StageEditor : EditorWindow
         }
         
         editorTile.tileID = curTileID;
-        editorTile.spawnPos = pos;
+        editorTile.tilePos = pos;
         editorTile.spawnRot = rot;
         editorTile.floor = floor;
 
@@ -1301,7 +1425,7 @@ public class StageEditor : EditorWindow
         }
         
         editorTile.tileID = curTileID;
-        editorTile.spawnPos = tilePos;
+        editorTile.tilePos = tilePos;
         editorTile.spawnRot = tileRot;
         editorTile.floor = tileFloor;
 
@@ -1350,7 +1474,7 @@ public class StageEditor : EditorWindow
                 tileRot.Set(tileSet.spawnRot);
 
                 UpdateData();
-                
+
                 CreateTile(true);
             }
         }
@@ -1456,6 +1580,15 @@ public class StageEditor : EditorWindow
     
     void SaveTileSet(TileSetData tileSetData, Dictionary<TileID, List<TileSet>> tileSetList, List<GimicSet> gimicSetList)
     {
+        if(!CheckSaveSafety())
+        {
+            Debug.LogWarningFormat("[STAGE EDITOR] Save Safety!\n" +
+                "Scene 에 배치된 타일의 수와 Spawn List 의 수가 일치하지 않습니다!\n" +
+                "Spawn Count : {0}\nTileSet Count : {1}\nGimicSet Count : {2}", 
+                spawnList.Count, tileSetList.Count, gimicSetList.Count);
+            return;
+        }
+
         ClearTileSet(ref tileSetData);
 
         if (tileSetList.Count > 0)
@@ -1472,11 +1605,11 @@ public class StageEditor : EditorWindow
                     tileSetData.tileSetList[key].Add(new TileSet(tileSet));
                 }
             }
-        }
 
-        foreach (var gimicSet in gimicSetList.OrderBy(x => x.ID))
-        {
-            tileSetData.gimicSetList.Add(new GimicSet(gimicSet));
+            foreach (var gimicSet in gimicSetList.OrderBy(x => x.ID))
+            {
+                tileSetData.gimicSetList.Add(new GimicSet(gimicSet));
+            }
         }
 
         EditorUtility.SetDirty(tileSetData);

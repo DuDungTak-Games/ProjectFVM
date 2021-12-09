@@ -13,7 +13,7 @@ public class TileSkinData : ScriptableObject
         if(materials.Length <= 0)
             return null;
 
-        id = Mathf.Clamp(id, 0, materials.Length-1);
+        id = (int)Mathf.Repeat(id, materials.Length);
         return materials[id];
     }
 }

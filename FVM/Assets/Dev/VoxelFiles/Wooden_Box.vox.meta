@@ -1,0 +1,43 @@
+fileFormatVersion: 2
+guid: d5a9a56cf2dfa5941b181c8da4ce9978
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: eeb34f3ead148d04e8630fc3f79cbc1a, type: 3}
+  dataVersion: 6
+  fileType: 0
+  gameObjectName: Wooden_Box
+  meshMode: 0
+  importMode: 1
+  importScale: {x: 0.4, y: 0.4, z: 0.4}
+  importOffset: {x: 0, y: -20, z: 0}
+  combineFaces: 1
+  ignoreCavity: 1
+  shareSameFace: 1
+  removeUnusedPalettes: 1
+  shareSameMaterial: 1
+  outputStructure: 0
+  generateLightmapUVs: 0
+  generateLightmapUVsAngleError: 8
+  generateLightmapUVsAreaError: 15
+  generateLightmapUVsHardAngle: 88
+  generateLightmapUVsPackMargin: 4
+  generateTangents: 0
+  meshFaceVertexOffset: 0
+  loadFromVoxelFile: 1
+  generateMipMaps: 0
+  colliderType: 0
+  createContactChunkFaces: 0
+  materialMode: 0
+  materials:
+  - {fileID: -156486658544998735, guid: d5a9a56cf2dfa5941b181c8da4ce9978, type: 3}
+  materialNames:
+  - Wooden_Box_0
+  remappedMaterials: []
+  export: 0
+  legacyVoxImport: 0
+  legacyAssetNaming: 0

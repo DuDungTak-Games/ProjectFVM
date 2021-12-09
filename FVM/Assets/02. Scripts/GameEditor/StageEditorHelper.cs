@@ -1,9 +1,7 @@
-using System;
-using System.Data;
 using UnityEngine;
+using UnityEditor;
 
 using DuDungTakGames.Extensions;
-using UnityEditor;
 
 public class StageEditorHelper : MonoBehaviour
 {
@@ -17,8 +15,10 @@ public class StageEditorHelper : MonoBehaviour
     float tileUnit = 10;
     
     Vector3 tilePos = Vector3.zero;
+    Vector3 multiTilePos = Vector3.zero;
     Vector3 tileRot = Vector3.zero;
     Vector3 tileSize = Vector3.zero;
+
     Vector3 gridPos = Vector3.zero;
     Vector3 mousePos = Vector3.zero;
 
@@ -30,19 +30,18 @@ public class StageEditorHelper : MonoBehaviour
         tileUnit = unit;
     }
 
-    public void SetEditorTile(EditorTile editorTile)
-    {
-        this.editorTile = editorTile;
-    }
-    
-    public void SetGimicObject(GimicObject gimicObject)
-    {
-        this.gimicObject = gimicObject;
-    }
-
     public void SetState(bool isBlock)
     {
         this.isBlock = isBlock;
+    }
+
+    public void SetPos(Vector3 curTilePos, Vector3 multiTilePos, Vector3 curTileRot, Vector3 curGridPos, Vector3 curMousePos)
+    {
+        tilePos = curTilePos;
+        this.multiTilePos = multiTilePos;
+        tileRot = curTileRot;
+        gridPos = curGridPos;
+        mousePos = curMousePos;
     }
 
     public void SetSize(Vector3 size)
@@ -50,12 +49,14 @@ public class StageEditorHelper : MonoBehaviour
         tileSize = size;
     }
 
-    public void SetPos(Vector3 curTilePos, Vector3 curTileRot, Vector3 curGridPos, Vector3 curMousePos)
+    public void SetEditorTile(EditorTile editorTile)
     {
-        tilePos = curTilePos;
-        tileRot = curTileRot;
-        gridPos = curGridPos;
-        mousePos = curMousePos;
+        this.editorTile = editorTile;
+    }
+
+    public void SetGimicObject(GimicObject gimicObject)
+    {
+        this.gimicObject = gimicObject;
     }
 
     void OnDrawGizmos()
@@ -93,7 +94,26 @@ public class StageEditorHelper : MonoBehaviour
             Vector3 linePos = gridPos + (Vector3.right * halfUnit) + (Vector3.forward * halfUnit);
             DrawGrid(linePos);
 
-            DrawTile();
+            if(multiTilePos != Vector3.zero)
+            {
+                for (int x = 0; x <= multiTilePos.x; x++)
+                {
+                    for (int y = 0; y <= multiTilePos.y; y++)
+                    {
+                        for (int z = 0; z <= multiTilePos.z; z++)
+                        {
+                            Vector3 multiPos = new Vector3(tilePos.x + (tileUnit * x),
+                                                tilePos.y + (tileUnit * y),
+                                                tilePos.z + (tileUnit * z));
+                            DrawTile(multiPos);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                DrawTile(tilePos);
+            }
             DrawTileOutline(halfUnit);
             DrawDirection(halfUnit);
             DrawMouseSphere();
@@ -120,7 +140,7 @@ public class StageEditorHelper : MonoBehaviour
         Gizmos.DrawSphere(mousePos, 0.5f);
     }
 
-    void DrawTile()
+    void DrawTile(Vector3 tilePos)
     {
         Color greenColor = Color.green;
         greenColor.a = 0.5f;
@@ -218,7 +238,7 @@ public class StageEditorHelper : MonoBehaviour
 
         Gizmos.color = tileColor;
         
-        Gizmos.DrawCube(editorTile.spawnPos, tileSize * 1.1f);
+        Gizmos.DrawCube(editorTile.tilePos, tileSize * 1.1f);
         
         GUIStyle style = new GUIStyle();
         style.fontStyle = FontStyle.Bold;
@@ -226,15 +246,15 @@ public class StageEditorHelper : MonoBehaviour
         style.normal.textColor = Color.red;
         style.fontSize = 20;
         
-        Vector3 namePos = editorTile.spawnPos + (Vector3.up * 10f);
+        Vector3 namePos = editorTile.tilePos + (Vector3.up * 10f);
         Handles.Label(namePos, editorTile.gameObject.name, style);
     }
-    
+
     void DrawGimicInfo()
     {
         Gizmos.color = Color.magenta;
         
-        if (gimicObject is GimicTrigger)
+        if (gimicObject is GimicTrigger || gimicObject is GimicCustom)
         {
             foreach (var actorObject in FindObjectsOfType<GimicActor>())
             {
@@ -262,6 +282,6 @@ public class StageEditorHelper : MonoBehaviour
 
     void DrawGimicLine(Vector3 targetPos)
     {
-        Gizmos.DrawLine(editorTile.spawnPos, targetPos);
+        Gizmos.DrawLine(editorTile.tilePos, targetPos);
     }
 }

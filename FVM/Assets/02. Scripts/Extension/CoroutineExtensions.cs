@@ -44,8 +44,7 @@ namespace DuDungTakGames.Extensions
             while (progress < 1f)
             {
                 action.Invoke();
-
-                // NOTE : Lerp 에 0.1f 추가로 보정
+                
                 progress = Mathf.Lerp(progress, 1.1f, speed * Time.smoothDeltaTime);
 
                 yield return null;

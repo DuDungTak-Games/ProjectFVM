@@ -6,7 +6,7 @@ using DuDungTakGames.Extensions;
 public class VMCamera : MonoBehaviour
 {
     
-    Camera camera;
+    Camera mainCamera;
 
     [Header("Camera Info")]
     [SerializeField] Vector3 offsetPos;
@@ -24,7 +24,7 @@ public class VMCamera : MonoBehaviour
 
     void Awake()
     {
-        camera = GetComponent<Camera>();
+        mainCamera = Camera.main;
 
         Application.targetFrameRate = 60;
     }
@@ -62,7 +62,12 @@ public class VMCamera : MonoBehaviour
     
     void UpdateCameraZoom()
     {
-        camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, offsetZoom, followSpeed * Time.smoothDeltaTime);
+        mainCamera.orthographicSize = Mathf.Lerp(mainCamera.orthographicSize, offsetZoom, followSpeed * Time.smoothDeltaTime);
+    }
+
+    public void SetCameraLerp(bool isOn)
+    {
+        isLerp = isOn;
     }
 
     public void SetCameraTarget(Transform trf)

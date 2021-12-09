@@ -4,7 +4,7 @@ using UnityEngine;
 public class TilePrefabData : ScriptableObject
 {
     public SerializeDictionary<TileID, GameObject> prefabList = new SerializeDictionary<TileID, GameObject>();
-    public SerializeDictionary<TileID, float> floorUnitList = new SerializeDictionary<TileID, float>();
+    public SerializeDictionary<TileID, Vector3> offsetList = new SerializeDictionary<TileID, Vector3>();
     
     public GameObject GetPrefab(TileID id)
     {
@@ -16,13 +16,13 @@ public class TilePrefabData : ScriptableObject
         return null;
     }
     
-    public float GetUnit(TileID id)
+    public Vector3 GetOffset(TileID id)
     {
-        if (floorUnitList.ContainsKey(id))
+        if (offsetList.ContainsKey(id))
         {
-            return floorUnitList[id];
+            return offsetList[id];
         }
         
-        return 0;
+        return Vector3.zero;
     }
 }

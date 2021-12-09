@@ -17,7 +17,7 @@ public class PlayerTest : MonoBehaviour
     public VMInputSwipe vmInput;
     
     float currentFloor = 1f;
-    Floor forwardFloor;
+    Tile forwardTile;
 
     Coroutine moveCoroutine, rotateCoroutine;
 
@@ -119,7 +119,7 @@ public class PlayerTest : MonoBehaviour
     {
         if (moveCoroutine == null)
         {
-            forwardFloor = null;
+            forwardTile = null;
 
             if (CheckFoward(direction))
                 return;
@@ -160,9 +160,9 @@ public class PlayerTest : MonoBehaviour
 
             if(hitObj)
             {
-                if (hitObj.TryGetComponent(out forwardFloor))
+                if (hitObj.TryGetComponent(out forwardTile))
                 {
-                    float result = (forwardFloor.floor - currentFloor);
+                    float result = (forwardTile.floor - currentFloor);
                     if (Mathf.Abs(result) != 0.5f)
                     {
                         return true;
@@ -187,9 +187,9 @@ public class PlayerTest : MonoBehaviour
 
             if (hitObj)
             {
-                if(forwardFloor == null)
+                if(forwardTile == null)
                 {
-                    return hitObj.TryGetComponent(out forwardFloor);
+                    return hitObj.TryGetComponent(out forwardTile);
                 }
 
                 return true;
@@ -211,10 +211,10 @@ public class PlayerTest : MonoBehaviour
 
     Vector3 GetMoveHeight()
     {
-        if (forwardFloor == null)
+        if (forwardTile == null)
             return Vector3.zero;
 
-        float targetFloor = forwardFloor.floor;
+        float targetFloor = forwardTile.floor;
         float result = (targetFloor - currentFloor);
 
         float posY = 0;

@@ -13,6 +13,6 @@ public class GimicSet
         }
     }
 
-    public Vector3 targetPos;
+    public Vector3 targetPos; // NOTE : TilePos
     public int ID;
 }
