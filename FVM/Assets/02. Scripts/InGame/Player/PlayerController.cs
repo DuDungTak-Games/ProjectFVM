@@ -178,6 +178,8 @@ public class PlayerController : MonoBehaviour
         {
             if (rayObj.TryGetComponent(out dirTile))
             {
+                if(dirTile.tileID is TileID.BOX)
+                    Debug.Log(dirTile.floor - curFloor);
                 float result = (dirTile.floor - curFloor);
                 if (Mathf.Abs(result) == 0.5f)
                     return false;

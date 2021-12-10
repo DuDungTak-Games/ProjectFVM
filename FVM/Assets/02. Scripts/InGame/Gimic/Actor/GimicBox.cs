@@ -114,20 +114,19 @@ public class GimicBox : GimicTrigger
                 transform.rotation = Quaternion.Lerp(transform.rotation, targetRot, t);
             });
 
-            // TODO : 내려가는 사이에 플레이어가 이동할 수 있어서 수정해야함
             if (bottomTile != null)
             {
                 startPos = transform.position;
                 targetPos = bottomTile.GetDirPos(Vector3.up);
 
+                tile.floor = (bottomTile.floor + 1);
+
+                bottomTile = null;
+
                 yield return CoroutineExtensions.ProcessAction(moveSpeed, (t) =>
                 {
                     transform.position = Vector3.Lerp(startPos, targetPos, t);
                 });
-
-                tile.floor = (bottomTile.floor + 1);
-
-                bottomTile = null;
             }
 
             transform.position = targetPos;

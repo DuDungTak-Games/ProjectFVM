@@ -14,11 +14,6 @@ public class GimicManager : MonoBehaviour
     [SerializeField] 
     List<GimicCustom> gimicCustoms = new List<GimicCustom>();
 
-    void Awake()
-    {
-        ResetData();
-    }
-
     public void Init()
     {
         MatchingGimic();

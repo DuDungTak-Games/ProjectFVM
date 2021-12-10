@@ -71,7 +71,7 @@ public class TileManager : MonoBehaviour
             case TileID.VM_POINT:
                 GameObject triggerPrefab = GetTilePrefab(TileID.PRESSURE_TOGGLE, tileSet);
                 Vector3 triggerPos = GetPosByOffset(TileID.PRESSURE_TOGGLE, tileSet.spawnPos) + (tileObj.transform.forward.normalized * 10f);
-                    
+
                 GameObject triggerObj = Instantiate(triggerPrefab, triggerPos, Quaternion.Euler(tileSet.spawnRot), rootTrf);
                 GimicTrigger trigger = triggerObj.GetComponent<GimicTrigger>();
                 trigger.SetGimicID(-1);

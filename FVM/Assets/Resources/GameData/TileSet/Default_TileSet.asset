@@ -634,6 +634,12 @@ MonoBehaviour:
       - spawnPos: {x: 120, y: -22.5, z: -90}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: -2.5
+      - spawnPos: {x: 60, y: -22.5, z: -140}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: -2.5
+      - spawnPos: {x: 60, y: -22.5, z: -130}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: -2.5
       - spawnPos: {x: 70, y: -30, z: -100}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: -3
@@ -776,6 +782,12 @@ MonoBehaviour:
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: -3
       - spawnPos: {x: 10, y: -30, z: 80}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: -3
+      - spawnPos: {x: 60, y: -30, z: -130}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: -3
+      - spawnPos: {x: 60, y: -30, z: -140}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: -3
       - spawnPos: {x: 70, y: -32.5, z: -110}
