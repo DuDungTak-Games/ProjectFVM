@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 
@@ -285,3 +286,4 @@ public class StageEditorHelper : MonoBehaviour
         Gizmos.DrawLine(editorTile.tilePos, targetPos);
     }
 }
+#endif
