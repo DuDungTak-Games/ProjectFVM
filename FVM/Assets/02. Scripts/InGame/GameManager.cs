@@ -9,8 +9,10 @@ public class GameManager : MonoSingleton<GameManager>
     public TileManager tileManager { get; private set; }
     public Player player { get; private set; }
     
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         vmCamera = FindObjectOfType<VMCamera>();
         tileManager = FindObjectOfType<TileManager>();
         player = FindObjectOfType<Player>();

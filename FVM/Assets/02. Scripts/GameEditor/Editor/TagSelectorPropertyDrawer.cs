@@ -1,14 +1,13 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
-  
- // Original by DYLAN ENGELMAN http://jupiterlighthousestudio.com/custom-inspectors-unity/
- // Altered by Brecht Lecluyse http://www.brechtos.com
- [CustomPropertyDrawer(typeof(TagSelectorAttribute))]
+
+// Original by DYLAN ENGELMAN http://jupiterlighthousestudio.com/custom-inspectors-unity/
+// Altered by Brecht Lecluyse http://www.brechtos.com
+[CustomPropertyDrawer(typeof(TagSelectorAttribute))]
  public class TagSelectorPropertyDrawer : PropertyDrawer
  {
-  
-     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
      {
          if (property.propertyType == SerializedPropertyType.String)
          {
@@ -72,4 +71,4 @@ using System.Collections.Generic;
              EditorGUI.PropertyField(position, property, label);
          }
      }
- }
+}
