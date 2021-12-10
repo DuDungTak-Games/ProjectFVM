@@ -16,13 +16,20 @@ public class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
         }
     }
 
-    protected virtual void Awake()
+    void Awake()
     {
-        if (instance != this)
+        if (Instance != this)
         {
             Destroy(this.gameObject);
         }
-        
+
+        Init();
+
         DontDestroyOnLoad(this.gameObject);
+    }
+
+    protected virtual void Init()
+    {
+
     }
 }
