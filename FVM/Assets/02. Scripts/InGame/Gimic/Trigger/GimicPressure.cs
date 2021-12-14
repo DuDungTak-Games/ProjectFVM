@@ -31,7 +31,7 @@ public class GimicPressure : GimicTrigger
 
     void OnTriggerEnter(Collider col)
     {
-        if (col.gameObject.CompareTag(targetTag))
+        if (col.gameObject.CompareTag(targetTag) || col.gameObject.CompareTag("Tile"))
         {
             animator.SetBool("isTrigger", true);
 
@@ -41,7 +41,7 @@ public class GimicPressure : GimicTrigger
 
     void OnTriggerExit(Collider col)
     {
-        if (col.gameObject.CompareTag(targetTag))
+        if (col.gameObject.CompareTag(targetTag) || col.gameObject.CompareTag("Tile"))
         {
             animator.SetBool("isTrigger", isOnceTrigger);
 

@@ -81,10 +81,10 @@ MonoBehaviour:
   floorDistance: 6
   dirLayer:
     serializedVersion: 2
-    m_Bits: 4294967103
+    m_Bits: 4294967176
   floorLayer:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 776
   triggerLayer:
     serializedVersion: 2
     m_Bits: 256

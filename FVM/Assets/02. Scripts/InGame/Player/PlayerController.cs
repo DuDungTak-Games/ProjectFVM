@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Pit Move")]
     [SerializeField] float pitSpeed = 10f;
+    [SerializeField] float pitScale = 0.8f;
     [SerializeField] Vector3 pitMoveHeight = new Vector3(0, 20, 0);
     [SerializeField] Vector3 pitHeight = new Vector3(0, -20, 0);
 
@@ -60,8 +61,8 @@ public class PlayerController : MonoBehaviour
         vmInput.onSwipe.AddListener(Rotate);
         
         AddMoveStartEvent(ResetDirTrigger);
-        AddMoveEndEvent(FindNearTrigger);
-        AddRotateEndEvent(FindNearTrigger);
+        // AddMoveEndEvent(FindNearTrigger);
+        // AddRotateEndEvent(FindNearTrigger);
     }
 
     
@@ -128,6 +129,9 @@ public class PlayerController : MonoBehaviour
             if (!CheckDirectionFloor(direction))
                 return;
 
+            if (dirTile == null)
+                return;
+
             Vector3 movePos = GetPosUnit(transform.position) + GetMoveUnit(direction) + GetMoveHeight();
             MoveCoroutine(transform.position, movePos).Start(ref moveCoroutine, this);
         }
@@ -149,9 +153,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void JumpMove(Vector3 targetPos)
+    public void JumpMove(Vector3 targetPos, float targetFloor)
     {
-        JumpMoveCoroutine(targetPos).Start(ref moveCoroutine, this);
+        JumpMoveCoroutine(targetPos, targetFloor).Start(ref moveCoroutine, this);
     }
 
     void Rotate(SwipeType swipeType)
@@ -178,8 +182,6 @@ public class PlayerController : MonoBehaviour
         {
             if (rayObj.TryGetComponent(out dirTile))
             {
-                if(dirTile.tileID is TileID.BOX)
-                    Debug.Log(dirTile.floor - curFloor);
                 float result = (dirTile.floor - curFloor);
                 if (Mathf.Abs(result) == 0.5f)
                     return false;
@@ -236,6 +238,10 @@ public class PlayerController : MonoBehaviour
                 if (dirTrigger is GimicPit)
                 {
                     OnTrigger();
+                    
+                    dirTile = null;
+
+                    return true;
                 }
             }
         }
@@ -244,12 +250,12 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    void FindNearTrigger()
-    {
-        if(CheckTrigger(transform.forward)) return;
-        if(CheckTrigger(transform.right)) return;
-        if(CheckTrigger(-transform.right)) return;
-    }
+    //void FindNearTrigger()
+    //{
+    //    if(CheckTrigger(transform.forward)) return;
+    //    if(CheckTrigger(transform.right)) return;
+    //    if(CheckTrigger(-transform.right)) return;
+    //}
 
     void ResetDirTrigger()
     {
@@ -262,23 +268,23 @@ public class PlayerController : MonoBehaviour
         {
             dirTrigger.OnTrigger();
         }
-        
+
         ResetDirTrigger();
-        FindNearTrigger();
+        // FindNearTrigger();
     }
 
     // NOTE : 일반 이동으로 변경된게 아닌 경우에는 -1 해줌
-    public void SetFloor(float newFloor, bool isTileFloor = false)
+    public void SetFloor(float floor)
     {
-        curFloor = newFloor + (isTileFloor ? -1 : 0);
+        curFloor = floor;
     }
 
-    public void SetLockControl(bool isOn)
+    void SetLockControl(bool isOn)
     {
         lockControl = isOn;
     }
 
-    public Vector3 GetPosUnit(Vector3 pos)
+    Vector3 GetPosUnit(Vector3 pos)
     {
         float x = (int)Mathf.Round(pos.x/moveUnit) * moveUnit;
         float y = (int)Mathf.Round(pos.y/heightUnit) * heightUnit;
@@ -287,7 +293,7 @@ public class PlayerController : MonoBehaviour
         return new Vector3(x, y, z);
     }
 
-    public Vector3 GetMoveUnit(Vector3 direction)
+    Vector3 GetMoveUnit(Vector3 direction)
     {
         return (direction * moveUnit);
     }
@@ -384,13 +390,13 @@ public class PlayerController : MonoBehaviour
         Vector3 startPos = transform.position;
         Vector3 endPos = GetPosUnit(startPit.transform.position + pitHeight);
 
-        yield return AccelerationMoveLogic(startPos, endPos, pitMoveHeight, pitSpeed);
+        yield return AccelerationMoveLogic(startPos, endPos, pitMoveHeight, pitSpeed, pitScale);
 
         yield return new WaitForSeconds(0.5f);
 
         endPit.PlayTriggerAnim();
 
-        SetFloor(endPit.tile.floor, true);
+        SetFloor(endPit.tile.floor-1);
         dirTile = endPit.exitTile;
 
         startPos = (endPit.transform.position + pitHeight);
@@ -398,7 +404,7 @@ public class PlayerController : MonoBehaviour
 
         transform.SetRotation(Quaternion.LookRotation(exitDir));
 
-        yield return AccelerationMoveLogic(startPos, endPos, pitMoveHeight, pitSpeed);
+        yield return AccelerationMoveLogic(startPos, endPos, pitMoveHeight, pitSpeed, 1);
 
         animator.SetBool("isFloating", false);
 
@@ -410,7 +416,7 @@ public class PlayerController : MonoBehaviour
         moveCoroutine = null;
     }
 
-    IEnumerator JumpMoveCoroutine(Vector3 targetPos)
+    IEnumerator JumpMoveCoroutine(Vector3 targetPos, float targetFloor)
     {
         VMCamera camera = GameManager.Instance.vmCamera;
         camera.SetCameraLerp(false);
@@ -422,31 +428,37 @@ public class PlayerController : MonoBehaviour
         Vector3 startPos = transform.position;
         Vector3 endPos = GetPosUnit(targetPos);
 
-        yield return AccelerationMoveLogic(startPos, endPos, jumpHeight, jumpSpeed);
+        yield return AccelerationMoveLogic(startPos, endPos, jumpHeight, jumpSpeed, 1);
 
         animator.SetBool("isFloating", false);
 
         camera.SetCameraLerp(true);
 
         transform.SetPosition(endPos);
+        SetFloor(targetFloor);
         SetLockControl(false);
 
         moveCoroutine = null;
     }
 
-    IEnumerator AccelerationMoveLogic(Vector3 startPos, Vector3 endPos, Vector3 curveHeight, float maxSpeed)
+    IEnumerator AccelerationMoveLogic(Vector3 startPos, Vector3 endPos, Vector3 curveHeight, float maxSpeed, float modelScale)
     {
         float speed = 0.1f;
         float t = 0f;
 
+        Vector3 originScale = transform.localScale;
+
         while (t < 1f)
         {
             transform.BezierCurvePosition(startPos, endPos, curveHeight, t);
+            transform.LerpScale(originScale, (Vector3.one * modelScale), t);
 
             t = Mathf.Lerp(t, 1.1f, speed * Time.smoothDeltaTime);
             speed = Mathf.Lerp(0.1f, maxSpeed, (t < 0.5f) ? (1f - t) : t);
 
             yield return null;
         }
+
+        transform.SetScale(Vector3.one * modelScale);
     }
 }

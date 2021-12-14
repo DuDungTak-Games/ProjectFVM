@@ -141,7 +141,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &38412237
 RectTransform:
   m_ObjectHideFlags: 0
@@ -263,45 +263,9 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 108886, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 122542, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
       propertyPath: m_Name
       value: Dummy_Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 122542, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 122542, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
-      propertyPath: m_TagString
-      value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 125458, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 145966, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 148196, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 158808, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 175404, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 197254, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
-      propertyPath: m_Layer
-      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 494468, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
       propertyPath: m_RootOrder
@@ -335,36 +299,19 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 11443940, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
-      propertyPath: fileRefreshLastTimeTicks
-      value: 637730546442356217
-      objectReference: {fileID: 0}
-    - target: {fileID: 2474373940126768653, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
-      propertyPath: dirLayerMask.m_Bits
-      value: 4294967103
-      objectReference: {fileID: 0}
-    - target: {fileID: 2474373940126768653, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
-      propertyPath: floorLayerMask.m_Bits
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 2474373940126768653, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
-      propertyPath: deepFloorLayerMask.m_Bits
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 7825480184224408153, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
-      propertyPath: vmInput
-      value: 
-      objectReference: {fileID: 1146052427}
-    - target: {fileID: 8575016579611022382, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
-      propertyPath: m_UseGravity
+    - target: {fileID: 494468, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8575016579611022382, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
-      propertyPath: m_IsKinematic
-      value: 1
+    - target: {fileID: 494468, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 1757426808303094636, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
+    - target: {fileID: 494468, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8a5787ce22d43894aade7e7959d7554c, type: 3}
 --- !u!4 &39187953 stripped
 Transform:
@@ -1478,9 +1425,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acdf8e3e04205bf4cb18b1f23c588601, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gimicTriggers: []
-  gimicActors: []
-  gimicCustoms: []
 --- !u!4 &843444754
 Transform:
   m_ObjectHideFlags: 0

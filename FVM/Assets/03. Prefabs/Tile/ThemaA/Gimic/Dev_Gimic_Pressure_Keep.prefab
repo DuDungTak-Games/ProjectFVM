@@ -277,5 +277,7 @@ MonoBehaviour:
   gimicEvent:
     m_PersistentCalls:
       m_Calls: []
+  targetTags:
+  - Tile
   isKeepPressure: 1
   isOnceTrigger: 0

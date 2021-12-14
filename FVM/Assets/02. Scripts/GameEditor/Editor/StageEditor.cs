@@ -87,7 +87,14 @@ public class StageEditor : EditorWindow
         }
         
         if(EditorApplication.isPlaying)
+        {
+            if (previewTile != null)
+            {
+                DestroyImmediate(previewTile);
+            }
+
             return;
+        }
         
         if (GizmoHelper == null)
             return;
@@ -1126,7 +1133,7 @@ public class StageEditor : EditorWindow
         return ((int)tileID) >= ((int)TileID.GIMIC_CUSTOM);
     }
 
-    bool IsSpecial(TileID tileID)
+    bool IsUnique(TileID tileID)
     {
         if (tileID == TileID.START_POINT || tileID == TileID.VM_POINT)
             return true;
@@ -1305,7 +1312,7 @@ public class StageEditor : EditorWindow
 
             if (!isLoad)
             {
-                if (IsSpecial(curTileID))
+                if (IsUnique(curTileID))
                 {
                     DeleteDuplicateTile();
                 }

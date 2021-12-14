@@ -5,13 +5,10 @@ using UnityEngine;
 public class GimicManager : MonoBehaviour
 {
 
-    [SerializeField] 
     List<GimicTrigger> gimicTriggers = new List<GimicTrigger>();
-    
-    [SerializeField] 
+
     List<GimicActor> gimicActors = new List<GimicActor>();
     
-    [SerializeField] 
     List<GimicCustom> gimicCustoms = new List<GimicCustom>();
 
     public void Init()
@@ -39,17 +36,6 @@ public class GimicManager : MonoBehaviour
             //     Debug.LogWarningFormat("[GimicManager] GimicTrigger ({0}) 매칭이 되지 않아서 삭제됨!", trigger.ID);
             //     Destroy(trigger.gameObject);
             // }
-        }
-        
-        foreach (var gimic in gimicCustoms)
-        {
-            foreach (var actor in gimicActors)
-            {
-                if (gimic.ID == actor.ID)
-                {
-                    actor.CustomAction(gimic);
-                }
-            }
         }
     }
 

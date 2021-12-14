@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Default_TileSet
   m_EditorClassIdentifier: 
   tileSetList:
-    keys: 0000000002000000040000001a0400001b040000f3030000f203000011040000100400001204000006040000fc030000240400002e040000f503000003000000
+    keys: 0000000002000000040000001a0400001b040000f3030000f203000011040000100400001204000006040000fc030000240400002e04000003000000f4030000
     values:
     - datas:
       - spawnPos: {x: 10, y: 10, z: 80}
@@ -1987,9 +1987,15 @@ MonoBehaviour:
       - spawnPos: {x: -10, y: 10, z: -50}
         spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 1
+      - spawnPos: {x: 60, y: -15, z: -140}
+        spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: -1.5
     - datas:
       - spawnPos: {x: -10, y: 10, z: 50}
         spawnRot: {x: 0, y: 0, z: 0}
+        spawnFloor: 1
+      - spawnPos: {x: 30, y: 10, z: -110}
+        spawnRot: {x: 0, y: 270, z: 0}
         spawnFloor: 1
     - datas:
       - spawnPos: {x: 0, y: 10, z: 20}
@@ -2070,12 +2076,12 @@ MonoBehaviour:
         spawnRot: {x: 0, y: 90, z: 0}
         spawnFloor: 1
     - datas:
-      - spawnPos: {x: 0, y: 10, z: -90}
-        spawnRot: {x: 0, y: 0, z: 0}
-        spawnFloor: 1
-    - datas:
       - spawnPos: {x: 0, y: 10, z: 0}
         spawnRot: {x: 0, y: 180, z: 0}
+        spawnFloor: 1
+    - datas:
+      - spawnPos: {x: 0, y: 10, z: -90}
+        spawnRot: {x: 0, y: 0, z: 0}
         spawnFloor: 1
   gimicSetList:
   - targetPos: {x: 0, y: 10, z: -70}
@@ -2098,6 +2104,8 @@ MonoBehaviour:
     ID: 0
   - targetPos: {x: -40, y: 15, z: -100}
     ID: 0
+  - targetPos: {x: 0, y: 10, z: -90}
+    ID: 0
   - targetPos: {x: -20, y: 10, z: 0}
     ID: 1
   - targetPos: {x: -40, y: 10, z: 0}
@@ -2105,8 +2113,6 @@ MonoBehaviour:
   - targetPos: {x: -30, y: 10, z: 0}
     ID: 1
   - targetPos: {x: 30, y: 10, z: 0}
-    ID: 3
-  - targetPos: {x: 0, y: 10, z: -90}
     ID: 3
   - targetPos: {x: -10, y: 10, z: -50}
     ID: 4
@@ -2130,3 +2136,7 @@ MonoBehaviour:
     ID: 11
   - targetPos: {x: 10, y: 10, z: -50}
     ID: 11
+  - targetPos: {x: 30, y: 10, z: -110}
+    ID: 12
+  - targetPos: {x: 60, y: -15, z: -140}
+    ID: 12

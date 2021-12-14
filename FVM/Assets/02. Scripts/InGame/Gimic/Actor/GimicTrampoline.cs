@@ -11,6 +11,8 @@ public class GimicTrampoline : GimicActor
     [TagSelector] 
     public string targetTag;
 
+    float targetFloor;
+
     Vector3 targetPos;
 
     Animator animator;
@@ -20,29 +22,38 @@ public class GimicTrampoline : GimicActor
         base.Awake();
 
         targetPos = Vector3.zero;
-        
+
         animator = GetComponent<Animator>();
     }
 
     public override void OnAction()
     {
-        if (targetPos == Vector3.zero)
-            return;
-
-        PlayerController pc = GameManager.Instance.player.controller;
-        pc.JumpMove(targetPos);
-
-        animator.SetTrigger("OnTrigger");
-    }
-
-    public override void CustomAction(GimicCustom gimic)
-    {
-        if(targetPos == Vector3.zero)
+        if (targetPos != Vector3.zero)
         {
-            targetPos = gimic.transform.position;
+            PlayerController pc = GameManager.Instance.player.controller;
+            pc.JumpMove(targetPos, targetFloor-1);
+
+            animator.SetTrigger("OnTrigger");
         }
     }
-    
+
+    public override void OnActive()
+    {
+        FindTargetPos();
+    }
+
+    void FindTargetPos()
+    {
+        GimicManager gimicManager = GameManager.Instance.gimicManager;
+        var gimicList = gimicManager.FindGimicCustom(this.ID);
+
+        if(gimicList.Count > 0)
+        {
+            targetPos = gimicList[0].transform.position;
+            targetFloor = gimicList[0].GetComponent<Tile>().floor;
+        }
+    }
+
     void OnTriggerEnter(Collider col)
     {
         if (col.gameObject.CompareTag(targetTag))

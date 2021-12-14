@@ -28,9 +28,10 @@ public class TileManager : MonoBehaviour
 
     void Init()
     {
-        gimicManager = FindObjectOfType<GimicManager>();
+        gimicManager = GameManager.Instance.gimicManager;
+        gimicManager.ResetData();
         
-        GameObject tileFolder = new GameObject("Tile Folder");
+        GameObject tileFolder = new GameObject("Tile List");
         rootTrf = tileFolder.transform;
 
         SpawnTileSet(mainTileSetData);
@@ -66,7 +67,7 @@ public class TileManager : MonoBehaviour
                 PlayerController pc = GameManager.Instance.player.controller;
                 pc.transform.SetPosition(tileObj.transform.position);
                 pc.transform.SetRotation(tileObj.transform.rotation);
-                pc.SetFloor(spawnFloor, true);
+                pc.SetFloor(spawnFloor-1);
                 break;
             case TileID.VM_POINT:
                 GameObject triggerPrefab = GetTilePrefab(TileID.PRESSURE_TOGGLE, tileSet);
@@ -81,7 +82,7 @@ public class TileManager : MonoBehaviour
                 break;
         }
         
-        if ((int) tileID >= (int) TileID.GIMIC_CUSTOM)
+        if (IsGimic(tileID))
         {
             GimicObject gimic;
             if (tileObj.TryGetComponent(out gimic) && gimicSet != null)
@@ -143,5 +144,10 @@ public class TileManager : MonoBehaviour
             x.Item1 == tilePos + (Vector3.up * tileUnit));
 
         return (data != null);
+    }
+
+    bool IsGimic(TileID tileID)
+    {
+        return ((int)tileID) >= ((int)TileID.GIMIC_CUSTOM);
     }
 }

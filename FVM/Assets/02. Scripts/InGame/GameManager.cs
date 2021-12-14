@@ -7,12 +7,14 @@ public class GameManager : MonoSingleton<GameManager>
 
     public VMCamera vmCamera{ get; private set; }
     public TileManager tileManager { get; private set; }
+    public GimicManager gimicManager { get; private set; }
     public Player player { get; private set; }
     
     protected override void Init()
     {
         vmCamera = FindObjectOfType<VMCamera>();
         tileManager = FindObjectOfType<TileManager>();
+        gimicManager = FindObjectOfType<GimicManager>();
         player = FindObjectOfType<Player>();
     }
     

@@ -10,7 +10,7 @@ public class Raycaster : MonoBehaviour
     [SerializeField] float floorDistance = 11f;
 
     [Header("Raycast Layer")]
-    [SerializeField] LayerMask dirLayer = ~(1 << 6 | 1 << 7); // ~(Player | Item)
+    [SerializeField] LayerMask dirLayer = ~(1 << 6 | 1 << 7 | 1 << 9); // ~(Player | Item | Point)
     [SerializeField] LayerMask floorLayer = (1 << 3); // Tile
     [SerializeField] LayerMask triggerLayer = (1 << 3); // Trigger
 

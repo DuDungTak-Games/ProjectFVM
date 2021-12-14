@@ -6,8 +6,8 @@ public class GimicTrigger : GimicObject
 
     protected bool isTrigger;
 
-    [TagSelector] 
-    public string targetTag;
+    [SerializeField, TagSelector]
+    protected string targetTag;
 
     [HideInInspector]
     public UnityEvent gimicEvent;

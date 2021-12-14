@@ -166,13 +166,10 @@ MonoBehaviour:
   floorDistance: 11
   dirLayer:
     serializedVersion: 2
-    m_Bits: 4294967103
+    m_Bits: 4294966591
   floorLayer:
     serializedVersion: 2
-    m_Bits: 8
-  deepFloorLayer:
-    serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 264
   triggerLayer:
     serializedVersion: 2
     m_Bits: 256

@@ -13,15 +13,12 @@ public class GimicDoor : GimicActor
     [SerializeField] 
     bool isOnceActive;
 
-    Collider collider;
-    
     Animator animator;
 
     protected override void Awake()
     {
         base.Awake();
 
-        collider = GetComponent<Collider>();
         animator = GetComponent<Animator>();
     }
 
@@ -31,7 +28,7 @@ public class GimicDoor : GimicActor
             return;
         
         isTrigger = !isTrigger;
-        collider.enabled = !isTrigger;
+        gameObject.layer = isTrigger ? (LayerMask.NameToLayer("Point")) : (LayerMask.NameToLayer("Tile"));
         
         animator.SetBool("isTrigger", isTrigger);
     }

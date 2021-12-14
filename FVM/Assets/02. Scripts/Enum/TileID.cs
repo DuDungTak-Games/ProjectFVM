@@ -11,7 +11,6 @@ public enum TileID
     PRESSURE_TOGGLE = 1010,
     PRESSURE_ONCE,
     PRESSURE_KEEP,
-    PRESSURE_BOX,
     
     LEVER_TOGGLE = 1020,
     LEVER_ONCE,

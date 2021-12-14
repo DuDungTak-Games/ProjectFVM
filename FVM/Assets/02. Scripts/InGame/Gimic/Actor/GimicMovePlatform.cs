@@ -31,8 +31,7 @@ public class GimicMovePlatform : GimicActor
     [SerializeField] 
     float moveInertia = 20f;
     
-    List<Vector3> points = new List<Vector3>();
-    List<GimicCustom> gimics = new List<GimicCustom>();
+    List<Vector3> movePoints = new List<Vector3>();
 
     GameObject child;
 
@@ -58,15 +57,9 @@ public class GimicMovePlatform : GimicActor
 
     public override void OnActive()
     {
-        points.Add(transform.position); // NOTE : START POINT
-        
-        foreach (var gimic in gimics.OrderBy(x => x.ID))
-        {
-            points.Add(gimic.transform.position);
-            Destroy(gimic.gameObject);
-        }
-        
-        gimics.Clear();
+        movePoints.Add(transform.position); // NOTE : START POINT
+
+        FindMovePoints();
 
         curIdx = 1;
         
@@ -76,14 +69,21 @@ public class GimicMovePlatform : GimicActor
         }
     }
 
-    public override void CustomAction(GimicCustom gimic)
+    void FindMovePoints()
     {
-        gimics.Add(gimic);
+        GimicManager gimicManager = GameManager.Instance.gimicManager;
+        var gimicList = gimicManager.FindGimicCustom(this.ID);
+
+        foreach (var gimic in gimicList.OrderBy(x => x.ID))
+        {
+            movePoints.Add(gimic.transform.position);
+            Destroy(gimic.gameObject);
+        }
     }
 
     IEnumerator LoopCoroutine()
     {
-        if (points.Count < 2)
+        if (movePoints.Count < 2)
             yield break;
 
         bool isDelay = true;
@@ -101,7 +101,7 @@ public class GimicMovePlatform : GimicActor
             child?.transform.SetParent(this.transform);
 
             Vector3 startPoint = transform.position;
-            Vector3 targetDir = (points[curIdx] - startPoint).normalized * moveInertia;
+            Vector3 targetDir = (movePoints[curIdx] - startPoint).normalized * moveInertia;
 
             Quaternion startRot = Quaternion.Euler(targetDir.z * -1f, targetDir.y, targetDir.x);
             Quaternion endRot = Quaternion.identity;
@@ -109,12 +109,12 @@ public class GimicMovePlatform : GimicActor
 
             yield return CoroutineExtensions.ProcessAction(moveSpeed, (t) =>
             {
-                transform.position = Vector3.Lerp(startPoint, points[curIdx], t);
+                transform.position = Vector3.Lerp(startPoint, movePoints[curIdx], t);
                 targetRot = Quaternion.Lerp(startRot, endRot, t);
                 transform.rotation = Quaternion.Lerp(transform.rotation, targetRot, t);
             });
 
-            transform.position = points[curIdx];
+            transform.position = movePoints[curIdx];
             transform.rotation = Quaternion.identity;
 
             child?.transform.SetParent(null);
@@ -133,11 +133,11 @@ public class GimicMovePlatform : GimicActor
 
     bool NextPoint()
     {
-        bool isArrive = ((curIdx + 1) >= points.Count) || ((curIdx - 1) <= -1);
+        bool isArrive = ((curIdx + 1) >= movePoints.Count) || ((curIdx - 1) <= -1);
 
         if(isArrive)
         {
-            isTurnBack = ((curIdx + 1) >= points.Count);
+            isTurnBack = ((curIdx + 1) >= movePoints.Count);
         }
 
         curIdx += isTurnBack ? -1 : 1;
@@ -167,14 +167,14 @@ public class GimicMovePlatform : GimicActor
     {
         Gizmos.color = Color.green;
 
-        if (points.Count > 1)
+        if (movePoints.Count > 1)
         {
-            Gizmos.DrawSphere(points[0], 0.4f);
+            Gizmos.DrawSphere(movePoints[0], 0.4f);
             
-            for (int i = 1; i < points.Count; i++)
+            for (int i = 1; i < movePoints.Count; i++)
             {
-                Gizmos.DrawLine(points[i-1], points[i]);
-                Gizmos.DrawSphere(points[i], 0.2f);
+                Gizmos.DrawLine(movePoints[i-1], movePoints[i]);
+                Gizmos.DrawSphere(movePoints[i], 0.2f);
             }
         }
     }

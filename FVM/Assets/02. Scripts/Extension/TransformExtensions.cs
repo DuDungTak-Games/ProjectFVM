@@ -4,7 +4,7 @@ namespace DuDungTakGames.Extensions
 {
     public static class TransformExtensions
     {
-        public static void BezierCurvePosition(this Transform target, Vector3 startPos, Vector3 endPos, Vector3 heightOffset, float t)
+        public static void BezierCurvePosition(this Transform trf, Vector3 startPos, Vector3 endPos, Vector3 heightOffset, float t)
         {
             Vector3 startPosH = startPos + heightOffset;
             Vector3 endPosH = endPos + heightOffset;
@@ -16,7 +16,12 @@ namespace DuDungTakGames.Extensions
             Vector3 B0 = Vector3.Lerp(M0, M1, t);
             Vector3 B1 = Vector3.Lerp(M1, M2, t);
 
-            target.position = Vector3.Lerp(B0, B1, t);
+            trf.position = Vector3.Lerp(B0, B1, t);
+        }
+
+        public static void LerpScale(this Transform trf, Vector3 startScale, Vector3 endScale, float t)
+        {
+            trf.SetScale(Vector3.Lerp(startScale, endScale, t));
         }
 
         public static void SetPosition(this Transform trf, Vector3 newPos)

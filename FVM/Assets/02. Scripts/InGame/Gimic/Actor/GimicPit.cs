@@ -83,11 +83,10 @@ public class GimicPit : GimicTrigger
 
     void FindExitPit()
     {
-        // TODO : 추후에 수정 필요
-        GimicManager gimicManager = FindObjectOfType<GimicManager>();
+        GimicManager gimicManager = GameManager.Instance.gimicManager;
         
-        var list = gimicManager.FindGimicTrigger(this.ID);
-        foreach (var trigger in list)
+        var gimicList = gimicManager.FindGimicTrigger(this.ID);
+        foreach (var trigger in gimicList)
         {
             if (trigger != this)
             {

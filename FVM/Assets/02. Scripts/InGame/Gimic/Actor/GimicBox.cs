@@ -20,11 +20,11 @@ public class GimicBox : GimicTrigger
     {
         base.Awake();
 
-        raycaster = this.GetComponent<Raycaster>();
-
         transform.rotation = Quaternion.identity;
 
         ID = -1;
+
+        raycaster = this.GetComponent<Raycaster>();
     }
 
     public override void OnActive()
@@ -56,6 +56,9 @@ public class GimicBox : GimicTrigger
         GameObject rayObj = raycaster.CheckFloor(direction);
         if (rayObj)
         {
+            if (CheckRayGimic(rayObj))
+                return false;
+
             if (rayObj.TryGetComponent(out Tile rayTile))
             {
                 float result = (rayTile.floor - tile.floor);
@@ -74,14 +77,30 @@ public class GimicBox : GimicTrigger
 
     bool CheckDeepFloor(Vector3 direction)
     {
-        int layerMask = (1 << LayerMask.NameToLayer("Tile") | 1 << LayerMask.NameToLayer("Trigger"));
+        int layerMask = (1 << LayerMask.NameToLayer("Tile") | 1 << LayerMask.NameToLayer("Trigger") | 1 << LayerMask.NameToLayer("Point"));
         GameObject rayObj = raycaster.CheckRayOrigin(direction * TileManager.tileUnit, Vector3.down, Mathf.Infinity, layerMask);
         if (rayObj)
         {
+            if (CheckRayGimic(rayObj))
+                return false;
+
             if (rayObj.TryGetComponent(out Tile rayTile))
             {
                 bottomTile = rayTile;
                 return true;
+            }
+        }
+
+        return false;
+    }
+
+    bool CheckRayGimic(GameObject rayObj)
+    {
+        if (rayObj.TryGetComponent(out GimicObject gimic))
+        {
+            if (!(gimic is GimicPressure || gimic is GimicBox))
+            {
+                return false;
             }
         }
 
