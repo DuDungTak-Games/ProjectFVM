@@ -101,7 +101,7 @@ public class PlayerController : MonoBehaviour
 
     bool IsLockControl()
     {
-        if (!TestGameManager.Instance.IsGameState(GameState.COIN_GAME))
+        if (!GameManager.Instance.IsGameState(GameState.COIN_COLLECTION))
             return true;
 
         return lockControl;
@@ -132,7 +132,7 @@ public class PlayerController : MonoBehaviour
             if (dirTile == null)
                 return;
 
-            Vector3 movePos = GetPosUnit(transform.position) + GetMoveUnit(direction) + GetMoveHeight();
+            Vector3 movePos = GetUnitPos(transform.position) + GetMovePos(direction) + GetMoveHeight();
             MoveCoroutine(transform.position, movePos).Start(ref moveCoroutine, this);
         }
     }
@@ -185,8 +185,9 @@ public class PlayerController : MonoBehaviour
                 float result = (dirTile.floor - curFloor);
                 if (Mathf.Abs(result) == 0.5f)
                     return false;
-                return true;
             }
+
+            return true;
         }
 
         return false;
@@ -284,7 +285,7 @@ public class PlayerController : MonoBehaviour
         lockControl = isOn;
     }
 
-    Vector3 GetPosUnit(Vector3 pos)
+    Vector3 GetUnitPos(Vector3 pos)
     {
         float x = (int)Mathf.Round(pos.x/moveUnit) * moveUnit;
         float y = (int)Mathf.Round(pos.y/heightUnit) * heightUnit;
@@ -293,7 +294,7 @@ public class PlayerController : MonoBehaviour
         return new Vector3(x, y, z);
     }
 
-    Vector3 GetMoveUnit(Vector3 direction)
+    Vector3 GetMovePos(Vector3 direction)
     {
         return (direction * moveUnit);
     }
@@ -388,7 +389,7 @@ public class PlayerController : MonoBehaviour
         SetLockControl(true);
 
         Vector3 startPos = transform.position;
-        Vector3 endPos = GetPosUnit(startPit.transform.position + pitHeight);
+        Vector3 endPos = GetUnitPos(startPit.transform.position + pitHeight);
 
         yield return AccelerationMoveLogic(startPos, endPos, pitMoveHeight, pitSpeed, pitScale);
 
@@ -400,7 +401,7 @@ public class PlayerController : MonoBehaviour
         dirTile = endPit.exitTile;
 
         startPos = (endPit.transform.position + pitHeight);
-        endPos = GetPosUnit(endPit.transform.position) + GetMoveUnit(exitDir) + GetMoveHeight();
+        endPos = GetUnitPos(endPit.transform.position) + GetMovePos(exitDir) + GetMoveHeight();
 
         transform.SetRotation(Quaternion.LookRotation(exitDir));
 
@@ -426,7 +427,7 @@ public class PlayerController : MonoBehaviour
         SetLockControl(true);
 
         Vector3 startPos = transform.position;
-        Vector3 endPos = GetPosUnit(targetPos);
+        Vector3 endPos = GetUnitPos(targetPos);
 
         yield return AccelerationMoveLogic(startPos, endPos, jumpHeight, jumpSpeed, 1);
 

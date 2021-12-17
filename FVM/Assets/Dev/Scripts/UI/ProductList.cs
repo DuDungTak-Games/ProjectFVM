@@ -15,7 +15,7 @@ public class ProductList : MonoBehaviour
     
     void Awake()
     {
-        TestGameManager.Instance.AddGameEvent(GameState.PREPARE, OnInit);
+        GameManager.Instance.AddGameEvent(GameState.LAUNCH_PREPARE, OnInit);
         
         tempProduct = GetComponentInChildren<TestProduct>();
         tempProduct.gameObject.SetActive(false);
@@ -23,10 +23,11 @@ public class ProductList : MonoBehaviour
 
     void OnBuyProduct(int kg, int price)
     {
-        TestGameManager.Instance.DietVM(kg);
-        TestGameManager.Instance.BuyProductEvent(price);
-        
-        onBuyEvent.Invoke(TestGameManager.Instance.GetCoinCount());
+        // TODO : 여기 수정해야함
+        // GameManager.Instance.DietVM(kg);
+        // GameManager.Instance.BuyProductEvent(price);
+
+        // onBuyEvent.Invoke(GameManager.Instance.GetCoinCount());
     }
 
     void OnInit()

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,7 +17,7 @@ public class VMInput : MonoBehaviour
         
     [SerializeField]
     EventTrigger trigger;
-        
+
     [SerializeField] // NOTE : µð¹ö±ë¿ë
     Image startCircle, currentCircle, endCircle;
         
@@ -25,8 +26,8 @@ public class VMInput : MonoBehaviour
 
     protected InputData beginInputData, stayInputData, endInputData;
 
-    bool isPointerObject;
-        
+    bool isLockControl, isPointerObject;
+
     void Start()
     {
         Init();
@@ -75,6 +76,9 @@ public class VMInput : MonoBehaviour
 
     void Update()
     {
+        if(isLockControl)
+            return;
+
         UpdateLogic();
     }
 
@@ -192,6 +196,20 @@ public class VMInput : MonoBehaviour
 
         return results.Count;
     }
+
+    public void SetControlLock(bool isOn)
+    {
+        StartCoroutine(SetControlLockCoroutine(isOn));
+    }
+
+    IEnumerator SetControlLockCoroutine(bool isOn)
+    {
+        yield return new WaitForEndOfFrame();
+
+        isLockControl = isOn;
+    }
+
+
 
     void StartCircle(InputData inputData)
     {

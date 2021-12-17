@@ -10,12 +10,5 @@ public class Player : MonoBehaviour
     void Awake()
     {
         controller = this.GetComponent<PlayerController>();
-
-        Init();
-    }
-    
-    void Init()
-    {
-        TestGameManager.Instance.SetGameEvent(GameState.COIN_GAME);
     }
 }

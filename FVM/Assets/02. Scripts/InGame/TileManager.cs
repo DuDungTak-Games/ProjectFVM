@@ -76,7 +76,7 @@ public class TileManager : MonoBehaviour
                 GameObject triggerObj = Instantiate(triggerPrefab, triggerPos, Quaternion.Euler(tileSet.spawnRot), rootTrf);
                 GimicTrigger trigger = triggerObj.GetComponent<GimicTrigger>();
                 trigger.SetGimicID(-1);
-                trigger.AddEvent(() => { TestGameManager.Instance.SetGameEvent(GameState.PREPARE); });
+                trigger.AddEvent(() => { GameManager.Instance.SetGameState(GameState.LAUNCH_PREPARE); });
                 break;
             default:
                 break;

@@ -5,6 +5,7 @@ using UnityEngine;
 [Serializable]
 public class SubList<T> : List<T>, ISerializationCallbackReceiver
 {
+
     [SerializeField]
     List<T> datas = new List<T>();
 

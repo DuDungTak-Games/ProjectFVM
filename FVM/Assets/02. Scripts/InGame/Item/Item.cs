@@ -5,23 +5,16 @@ using DuDungTakGames.Extensions;
 
 namespace DuDungTakGames.Item
 {
-    public enum ItemType
-    {
-        COIN
-    }
-
     public class Item : MonoBehaviour
     {
 
-        [SerializeField] ItemType type;
+        [SerializeField] ItemType itemType;
 
-        Transform targetTrf;
-
-        Collider collider;
+        Collider itemCollider;
 
         protected virtual void Awake()
         {
-            collider = GetComponent<Collider>();
+            itemCollider = GetComponent<Collider>();
         }
 
         protected virtual void Start()
@@ -29,25 +22,22 @@ namespace DuDungTakGames.Item
             StartCoroutine(IdleCoroutine());    
         }
 
-        //public ItemType GetItemType()
-        //{
-        //    return this.type;
-        //}
-
         public void OnTriggerEnter(Collider col)
         {
             if(col.gameObject.CompareTag("Player"))
             {
-                targetTrf = col.gameObject.transform;
-
-                OnGetItem();
+                OnGetItem(col, col.transform);
             }
         }
 
-        public virtual void OnGetItem()
+        public virtual void OnGetItem(Collider col, Transform colTrf)
         {
+            itemCollider.enabled = false;
+
+            GameManager.Instance.AddItem(itemType);
+
             this.StopAllCoroutines();
-            StartCoroutine(OnGetItemCoroutine());
+            StartCoroutine(OnGetItemCoroutine(colTrf));
         }
 
         IEnumerator IdleCoroutine()
@@ -63,15 +53,13 @@ namespace DuDungTakGames.Item
             }
         }
 
-        IEnumerator OnGetItemCoroutine()
+        IEnumerator OnGetItemCoroutine(Transform colTrf)
         {
-            collider.enabled = false;
-
             Vector3 startPos = transform.position;
 
             yield return CoroutineExtensions.ProcessAction(6f, (t) =>
             {
-                transform.position = Vector3.Lerp(startPos, targetTrf.position, t);
+                transform.position = Vector3.Lerp(startPos, colTrf.position, t);
                 transform.LerpScale(Vector3.one, Vector3.zero, t);
             });
 

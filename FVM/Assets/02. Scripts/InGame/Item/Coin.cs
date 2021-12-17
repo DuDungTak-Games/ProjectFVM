@@ -6,11 +6,11 @@ namespace DuDungTakGames.Item
 {
     public class Coin : Item
     {
-        public override void OnGetItem()
-        {
-            TestGameManager.Instance.GetCoinEvent();
+        //public override void OnGetItem()
+        //{
+        //    GameManager.Instance.GetCoinEvent();
 
-            base.OnGetItem();
-        }
+        //    base.OnGetItem();
+        //}
     }
 }

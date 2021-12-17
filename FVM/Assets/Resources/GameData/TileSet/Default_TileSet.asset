@@ -2104,8 +2104,6 @@ MonoBehaviour:
     ID: 0
   - targetPos: {x: -40, y: 15, z: -100}
     ID: 0
-  - targetPos: {x: 0, y: 10, z: -90}
-    ID: 0
   - targetPos: {x: -20, y: 10, z: 0}
     ID: 1
   - targetPos: {x: -40, y: 10, z: 0}
@@ -2113,6 +2111,8 @@ MonoBehaviour:
   - targetPos: {x: -30, y: 10, z: 0}
     ID: 1
   - targetPos: {x: 30, y: 10, z: 0}
+    ID: 3
+  - targetPos: {x: 0, y: 10, z: -90}
     ID: 3
   - targetPos: {x: -10, y: 10, z: -50}
     ID: 4

@@ -19,7 +19,7 @@ public class CameraPreset : MonoBehaviour
         for (int i = 0; i < datas.Count; i++)
         {
             int index = i;
-            TestGameManager.Instance.AddGameEvent(datas[index].onGameState, () =>
+            GameManager.Instance.AddGameEvent(datas[index].onGameState, () =>
             {
                 SetCameraData(index);
             });

@@ -31,7 +31,7 @@ public class VendingMachine : MonoBehaviour
     
     private CameraShake cameraShake;
     
-    private TestGameManager gm;
+    // private TestGameManager gm;
     
     private Rigidbody rb;
 
@@ -46,9 +46,10 @@ public class VendingMachine : MonoBehaviour
 
     void Start()
     {   
-        gm = TestGameManager.Instance;
+        // gm = TestGameManager.Instance;
         
-        vmKg = gm.GetKg();
+        // TODO : 여기도 수정해야함
+        // vmKg = gm.GetKg();
         
         curKg = vmKg + (fuelFkg + fuelEkg);
         curFuel = maxFuel;
@@ -133,13 +134,14 @@ public class VendingMachine : MonoBehaviour
 
         CheckFalling(rb.velocity.y);
 
-        gm.UpdateUI(LabelText.labelType.CUR_KG, (int)curKg);
-        gm.UpdateUI(LabelText.labelType.CUR_FUEL, (int)curFuel);
-        gm.UpdateUI(LabelText.labelType.CUR_ANGLE, (int)transform.eulerAngles.z);
-        gm.UpdateUI(LabelText.labelType.CUR_HEIGHT, (int)curHeight);
-        gm.UpdateUI(LabelText.labelType.MAX_HEIGHT, (int)maxHeight);
-        gm.UpdateUI(LabelText.labelType.CUR_THRUST, curThrust > 0 ? (int)curThrust : 0);
-        gm.UpdateUI(LabelText.labelType.CUR_VELOCITY, rb.velocity.y > 0 ? (int)rb.velocity.y : 0);
+        // TODO : 추후 수정
+        //gm.UpdateUI(LabelText.labelType.CUR_KG, (int)curKg);
+        //gm.UpdateUI(LabelText.labelType.CUR_FUEL, (int)curFuel);
+        //gm.UpdateUI(LabelText.labelType.CUR_ANGLE, (int)transform.eulerAngles.z);
+        //gm.UpdateUI(LabelText.labelType.CUR_HEIGHT, (int)curHeight);
+        //gm.UpdateUI(LabelText.labelType.MAX_HEIGHT, (int)maxHeight);
+        //gm.UpdateUI(LabelText.labelType.CUR_THRUST, curThrust > 0 ? (int)curThrust : 0);
+        //gm.UpdateUI(LabelText.labelType.CUR_VELOCITY, rb.velocity.y > 0 ? (int)rb.velocity.y : 0);
     }
 
     void CheckFalling(float velocityY)
@@ -171,8 +173,8 @@ public class VendingMachine : MonoBehaviour
                 Instantiate(deadEffect_Prefab, spawnPos, Quaternion.identity);
                 
                 cameraShake?.Shake(0.5f, 0.75f);
-                
-                TestGameManager.Instance.SetGameEvent(GameState.GAME_OVER);
+
+                GameManager.Instance.ActionGameEvent(GameState.END);
 
                 Destroy(this.gameObject, 0.01f);
             }
