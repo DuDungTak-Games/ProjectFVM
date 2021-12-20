@@ -7,7 +7,7 @@ public class GameManager : MonoSingleton<GameManager>
 {
 
     public VMCamera vmCamera{ get; private set; }
-    public VMInput vmInput{ get; private set; }
+    public VMInputManager inputManager{ get; private set; }
     public TileManager tileManager { get; private set; }
     public GimicManager gimicManager { get; private set; }
     public CanvasManager canvasManager { get; private set; }
@@ -23,7 +23,7 @@ public class GameManager : MonoSingleton<GameManager>
     protected override void Init()
     {
         vmCamera = FindObjectOfType<VMCamera>();
-        vmInput = FindObjectOfType<VMInput>();
+        inputManager = FindObjectOfType<VMInputManager>();
         tileManager = FindObjectOfType<TileManager>();
         gimicManager = FindObjectOfType<GimicManager>();
         canvasManager = FindObjectOfType<CanvasManager>();
@@ -41,14 +41,14 @@ public class GameManager : MonoSingleton<GameManager>
 
         AddGameEvent(GameState.COIN_COLLECTION, () =>
         {
-            vmInput.SetControlLock(false);
+            inputManager.SetControlLock(false);
 
             canvasManager.SetPanel("InGame_Coin");
         });
 
         AddGameEvent(GameState.LAUNCH_PREPARE, () =>
         {
-            vmInput.SetControlLock(true);
+            inputManager.SetControlLock(true);
 
             canvasManager.SetPanel("Launch_Prepare");
         });

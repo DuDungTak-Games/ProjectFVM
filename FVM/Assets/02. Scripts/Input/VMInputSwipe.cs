@@ -3,18 +3,21 @@ using UnityEngine.Events;
 
 using DuDungTakGames.Input;
 
-public class VMInputSwipe : VMInput
+public class VMInputSwipe : MonoBehaviour
 {
-    
-    public enum SwipeType 
+
+    VMInputManager inputManager;
+
+    public enum SwipeTouchType 
     { 
+        NONE,
         RIGHT, LEFT, UP, DOWN, 
         RIGHT_UP, LEFT_UP, 
         RIGHT_DOWN, LEFT_DOWN 
     }
     
     [HideInInspector]
-    public UnityEvent<SwipeType> onSwipe;
+    public UnityEvent<SwipeTouchType> onSwipe;
     
     [HideInInspector]
     public UnityEvent onTouch;
@@ -26,53 +29,60 @@ public class VMInputSwipe : VMInput
 
     void Awake()
     {
+        inputManager = VMInputManager.Instance;
+
+        Init();
+    }
+
+    void Init()
+    {
         Vector2 screenSize = new Vector2(Screen.width, Screen.height);
         minSwipeDistance = Mathf.Max(screenSize.x, screenSize.y) / 20f;
 
-        Debug.LogWarningFormat("MinSwipeDistance : {0}", minSwipeDistance);
+        inputManager.inputEvents[TouchPhase.Ended].AddListener(CheckMultiSwipe);
+        inputManager.inputEvents[TouchPhase.Ended].AddListener(CheckTouch);
     }
 
-    public override void Init()
+    void OnDestroy()
     {
-        base.Init();
-        
-        onEndInput.AddListener(CheckMultiSwipe);
-        onEndInput.AddListener(CheckTouch);
+        inputManager.inputEvents[TouchPhase.Ended].RemoveListener(CheckMultiSwipe);
+        inputManager.inputEvents[TouchPhase.Ended].RemoveListener(CheckTouch);
     }
-    
+
+    // NOTE : 4방향 스와이프
     // void CheckSingleSwipe(InputData inputData)
     // {
     //     Vector2 currentSwipe = endInputData.position - beginInputData.position;
     //
     //     if(currentSwipe.magnitude >= minSwipeDistance)
     //     {
-    //         SwipeType swipeType;
+    //         SwipeTouchType swipeType;
     //
     //         Vector2 swipeDirection = currentSwipe.normalized;
     //
-    //         swipeType = swipeDirection.x > 0 ? SwipeType.RIGHT : SwipeType.LEFT;
+    //         swipeType = swipeDirection.x > 0 ? SwipeTouchType.RIGHT : SwipeTouchType.LEFT;
     //
     //         if (Mathf.Abs(swipeDirection.y) > Mathf.Abs(swipeDirection.x))
     //         {
-    //             swipeType = swipeDirection.y > 0 ? SwipeType.UP : SwipeType.DOWN;
+    //             swipeType = swipeDirection.y > 0 ? SwipeTouchType.UP : SwipeTouchType.DOWN;
     //         }
     //
     //         onSwipe.Invoke(swipeType);
     //     }
     // }
-        
+
+    // NOTE : 8방향 스와이프
     void CheckMultiSwipe(InputData inputData)
     {
-        Vector2 currentSwipe = endInputData.position - beginInputData.position;
+        Vector2 currentSwipe = GetInputPosition(TouchPhase.Ended) - GetInputPosition(TouchPhase.Began);
 
-        if(currentSwipe.magnitude >= minSwipeDistance)
+        if (currentSwipe.magnitude >= minSwipeDistance)
         {
-            SwipeType swipeType;
+            SwipeTouchType swipeType = SwipeTouchType.NONE;
 
             Vector2 swipeDirection = currentSwipe.normalized;
-            Debug.LogWarningFormat("SwipeDirection : {0}", swipeDirection);
 
-            swipeType = swipeDirection.x > 0 ? SwipeType.RIGHT : SwipeType.LEFT;
+            swipeType = swipeDirection.x > 0 ? SwipeTouchType.RIGHT : SwipeTouchType.LEFT;
 
             if (Mathf.Abs(swipeDirection.y) > Mathf.Abs(swipeDirection.x) / 2f)
             {
@@ -80,24 +90,24 @@ public class VMInputSwipe : VMInput
                 {
                     if (Mathf.Abs(swipeDirection.x) <= 0.2f)
                     {
-                        swipeType = SwipeType.UP;
+                        swipeType = SwipeTouchType.UP;
                     }
                     else
                     {
-                        swipeType = (swipeType == SwipeType.RIGHT) ? 
-                                    SwipeType.RIGHT_UP : SwipeType.LEFT_UP;
+                        swipeType = (swipeType == SwipeTouchType.RIGHT) ? 
+                                    SwipeTouchType.RIGHT_UP : SwipeTouchType.LEFT_UP;
                     }
                 }
                 else
                 {
                     if (Mathf.Abs(swipeDirection.x) <= 0.2f)
                     {
-                        swipeType = SwipeType.DOWN;
+                        swipeType = SwipeTouchType.DOWN;
                     }
                     else
                     {
-                        swipeType = (swipeType == SwipeType.RIGHT) ? 
-                            SwipeType.RIGHT_DOWN : SwipeType.LEFT_DOWN;
+                        swipeType = (swipeType == SwipeTouchType.RIGHT) ? 
+                            SwipeTouchType.RIGHT_DOWN : SwipeTouchType.LEFT_DOWN;
                     }
                 }
             }
@@ -108,11 +118,16 @@ public class VMInputSwipe : VMInput
     
     void CheckTouch(InputData inputData)
     {
-        Vector2 currentSwipe = endInputData.position - beginInputData.position;
+        Vector2 currentSwipe = GetInputPosition(TouchPhase.Ended) - GetInputPosition(TouchPhase.Began);
 
         if (currentSwipe.magnitude < maxTouchDistance)
         {
             onTouch.Invoke();
         }
+    }
+
+    Vector3 GetInputPosition(TouchPhase touchPhase)
+    {
+        return inputManager.inputDatas[touchPhase].position;
     }
 }

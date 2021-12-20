@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using ScreenTouchType = VMInputScreen.ScreenTouchType;
+using TouchType = VMInputScreen.ScreenTouchType;
 
 public class VendingMachine : MonoBehaviour
 {
@@ -75,12 +75,12 @@ public class VendingMachine : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Q))
         {
-            Torque(ScreenTouchType.LEFT);
+            Torque(TouchType.LEFT);
         }
 
         if (Input.GetKey(KeyCode.E))
         {
-            Torque(ScreenTouchType.RIGHT);
+            Torque(TouchType.RIGHT);
         }
     }
 
@@ -113,7 +113,7 @@ public class VendingMachine : MonoBehaviour
         curFuel -= ((curThrust/maxThrust) * 1) * Time.deltaTime;
     }
 
-    void Torque(ScreenTouchType touchType)
+    void Torque(TouchType touchType)
     {
         rb.AddTorque((transform.forward * (int)touchType) * (torque * Time.deltaTime), ForceMode.Force);
     }

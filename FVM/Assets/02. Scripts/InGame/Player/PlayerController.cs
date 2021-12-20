@@ -4,7 +4,7 @@ using UnityEngine;
 
 using DuDungTakGames.Extensions;
 
-using SwipeType = VMInputSwipe.SwipeType;
+using SwipeType = VMInputSwipe.SwipeTouchType;
 
 [RequireComponent(typeof(Raycaster))]
 public class PlayerController : MonoBehaviour

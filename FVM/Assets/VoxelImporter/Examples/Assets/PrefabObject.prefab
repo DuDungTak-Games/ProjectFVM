@@ -592,9 +592,9 @@ MonoBehaviour:
   rotateSpeed: 14
   moveHeight: {x: 0, y: 5, z: 0}
   pitSpeed: 10
-  pitScale: 0.5
-  pitMoveHeight: {x: 0, y: 20, z: 0}
-  pitHeight: {x: 0, y: -20, z: 0}
+  pitScale: 0.4
+  pitMoveHeight: {x: 0, y: 30, z: 0}
+  pitHeight: {x: 0, y: -15, z: 0}
   jumpSpeed: 4
   jumpHeight: {x: 0, y: 60, z: 0}
 --- !u!1 &125458

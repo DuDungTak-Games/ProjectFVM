@@ -3,27 +3,33 @@ using UnityEngine.EventSystems;
 
 namespace DuDungTakGames.Input
 {
-    public struct InputData
+    public class InputData
     {
         public Vector2 position { get; private set; }
         public Vector2 deltaPosition { get; private set; }
 
-        public void SetData(Touch touch)
+        public InputData SetData(Touch touch)
         {
             this.position = touch.position;
             this.deltaPosition = touch.deltaPosition;
+
+            return this;
         }
 
-        public void SetData(Vector3 mousePosition)
+        public InputData SetData(Vector3 mousePosition)
         {
             this.position = mousePosition;
             this.deltaPosition = Vector3.zero;
+
+            return this;
         }
 
-        public void SetData(PointerEventData eventData)
+        public InputData SetData(PointerEventData eventData)
         {
             this.position = eventData.position;
             this.deltaPosition = eventData.delta;
+
+            return this;
         }
     }
 }

@@ -3,9 +3,11 @@ using UnityEngine.Events;
 
 using DuDungTakGames.Input;
 
-public class VMInputScreen : VMInput
+public class VMInputScreen : MonoBehaviour
 {
-    
+
+    VMInputManager inputManager;
+
     public enum ScreenTouchType
     {
         NONE = 0, 
@@ -16,11 +18,21 @@ public class VMInputScreen : VMInput
     [HideInInspector]
     public UnityEvent<ScreenTouchType> onTouch;
 
-    public override void Init()
+    void Awake()
     {
-        base.Init();
-        
-        onStayInput.AddListener(CheckScreenTouch);
+        inputManager = VMInputManager.Instance;
+
+        Init();
+    }
+
+    void Init()
+    {
+        inputManager.inputEvents[TouchPhase.Stationary].AddListener(CheckScreenTouch);
+    }
+
+    void OnDestroy()
+    {
+        inputManager.inputEvents[TouchPhase.Stationary].RemoveListener(CheckScreenTouch);
     }
 
     void CheckScreenTouch(InputData inputData)
@@ -28,7 +40,7 @@ public class VMInputScreen : VMInput
         float halfScreenWidth = (Screen.width / 2f);
         ScreenTouchType touchType = ScreenTouchType.NONE;
 
-        touchType = inputData.position.x < halfScreenWidth ? 
+        touchType = inputData.position.x < halfScreenWidth ?
                     ScreenTouchType.LEFT : ScreenTouchType.RIGHT;
 
         onTouch.Invoke(touchType);
